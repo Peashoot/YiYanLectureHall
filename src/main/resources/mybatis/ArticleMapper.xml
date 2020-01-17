@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.peashoot.blog.mapper.ArticleMapper">
+  <resultMap id="BaseResultMap" type="com.peashoot.blog.entity.Article">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="keyword1" jdbcType="VARCHAR" property="keyword1" />
+    <result column="keyword2" jdbcType="VARCHAR" property="keyword2" />
+    <result column="keyword3" jdbcType="VARCHAR" property="keyword3" />
+    <result column="keyword4" jdbcType="VARCHAR" property="keyword4" />
+    <result column="keyword5" jdbcType="VARCHAR" property="keyword5" />
+    <result column="filePath" jdbcType="VARCHAR" property="filePath" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="createUserId" jdbcType="INTEGER" property="createUserId" />
+    <result column="modifyTime" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="modifyUserId" jdbcType="INTEGER" property="modifyUserId" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="overview" jdbcType="VARCHAR" property="overview" />
+    <result column="pageView" jdbcType="BIGINT" property="pageView" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, title, keyword1, keyword2, keyword3, keyword4, keyword5, filePath, createTime, 
+    createUserId, modifyTime, modifyUserId, status, overview, pageView
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from bg_article
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from bg_article
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from bg_article
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteRangeByPrimaryKeys">
+    delete from bg_article
+    where id in (
+        <foreach collection="articleIds" item="id" index="index" separator="," >
+            #{id,jdbcType=INTEGER}
+        </foreach>
+     )
+  </delete>
+  <insert id="insert" parameterType="com.peashoot.blog.entity.Article">
+    insert into bg_article (id, title, keyword1, 
+      keyword2, keyword3, keyword4, 
+      keyword5, filePath, createTime, 
+      createUserId, modifyTime, modifyUserId, 
+      status, overview, pageView
+      )
+    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{keyword1,jdbcType=VARCHAR}, 
+      #{keyword2,jdbcType=VARCHAR}, #{keyword3,jdbcType=VARCHAR}, #{keyword4,jdbcType=VARCHAR}, 
+      #{keyword5,jdbcType=VARCHAR}, #{filePath,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUserId,jdbcType=INTEGER}, #{modifyTime,jdbcType=TIMESTAMP}, #{modifyUserId,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER}, #{overview,jdbcType=VARCHAR}, #{pageView,jdbcType=BIGINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.peashoot.blog.entity.Article">
+    insert into bg_article
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="keyword1 != null">
+        keyword1,
+      </if>
+      <if test="keyword2 != null">
+        keyword2,
+      </if>
+      <if test="keyword3 != null">
+        keyword3,
+      </if>
+      <if test="keyword4 != null">
+        keyword4,
+      </if>
+      <if test="keyword5 != null">
+        keyword5,
+      </if>
+      <if test="filePath != null">
+        filePath,
+      </if>
+      <if test="createTime != null">
+        createTime,
+      </if>
+      <if test="createUserId != null">
+        createUserId,
+      </if>
+      <if test="modifyTime != null">
+        modifyTime,
+      </if>
+      <if test="modifyUserId != null">
+        modifyUserId,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="overview != null">
+        overview,
+      </if>
+      <if test="pageView != null">
+        pageView,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword1 != null">
+        #{keyword1,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword2 != null">
+        #{keyword2,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword3 != null">
+        #{keyword3,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword4 != null">
+        #{keyword4,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword5 != null">
+        #{keyword5,jdbcType=VARCHAR},
+      </if>
+      <if test="filePath != null">
+        #{filePath,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        #{createUserId,jdbcType=INTEGER},
+      </if>
+      <if test="modifyTime != null">
+        #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyUserId != null">
+        #{modifyUserId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="overview != null">
+        #{overview,jdbcType=VARCHAR},
+      </if>
+      <if test="pageView != null">
+        #{pageView,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.peashoot.blog.entity.Article">
+    update bg_article
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword1 != null">
+        keyword1 = #{keyword1,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword2 != null">
+        keyword2 = #{keyword2,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword3 != null">
+        keyword3 = #{keyword3,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword4 != null">
+        keyword4 = #{keyword4,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword5 != null">
+        keyword5 = #{keyword5,jdbcType=VARCHAR},
+      </if>
+      <if test="filePath != null">
+        filePath = #{filePath,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        createTime = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        createUserId = #{createUserId,jdbcType=INTEGER},
+      </if>
+      <if test="modifyTime != null">
+        modifyTime = #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyUserId != null">
+        modifyUserId = #{modifyUserId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="overview != null">
+        overview = #{overview,jdbcType=VARCHAR},
+      </if>
+      <if test="pageView != null">
+        pageView = #{pageView,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.peashoot.blog.entity.Article">
+    update bg_article
+    set title = #{title,jdbcType=VARCHAR},
+      keyword1 = #{keyword1,jdbcType=VARCHAR},
+      keyword2 = #{keyword2,jdbcType=VARCHAR},
+      keyword3 = #{keyword3,jdbcType=VARCHAR},
+      keyword4 = #{keyword4,jdbcType=VARCHAR},
+      keyword5 = #{keyword5,jdbcType=VARCHAR},
+      filePath = #{filePath,jdbcType=VARCHAR},
+      createTime = #{createTime,jdbcType=TIMESTAMP},
+      createUserId = #{createUserId,jdbcType=INTEGER},
+      modifyTime = #{modifyTime,jdbcType=TIMESTAMP},
+      modifyUserId = #{modifyUserId,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      overview = #{overview,jdbcType=VARCHAR},
+      pageView = #{pageView,jdbcType=BIGINT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

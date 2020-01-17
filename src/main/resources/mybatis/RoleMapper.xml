@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.peashoot.blog.mapper.RoleMapper">
+  <resultMap id="BaseResultMap" type="com.peashoot.blog.entity.Role">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="roleName" jdbcType="VARCHAR" property="roleName" />
+    <result column="insertTime" jdbcType="TIMESTAMP" property="insertTime" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="permission" jdbcType="VARCHAR" property="permission" />
+    <result column="insertUserId" jdbcType="INTEGER" property="insertUserId" />
+    <result column="updateUserId" jdbcType="INTEGER" property="updateUserId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, roleName, insertTime, updateTime, permission, insertUserId, updateUserId
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from bg_role
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from bg_role
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from bg_role
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteRangeByPrimaryKeys">
+    delete from bg_role
+    where id in (
+    <foreach collection="roleIds" item="id" index="index" separator="," >
+      #{id,jdbcType=INTEGER}
+    </foreach>
+    )
+  </delete>
+  <insert id="insert" parameterType="com.peashoot.blog.entity.Role">
+    insert into bg_role (id, roleName, insertTime, 
+      updateTime, permission, insertUserId, 
+      updateUserId)
+    values (#{id,jdbcType=INTEGER}, #{roleName,jdbcType=VARCHAR}, #{insertTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{permission,jdbcType=VARCHAR}, #{insertUserId,jdbcType=INTEGER}, 
+      #{updateUserId,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.peashoot.blog.entity.Role">
+    insert into bg_role
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="roleName != null">
+        roleName,
+      </if>
+      <if test="insertTime != null">
+        insertTime,
+      </if>
+      <if test="updateTime != null">
+        updateTime,
+      </if>
+      <if test="permission != null">
+        permission,
+      </if>
+      <if test="insertUserId != null">
+        insertUserId,
+      </if>
+      <if test="updateUserId != null">
+        updateUserId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="roleName != null">
+        #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="insertTime != null">
+        #{insertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="permission != null">
+        #{permission,jdbcType=VARCHAR},
+      </if>
+      <if test="insertUserId != null">
+        #{insertUserId,jdbcType=INTEGER},
+      </if>
+      <if test="updateUserId != null">
+        #{updateUserId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.peashoot.blog.entity.Role">
+    update bg_role
+    <set>
+      <if test="roleName != null">
+        roleName = #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="insertTime != null">
+        insertTime = #{insertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        updateTime = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="permission != null">
+        permission = #{permission,jdbcType=VARCHAR},
+      </if>
+      <if test="insertUserId != null">
+        insertUserId = #{insertUserId,jdbcType=INTEGER},
+      </if>
+      <if test="updateUserId != null">
+        updateUserId = #{updateUserId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.peashoot.blog.entity.Role">
+    update bg_role
+    set roleName = #{roleName,jdbcType=VARCHAR},
+      insertTime = #{insertTime,jdbcType=TIMESTAMP},
+      updateTime = #{updateTime,jdbcType=TIMESTAMP},
+      permission = #{permission,jdbcType=VARCHAR},
+      insertUserId = #{insertUserId,jdbcType=INTEGER},
+      updateUserId = #{updateUserId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
