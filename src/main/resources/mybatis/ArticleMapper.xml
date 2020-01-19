@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.peashoot.blog.mapper.ArticleMapper">
-  <resultMap id="BaseResultMap" type="com.peashoot.blog.entity.Article">
+<mapper namespace="com.peashoot.blog.batis.mapper.ArticleMapper">
+  <resultMap id="BaseResultMap" type="com.peashoot.blog.batis.entity.Article">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="title" jdbcType="VARCHAR" property="title" />
     <result column="keyword1" jdbcType="VARCHAR" property="keyword1" />
@@ -45,7 +45,7 @@
         </foreach>
      )
   </delete>
-  <insert id="insert" parameterType="com.peashoot.blog.entity.Article">
+  <insert id="insert" parameterType="com.peashoot.blog.batis.entity.Article">
     insert into bg_article (id, title, keyword1, 
       keyword2, keyword3, keyword4, 
       keyword5, filePath, createTime, 
@@ -59,7 +59,7 @@
       #{status,jdbcType=INTEGER}, #{overview,jdbcType=VARCHAR}, #{pageView,jdbcType=BIGINT}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.peashoot.blog.entity.Article">
+  <insert id="insertSelective" parameterType="com.peashoot.blog.batis.entity.Article">
     insert into bg_article
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -156,7 +156,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.peashoot.blog.entity.Article">
+  <update id="updateByPrimaryKeySelective" parameterType="com.peashoot.blog.batis.entity.Article">
     update bg_article
     <set>
       <if test="title != null">
@@ -204,7 +204,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.peashoot.blog.entity.Article">
+  <update id="updateByPrimaryKey" parameterType="com.peashoot.blog.batis.entity.Article">
     update bg_article
     set title = #{title,jdbcType=VARCHAR},
       keyword1 = #{keyword1,jdbcType=VARCHAR},

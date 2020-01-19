@@ -1,12 +1,16 @@
 package com.peashoot.blog.controller;
 
-import com.peashoot.blog.entity.Role;
-import com.peashoot.blog.entity.SysUser;
-import com.peashoot.blog.response.ApiResp;
-import com.peashoot.blog.request.sysuser.LoginUser;
-import com.peashoot.blog.request.sysuser.RegisterUser;
-import com.peashoot.blog.service.AuthService;
-import com.peashoot.blog.service.SysUserService;
+import com.peashoot.blog.crypto.annotation.DecryptRequest;
+import com.peashoot.blog.crypto.annotation.EncryptResponse;
+import com.peashoot.blog.batis.entity.Role;
+import com.peashoot.blog.batis.entity.SysUser;
+import com.peashoot.blog.context.response.ApiResp;
+import com.peashoot.blog.context.request.sysuser.LoginUser;
+import com.peashoot.blog.context.request.sysuser.RegisterUser;
+import com.peashoot.blog.batis.service.AuthService;
+import com.peashoot.blog.batis.service.SysUserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +21,7 @@ import java.util.Date;
 import java.util.UUID;
 
 @RestController
+@Api(tags = "用户管理相关接口")
 @RequestMapping()
 public class SysUserController {
     @Autowired
@@ -25,6 +30,9 @@ public class SysUserController {
     private AuthService authService;
 
     @PostMapping(value = "/auth/login")
+    @ApiOperation("根据用户名或者邮箱进行登录")
+    @DecryptRequest
+    @EncryptResponse
     public ApiResp<String> loginByUserNameAndPassword(@RequestBody LoginUser loginUser) {
         String token = authService.login(loginUser.getUsername(), loginUser.getPassword());
         ApiResp<String> resp = new ApiResp<>();
@@ -34,6 +42,7 @@ public class SysUserController {
     }
 
     @PostMapping("/auth/register")
+    @ApiOperation("注册用户")
     public ApiResp<Boolean> registerSysUser(@RequestBody RegisterUser detail) {
         SysUser sysUser = new SysUser();
         detail.copyTo(sysUser);
