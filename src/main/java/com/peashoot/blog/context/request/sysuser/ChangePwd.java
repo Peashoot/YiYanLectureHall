@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @ApiModel
-public class LoginUser extends ApiReq {
+public class ChangePwd extends ApiReq {
     /**
      * 用户名
      */
@@ -18,6 +18,11 @@ public class LoginUser extends ApiReq {
     /**
      * 密码
      */
-    @ApiModelProperty(value = "密码", required = true)
-    private String password;
+    @ApiModelProperty(value = "旧密码", required = true)
+    private String oldPassword;
+    /**
+     * 新密码
+     */
+    @ApiModelProperty(value = "新密码", required = true)
+    private String newPassword;
 }

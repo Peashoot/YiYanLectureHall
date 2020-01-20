@@ -1,6 +1,7 @@
 package com.peashoot.blog.context.request.sysuser;
 
 import com.peashoot.blog.batis.entity.SysUser;
+import com.peashoot.blog.context.request.ApiReq;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 @ApiModel
-public class SysUserDetail {
+public class SysUserDetail extends ApiReq {
     /**
      * 用户名
      */

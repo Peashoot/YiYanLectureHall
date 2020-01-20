@@ -13,10 +13,6 @@ public class ApiResp<T> {
      */
     private Long timestamp;
     /**
-     * token（请求包含token，则返回原token，否则返回新的token）
-     */
-    private String token;
-    /**
      * 错误代码
      */
     private int code;

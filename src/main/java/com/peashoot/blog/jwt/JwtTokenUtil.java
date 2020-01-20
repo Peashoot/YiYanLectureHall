@@ -1,6 +1,7 @@
 package com.peashoot.blog.jwt;
 
 import com.peashoot.blog.batis.entity.SysUser;
+import com.peashoot.blog.util.Constant;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -12,15 +13,16 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
 @Component
 public class JwtTokenUtil implements Serializable {
     private static final String CLAIM_KEY_USERNAME = "sub";
     private static final String CLAIM_KEY_CREATED = "created";
 
-    @Value("${jwt.secret}")
+    @Value("${peashoot.blog.jwt.secret}")
     private String secret;
 
-    @Value("${jwt.expiration}")
+    @Value("${peashoot.blog.jwt.expiration}")
     private Long expiration;
 
     public String getUsernameFromToken(String token) {
@@ -70,7 +72,7 @@ public class JwtTokenUtil implements Serializable {
     }
 
     private Date generateExpirationDate() {
-        return new Date(System.currentTimeMillis() + expiration * 1000);
+        return new Date(System.currentTimeMillis() + expiration * Constant.oneMillisecondsPeySecond);
     }
 
     private Boolean isTokenExpired(String token) {
