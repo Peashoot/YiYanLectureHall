@@ -64,4 +64,14 @@ public class ArticleServiceImpl implements ArticleService {
         }
         return articleMapper.updateByPrimaryKey(updateItem);
     }
+
+    @Override
+    public List<Article> getArticlesByPage(int pageSize, int pageIndex, String keywordLike, String titleLike) {
+        return articleMapper.getArticlesByPage(pageSize * pageIndex, pageIndex, keywordLike, titleLike);
+    }
+
+    @Override
+    public int getMatchedArticleTotalCount(String keywordLike, String titleLike) {
+        return articleMapper.getMatchedArticleTotalCount(keywordLike, titleLike);
+    }
 }

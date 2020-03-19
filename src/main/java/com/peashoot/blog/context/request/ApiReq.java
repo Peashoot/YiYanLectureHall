@@ -19,4 +19,9 @@ public class ApiReq {
      */
     @ApiModelProperty(value = "浏览器指纹")
     private String browserFingerprint;
+    /**
+     * 访问时间
+     */
+    @ApiModelProperty(value = "访问时间，格式yyyy-MM-dd HH:mm:ss")
+    private String visitTime;
 }

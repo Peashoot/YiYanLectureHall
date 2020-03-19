@@ -222,4 +222,25 @@
       pageView = #{pageView,jdbcType=BIGINT}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="getArticlesByPage" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from bg_article where 1=1
+    <if test = "@com.peashoot.blog.util.StringUtils@isNotNullOrEmpty(keywordLike)">
+        and (keyword1 like %#{keywordLike}% or keyword2 like %#{keywordLike}% or keyword3 like %#{keywordLike}% or keyword4 like %#{keywordLike}% or keyword5 like %#{keywordLike}%)
+    </if>
+    <if test = "@com.peashoot.blog.util.StringUtils@isNotNullOrEmpty(titleLike)">
+      and title like %#{titleLike}%
+    </if>
+    order by id limit #{indexStart},#{selectCount}
+  </select>
+  <select id="getArticlesByPage">
+    select count(1) from bg_article where 1=1
+    <if test = "@com.peashoot.blog.util.StringUtils@isNotNullOrEmpty(keywordLike)">
+      and (keyword1 like %#{keywordLike}% or keyword2 like %#{keywordLike}% or keyword3 like %#{keywordLike}% or keyword4 like %#{keywordLike}% or keyword5 like %#{keywordLike}%)
+    </if>
+    <if test = "@com.peashoot.blog.util.StringUtils@isNotNullOrEmpty(titleLike)">
+      and title like %#{titleLike}%
+    </if>
+  </select>
 </mapper>

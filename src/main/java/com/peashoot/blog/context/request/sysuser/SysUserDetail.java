@@ -14,20 +14,10 @@ import javax.validation.constraints.NotNull;
 @ApiModel
 public class SysUserDetail extends ApiReq {
     /**
-     * 用户名
-     */
-    @ApiModelProperty(value = "用户名", required = true)
-    private String username;
-    /**
      * 昵称
      */
     @ApiModelProperty(value = "昵称", required = true)
     private String nickname;
-    /**
-     * 邮箱
-     */
-    @ApiModelProperty(value = "邮箱", required = true)
-    private String email;
     /**
      * 所在地区
      */
@@ -63,9 +53,7 @@ public class SysUserDetail extends ApiReq {
      * @param sysUser 系统用户实体
      */
     public void copyTo(@NotNull SysUser sysUser) {
-        sysUser.setUsername(username);
         sysUser.setNickName(nickname);
-        sysUser.setEmail(email);
         sysUser.setLocation(location);
         sysUser.setContact(contract);
         sysUser.setQq(qq);

@@ -10,6 +10,16 @@ import lombok.Setter;
 @ApiModel
 public class RegisterUser extends SysUserDetail {
     /**
+     * 邮箱
+     */
+    @ApiModelProperty(value = "邮箱", required = true)
+    private String email;
+    /**
+     * 用户名
+     */
+    @ApiModelProperty(value = "用户名", required = true)
+    private String username;
+    /**
      * 密码
      */
     @ApiModelProperty(value = "密码", required = true)

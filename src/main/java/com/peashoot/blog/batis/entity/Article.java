@@ -10,6 +10,10 @@ import java.util.Date;
 @Setter
 public class Article extends IntPrimaryEntity {
     /**
+     * 作者
+     */
+    private String author;
+    /**
      * 标题
      */
     private String title;
@@ -73,4 +77,8 @@ public class Article extends IntPrimaryEntity {
      * 浏览量
      */
     private Long pageView;
+    /**
+     * 文章URL链接
+     */
+    private String articleURL;
 }

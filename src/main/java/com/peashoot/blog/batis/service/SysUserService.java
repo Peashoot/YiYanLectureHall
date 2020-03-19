@@ -9,4 +9,5 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface SysUserService extends InsertService<SysUser>, UpdateService<SysUser>,
         RemoveService<SysUser, Integer>, SelectService<SysUser, Integer>, UserDetailsService {
+    int getIdByUsername(String username);
 }

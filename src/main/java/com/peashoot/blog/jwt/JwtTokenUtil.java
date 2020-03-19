@@ -1,10 +1,12 @@
 package com.peashoot.blog.jwt;
 
 import com.peashoot.blog.batis.entity.SysUser;
+import com.peashoot.blog.redis.service.SysUserRedisService;
 import com.peashoot.blog.util.Constant;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -16,15 +18,55 @@ import java.util.Map;
 
 @Component
 public class JwtTokenUtil implements Serializable {
+    /**
+     * 用户名键名
+     */
     private static final String CLAIM_KEY_USERNAME = "sub";
+    /**
+     * 创建时间键名
+     */
     private static final String CLAIM_KEY_CREATED = "created";
+    /**
+     * 登录IP键名
+     */
+    private static final String CLAIM_KEY_LOGINIP = "address";
+    /**
+     * 浏览器指纹键名
+     */
+    private static final String CLAIM_KEY_BROWSERFINGERPRINT = "bfp";
 
+    /**
+     * token加密密钥
+     */
     @Value("${peashoot.blog.jwt.secret}")
     private String secret;
 
+    /**
+     * token有效时间（秒）
+     */
     @Value("${peashoot.blog.jwt.expiration}")
-    private Long expiration;
+    private Long expiration = 3600L;
+    /**
+     * token中是否包含访问IP信息
+     */
+    @Value("${peashoot.blog.jwt.contains.visit_ip}")
+    private Boolean tokenWithVisitIP = true;
+    /**
+     * token中是否包含浏览器指纹信息
+     */
+    @Value("${peashoot.blog.jwt.contains.browser_fingerprint}")
+    private Boolean tokenWithBrowserFingerprint = true;
+    /**
+     * RedisToken操作类
+     */
+    @Autowired
+    private SysUserRedisService sysUserRedisService;
 
+    /**
+     * 从token中获取用户名
+     * @param token token
+     * @return 用户名
+     */
     public String getUsernameFromToken(String token) {
         String username;
         try {
@@ -36,6 +78,11 @@ public class JwtTokenUtil implements Serializable {
         return username;
     }
 
+    /**
+     * 从token中获取创建日期
+     * @param token token
+     * @return 创建日期
+     */
     public Date getCreatedDateFromToken(String token) {
         Date created;
         try {
@@ -47,6 +94,11 @@ public class JwtTokenUtil implements Serializable {
         return created;
     }
 
+    /**
+     * 从token中获取过期日期
+     * @param token token
+     * @return 创建日期
+     */
     public Date getExpirationDateFromToken(String token) {
         Date expiration;
         try {
@@ -58,6 +110,11 @@ public class JwtTokenUtil implements Serializable {
         return expiration;
     }
 
+    /**
+     * 从token中获取其他信息
+     * @param token token
+     * @return 其他信息
+     */
     private Claims getClaimsFromToken(String token) {
         Claims claims;
         try {
@@ -71,27 +128,62 @@ public class JwtTokenUtil implements Serializable {
         return claims;
     }
 
+    /**
+     * 生成过期日期
+     * @return 过期日期
+     */
     private Date generateExpirationDate() {
         return new Date(System.currentTimeMillis() + expiration * Constant.oneMillisecondsPeySecond);
     }
 
+    /**
+     * 判断token是否过期
+     * @param token token
+     * @return 是否过期
+     */
     private Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
 
+    /**
+     * 判断token生成时间是否早于重置密码时间（用户重置密码后需要重新登录）
+     * @param created token创建时间
+     * @param lastPasswordReset 上一次密码重置时间
+     * @return 是否需要重新生成token
+     */
     private Boolean isCreatedBeforeLastPasswordReset(Date created, Date lastPasswordReset) {
         return (lastPasswordReset != null && created.before(lastPasswordReset));
     }
 
-    public String generateToken(UserDetails userDetails) {
+    /**
+     * 生成token
+     * @param userDetails 用户信息
+     * @param loginIP 登录IP
+     * @param browserFingerprint 浏览器指纹
+     * @return token
+     */
+    public String generateToken(UserDetails userDetails, String loginIP, String browserFingerprint) {
         Map<String, Object> claims = new HashMap<>();
         claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
         claims.put(CLAIM_KEY_CREATED, new Date());
-        return generateToken(claims);
+        if (tokenWithVisitIP) {
+            claims.put(CLAIM_KEY_LOGINIP, loginIP);
+        }
+        if (tokenWithBrowserFingerprint) {
+            claims.put(CLAIM_KEY_BROWSERFINGERPRINT, browserFingerprint);
+        }
+        String token =  generateToken(claims);
+        sysUserRedisService.recordGenerateToken(userDetails.getUsername(), token, System.currentTimeMillis() + expiration * Constant.oneMillisecondsPeySecond);
+        return token;
     }
 
-    String generateToken(Map<String, Object> claims) {
+    /**
+     * 生成token
+     * @param claims 附加内容
+     * @return token
+     */
+    private String generateToken(Map<String, Object> claims) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(generateExpirationDate())
@@ -99,12 +191,23 @@ public class JwtTokenUtil implements Serializable {
                 .compact();
     }
 
+    /**
+     * 判断token是否可以刷新
+     * @param token 原token
+     * @param lastPasswordReset 上一次密码重置时间
+     * @return 是否需要刷新
+     */
     public Boolean canTokenBeRefreshed(String token, Date lastPasswordReset) {
         final Date created = getCreatedDateFromToken(token);
         return !isCreatedBeforeLastPasswordReset(created, lastPasswordReset)
                 && !isTokenExpired(token);
     }
 
+    /**
+     * 刷新token
+     * @param token 原token
+     * @return 新token
+     */
     public String refreshToken(String token) {
         String refreshedToken;
         try {
@@ -117,14 +220,20 @@ public class JwtTokenUtil implements Serializable {
         return refreshedToken;
     }
 
+    /**
+     * 验证token是否有效
+     * @param token token
+     * @param userDetails 用户信息
+     * @return 有效性
+     */
     public Boolean validateToken(String token, UserDetails userDetails) {
         SysUser user = (SysUser) userDetails;
         final String username = getUsernameFromToken(token);
         final Date created = getCreatedDateFromToken(token);
-//        final Date expiration = getExpirationDateFromToken(token);
         return (
                 username.equals(user.getUsername())
                         && !isTokenExpired(token)
-                        && !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate()));
+                        && !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate()))
+                        && !sysUserRedisService.checkIfNeedReLogin(username, token);
     }
 }

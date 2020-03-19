@@ -1,34 +1,24 @@
 package com.peashoot.blog.controller;
 
-import com.peashoot.blog.context.request.sysuser.ChangePwd;
+import com.peashoot.blog.context.request.sysuser.*;
 import com.peashoot.blog.crypto.annotation.DecryptRequest;
-import com.peashoot.blog.crypto.annotation.EncryptResponse;
 import com.peashoot.blog.batis.entity.Role;
 import com.peashoot.blog.batis.entity.SysUser;
 import com.peashoot.blog.context.response.ApiResp;
-import com.peashoot.blog.context.request.sysuser.LoginUser;
-import com.peashoot.blog.context.request.sysuser.RegisterUser;
 import com.peashoot.blog.batis.service.AuthService;
 import com.peashoot.blog.batis.service.SysUserService;
-import com.peashoot.blog.exception.UserHasLoginException;
 import com.peashoot.blog.exception.UserNameOccupiedException;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.UUID;
 
-/**
- * 系统用户控制器
- *
- * @Author peashoot
- */
 @RestController
 @Api(tags = "用户管理相关接口")
 @RequestMapping(path = "auth")
@@ -73,6 +63,8 @@ public class SysUserController {
     public ApiResp<Boolean> registerSysUser(@RequestBody RegisterUser detail) {
         SysUser sysUser = new SysUser();
         detail.copyTo(sysUser);
+        sysUser.setUsername(detail.getUsername());
+        sysUser.setEmail(detail.getEmail());
         sysUser.setPassword(detail.getPassword());
         String salt = UUID.randomUUID().toString().replace("-", "");
         sysUser.initialize(new Date(), String.valueOf(Role.VISITOR), salt);
@@ -82,7 +74,7 @@ public class SysUserController {
             resp.success().setData(success);
         } catch (UserNameOccupiedException ex) {
             resp.setCode(HttpStatus.BAD_REQUEST.value());
-            resp.setMessage("failure");
+            resp.setMessage("Failure to register.");
             resp.setData(false);
         }
         return resp;
@@ -98,6 +90,67 @@ public class SysUserController {
     @ApiOperation("修改用户密码")
     public ApiResp<Boolean> changePassword(@RequestBody ChangePwd changePwd) {
         boolean success = authService.changePassword(changePwd.getUsername(), changePwd.getOldPassword(), changePwd.getNewPassword());
+        ApiResp<Boolean> resp = new ApiResp<>();
+        resp.success().setData(success);
+        return resp;
+    }
+
+    /**
+     * 修改用户信息
+     *
+     * @param changeDetail 修改后的用户信息
+     * @return 是否修改成功
+     */
+    @PostMapping(path = "changeDetail")
+    @ApiOperation("修改用户信息")
+    public ApiResp<Boolean> changeUserInfo(@RequestBody ChangeDetail changeDetail) {
+        SysUser sysUser = sysUserService.selectById(changeDetail.getId());
+        ApiResp<Boolean> resp = new ApiResp<>();
+        if (sysUser == null) {
+            resp.setCode(301);
+            resp.setMessage("Please check your account carefully.");
+            resp.setData(false);
+            return resp;
+        }
+        changeDetail.copyTo(sysUser);
+        boolean result = sysUserService.update(sysUser) > 0;
+        if (result) {
+            resp.success().setData(true);
+        } else {
+            resp.setCode(501);
+            resp.setMessage("Failure to change information.");
+            resp.setData(false);
+        }
+        return resp;
+    }
+
+    @RequestMapping(path = "logout")
+    @ApiOperation("用户登出")
+    public ApiResp<Boolean> logOut(@RequestParam String username) {
+        ApiResp<Boolean> resp = new ApiResp<Boolean>().success();
+        resp.setData(authService.logOut(username));
+        return resp;
+    }
+
+    @RequestMapping(path = "apply/resetPwd")
+    @ApiOperation("申请重置密码")
+    public ApiResp<Boolean> applyResetPassword(@RequestParam String username) {
+        ApiResp<Boolean> resp = new ApiResp<>();
+        SysUser user = (SysUser) sysUserService.loadUserByUsername(username);
+        if (user == null) {
+            resp.setCode(301);
+            resp.setMessage("Please check you account carefully.");
+            return resp;
+        }
+        // 发送邮件到用户注册邮箱
+        resp.success().setData(authService.sendResetPasswordEmail(user));
+        return resp;
+    }
+
+    @RequestMapping(path = "resetPwd")
+    @ApiOperation("重置密码")
+    public ApiResp<Boolean> resetPassword(@RequestParam("applyId") String applySerial, @RequestBody ChangePwd changePwd) {
+        boolean success = authService.resetPassword(changePwd.getUsername(), applySerial, changePwd.getNewPassword());
         ApiResp<Boolean> resp = new ApiResp<>();
         resp.success().setData(success);
         return resp;

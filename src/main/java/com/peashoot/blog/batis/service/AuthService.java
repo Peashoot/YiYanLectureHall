@@ -35,4 +35,27 @@ public interface AuthService {
      * @return 是否成功
      */
     boolean changePassword(String username, String oldPwd, String newPwd);
+
+    /**
+     * 用户登出
+     * @param username 用户名
+     * @return 是否成功
+     */
+    boolean logOut(String username);
+
+    /**
+     * 发送重置密码邮件
+     * @param sysUser 用户信息
+     * @return 是否成功
+     */
+    boolean sendResetPasswordEmail(SysUser sysUser);
+
+    /**
+     * 重置密码
+     * @param username
+     * @param applySerial
+     * @param newPassword
+     * @return
+     */
+    boolean resetPassword(String username, String applySerial, String newPassword);
 }

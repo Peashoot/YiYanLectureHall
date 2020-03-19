@@ -23,4 +23,8 @@ public interface ArticleMapper {
     int updateByPrimaryKeySelective(Article record);
 
     int updateByPrimaryKey(Article record);
+
+    List<Article> getArticlesByPage(int indexStart, int selectCount, String keywordLike, String titleLike);
+
+    int getMatchedArticleTotalCount(String keywordLike, String titleLike);
 }
