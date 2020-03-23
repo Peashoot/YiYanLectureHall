@@ -2,6 +2,7 @@ package com.peashoot.blog.batis.entity;
 
 import com.peashoot.blog.batis.entity.base.IntPrimaryEntity;
 import com.peashoot.blog.util.StringUtils;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class SysUser extends IntPrimaryEntity implements UserDetails {
+public class SysUserDO extends IntPrimaryEntity implements UserDetails {
     /**
      * 角色类型id
      */
@@ -23,7 +24,7 @@ public class SysUser extends IntPrimaryEntity implements UserDetails {
     /**
      * 角色类型
      */
-    private List<Role> roles;
+    private List<RoleDO> roles;
     /**
      * 用户名
      */
@@ -95,7 +96,7 @@ public class SysUser extends IntPrimaryEntity implements UserDetails {
     /**
      * 性别： 0 保密 1 男 2 女
      */
-    private int gender;
+    private Integer gender;
     /**
      * 个人简介
      */
@@ -104,9 +105,9 @@ public class SysUser extends IntPrimaryEntity implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> auths = new ArrayList<>();
-        List<Role> roles = this.getRoles();
+        List<RoleDO> roles = this.getRoles();
         if (roles != null) {
-            for (Role role : roles) {
+            for (RoleDO role : roles) {
                 if (role == null) {
                     continue;
                 }

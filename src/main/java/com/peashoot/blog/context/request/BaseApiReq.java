@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @ApiModel
-public class ApiReq {
+public abstract class BaseApiReq {
     /**
      * 访问IP
      */

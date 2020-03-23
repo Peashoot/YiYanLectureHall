@@ -1,6 +1,7 @@
 package com.peashoot.blog.crypto.impl;
 
 import com.peashoot.blog.crypto.definition.Crypto;
+import com.peashoot.blog.util.EncryptUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -63,40 +64,24 @@ public class RsaCrypto implements Crypto {
     /**
      * RSA公钥加密
      *
-     * @param str 加密字符串
+     * @param original 加密字符串
      * @return 密文
      * @throws Exception 加密过程中的异常信息
      */
     @Override
-    public String encrypt(String str, String charset) throws Exception {
-        //base64编码的公钥
-        byte[] decoded = Base64.decodeBase64(publicKeyString);
-        RSAPublicKey pubKey = (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(decoded));
-        //RSA加密
-        Cipher cipher = Cipher.getInstance("RSA");
-        cipher.init(Cipher.ENCRYPT_MODE, pubKey);
-        String outStr = Base64.encodeBase64String(cipher.doFinal(str.getBytes(charset)));
-        return outStr;
+    public String encrypt(String original, String charset) throws Exception {
+        return EncryptUtils.rsaEncrypt(original, publicKeyString, charset);
     }
 
     /**
      * RSA私钥解密
      *
-     * @param str 加密字符串
+     * @param encrypted 加密字符串
      * @return 铭文
      * @throws Exception 解密过程中的异常信息
      */
     @Override
-    public String decrypt(String str, String charset) throws Exception {
-        //64位解码加密后的字符串
-        byte[] inputByte = Base64.decodeBase64(str.getBytes(charset));
-        //base64编码的私钥
-        byte[] decoded = Base64.decodeBase64(privateKeyString);
-        RSAPrivateKey priKey = (RSAPrivateKey) KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(decoded));
-        //RSA解密
-        Cipher cipher = Cipher.getInstance("RSA");
-        cipher.init(Cipher.DECRYPT_MODE, priKey);
-        String outStr = new String(cipher.doFinal(inputByte));
-        return outStr;
+    public String decrypt(String encrypted, String charset) throws Exception {
+        return EncryptUtils.rsaDecrypt(encrypted, privateKeyString, charset);
     }
 }

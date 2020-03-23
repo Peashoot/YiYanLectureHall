@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.peashoot.blog.batis.mapper.CommentMapper">
-  <resultMap id="BaseResultMap" type="com.peashoot.blog.batis.entity.Comment">
+  <resultMap id="BaseResultMap" type="com.peashoot.blog.batis.entity.CommentDO">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="nickName" jdbcType="VARCHAR" property="nickName" />
     <result column="userId" jdbcType="INTEGER" property="userId" />
@@ -36,7 +36,7 @@
     </foreach>
     )
   </delete>
-  <insert id="insert" parameterType="com.peashoot.blog.batis.entity.Comment">
+  <insert id="insert" parameterType="com.peashoot.blog.batis.entity.CommentDO">
     insert into bg_comment (id, nickName, userId, 
       comment, articleId, commentTime, 
       status)
@@ -44,7 +44,7 @@
       #{comment,jdbcType=VARCHAR}, #{articleId,jdbcType=INTEGER}, #{commentTime,jdbcType=TIMESTAMP}, 
       #{status,jdbcType=INTEGER})
   </insert>
-  <insert id="insertSelective" parameterType="com.peashoot.blog.batis.entity.Comment">
+  <insert id="insertSelective" parameterType="com.peashoot.blog.batis.entity.CommentDO">
     insert into bg_comment
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -93,7 +93,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.peashoot.blog.batis.entity.Comment">
+  <update id="updateByPrimaryKeySelective" parameterType="com.peashoot.blog.batis.entity.CommentDO">
     update bg_comment
     <set>
       <if test="nickName != null">
@@ -117,7 +117,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.peashoot.blog.batis.entity.Comment">
+  <update id="updateByPrimaryKey" parameterType="com.peashoot.blog.batis.entity.CommentDO">
     update bg_comment
     set nickName = #{nickName,jdbcType=VARCHAR},
       userId = #{userId,jdbcType=INTEGER},

@@ -1,6 +1,6 @@
 package com.peashoot.blog.batis.mapper;
 
-import com.peashoot.blog.batis.entity.Comment;
+import com.peashoot.blog.batis.entity.CommentDO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -12,15 +12,21 @@ public interface CommentMapper {
 
     int deleteRangeByPrimaryKeys(@Param("commentIds") Integer[] commentIds);
 
-    int insert(Comment record);
+    int insert(CommentDO record);
 
-    int insertSelective(Comment record);
+    int insertSelective(CommentDO record);
 
-    Comment selectByPrimaryKey(Integer id);
+    CommentDO selectByPrimaryKey(Integer id);
 
-    List<Comment> selectAll();
+    CommentDO selectByPrimaryKeyForUpdate(Integer id);
 
-    int updateByPrimaryKeySelective(Comment record);
+    List<CommentDO> selectAll();
 
-    int updateByPrimaryKey(Comment record);
+    int updateByPrimaryKeySelective(CommentDO record);
+
+    int updateByPrimaryKey(CommentDO record);
+
+    List<CommentDO> listPagedComments(int pageSize, int pageIndex, String articleId);
+
+    int countTotalRecords(String articleId);
 }

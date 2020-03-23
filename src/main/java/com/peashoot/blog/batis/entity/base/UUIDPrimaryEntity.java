@@ -9,8 +9,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
-public abstract class StringPrimaryEntity extends BaseEntity<String>{
-    public StringPrimaryEntity() {
+public abstract class UUIDPrimaryEntity extends BaseEntity<String>{
+    public UUIDPrimaryEntity() {
         id = UUID.randomUUID().toString().replace("-", "");
     }
 }

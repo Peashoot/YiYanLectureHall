@@ -1,12 +1,12 @@
 package com.peashoot.blog.context.response.article;
 
-import com.peashoot.blog.batis.entity.Article;
+import com.peashoot.blog.batis.entity.ArticleDO;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class ArticleIntroduction {
+public class ArticleIntroductionDTO {
     /**
      * 标题
      */
@@ -46,8 +46,8 @@ public class ArticleIntroduction {
     /**
      * 数据库实体转成返回实体
      */
-    public static ArticleIntroduction createArticlesInfo(Article articleEntity) {
-        ArticleIntroduction articleInfo = new ArticleIntroduction();
+    public static ArticleIntroductionDTO createArticlesInfo(ArticleDO articleEntity) {
+        ArticleIntroductionDTO articleInfo = new ArticleIntroductionDTO();
         articleInfo.title = articleEntity.getTitle();
         articleInfo.keyword1 = articleEntity.getKeyword1();
         articleInfo.keyword2 = articleEntity.getKeyword2();

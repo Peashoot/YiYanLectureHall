@@ -2,7 +2,7 @@ package com.peashoot.blog.batis.service.impl;
 
 import com.peashoot.blog.crypto.impl.Md5Crypto;
 import com.peashoot.blog.jwt.JwtTokenUtil;
-import com.peashoot.blog.batis.entity.SysUser;
+import com.peashoot.blog.batis.entity.SysUserDO;
 import com.peashoot.blog.exception.UserNameOccupiedException;
 import com.peashoot.blog.batis.service.AuthService;
 import com.peashoot.blog.batis.service.SysUserService;
@@ -67,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
     private SysUserRedisService sysUserRedisService;
 
     @Override
-    public boolean register(@NotNull SysUser userToAdd) throws UserNameOccupiedException {
+    public boolean insertSysUser(@NotNull SysUserDO userToAdd) throws UserNameOccupiedException {
         final String username = userToAdd.getUsername();
         try {
             // 如果没有找到相关用户，继续注册操作；否则抛出用户已注册异常
@@ -102,7 +102,7 @@ public class AuthServiceImpl implements AuthService {
     public String refresh(@NotNull String oldToken) {
         final String token = oldToken.substring(tokenHead.length());
         String username = jwtTokenUtil.getUsernameFromToken(token);
-        SysUser user = (SysUser) sysUserService.loadUserByUsername(username);
+        SysUserDO user = (SysUserDO) sysUserService.loadUserByUsername(username);
         if (jwtTokenUtil.canTokenBeRefreshed(token, user.getLastPasswordResetDate())) {
             return jwtTokenUtil.refreshToken(token);
         }
@@ -122,7 +122,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public boolean sendResetPasswordEmail(SysUser sysUser) {
+    public boolean sendResetPasswordEmail(SysUserDO sysUser) {
         try {
             String serialNumber = new Md5Crypto().encrypt(UUID.randomUUID().toString() + sysUser.getUsername(), "UTF-8");
             sysUserRedisService.saveResetPwdApplySerial(sysUser.getUsername(), serialNumber);
@@ -149,7 +149,7 @@ public class AuthServiceImpl implements AuthService {
      * @return 是否成功
      */
     private boolean updateUserPassword(String username, String newPwd) {
-        SysUser userToUpdate = (SysUser) sysUserService.loadUserByUsername(username);
+        SysUserDO userToUpdate = (SysUserDO) sysUserService.loadUserByUsername(username);
         if (userToUpdate == null) {
             return false;
         }

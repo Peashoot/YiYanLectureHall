@@ -5,9 +5,9 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class ChangeDetail extends SysUserDetail {
+public class ChangeDetailDTO extends SysUserDetailDTO {
     /**
      * 用户id
      */
-    private int id;
+    private Integer id;
 }

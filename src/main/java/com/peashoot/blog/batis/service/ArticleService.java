@@ -1,6 +1,6 @@
 package com.peashoot.blog.batis.service;
 
-import com.peashoot.blog.batis.entity.Article;
+import com.peashoot.blog.batis.entity.ArticleDO;
 import com.peashoot.blog.batis.service.base.InsertService;
 import com.peashoot.blog.batis.service.base.RemoveService;
 import com.peashoot.blog.batis.service.base.SelectService;
@@ -8,8 +8,8 @@ import com.peashoot.blog.batis.service.base.UpdateService;
 
 import java.util.List;
 
-public interface ArticleService extends InsertService<Article>, UpdateService<Article>,
-        SelectService<Article, Integer>, RemoveService<Article, Integer> {
+public interface ArticleService extends InsertService<ArticleDO>, UpdateService<ArticleDO>,
+        SelectService<ArticleDO, String>, RemoveService<ArticleDO, String> {
     /**
      * 分页获取文章
      * @param pageSize 单页最大记录数
@@ -19,7 +19,7 @@ public interface ArticleService extends InsertService<Article>, UpdateService<Ar
      * @param titleLike 部分标题
      * @return 满足条件的结果
      */
-    List<Article> getArticlesByPage(int pageSize, int pageIndex, String authorLike, String keywordLike, String titleLike);
+    List<ArticleDO> listPagedArticles(int pageSize, int pageIndex, String authorLike, String keywordLike, String titleLike);
 
     /**
      * 获取满足条件的记录总条数
@@ -28,5 +28,5 @@ public interface ArticleService extends InsertService<Article>, UpdateService<Ar
      * @param titleLike 部分标题
      * @return 满足条件的结果总数
      */
-    int getMatchedArticleTotalCount(String authorLike, String keywordLike, String titleLike);
+    int countTotalRecords(String authorLike, String keywordLike, String titleLike);
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.peashoot.blog.batis.mapper.SysUserMapper">
-    <resultMap id="BaseResultMap" type="com.peashoot.blog.batis.entity.SysUser">
+    <resultMap id="BaseResultMap" type="com.peashoot.blog.batis.entity.SysUserDO">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="roleIds" jdbcType="VARCHAR" property="roleIds"/>
         <result column="username" jdbcType="VARCHAR" property="username"/>
@@ -70,7 +70,7 @@
         </foreach>
         )
     </delete>
-    <insert id="insert" parameterType="com.peashoot.blog.batis.entity.SysUser">
+    <insert id="insert" parameterType="com.peashoot.blog.batis.entity.SysUserDO">
     insert into bg_sysuser (id, roleIds, username,
       password, salt, nickName,
       email, contact, qq,
@@ -88,7 +88,7 @@
       #{headPortrait,jdbcType=VARCHAR}, #{gender,jdbcType=INTEGER}, #{personalProfile,jdbcType=VARCHAR}
       )
   </insert>
-    <insert id="insertSelective" parameterType="com.peashoot.blog.batis.entity.SysUser">
+    <insert id="insertSelective" parameterType="com.peashoot.blog.batis.entity.SysUserDO">
         insert into bg_sysuser
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -221,7 +221,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.peashoot.blog.batis.entity.SysUser">
+    <update id="updateByPrimaryKeySelective" parameterType="com.peashoot.blog.batis.entity.SysUserDO">
         update bg_sysuser
         <set>
             <if test="roleIds != null">
@@ -287,7 +287,7 @@
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.peashoot.blog.batis.entity.SysUser">
+    <update id="updateByPrimaryKey" parameterType="com.peashoot.blog.batis.entity.SysUserDO">
     update bg_sysuser
     set roleIds = #{roleIds,jdbcType=VARCHAR},
       username = #{username,jdbcType=VARCHAR},
@@ -311,7 +311,7 @@
       personalProfile = #{personalProfile,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
-    <update id="updateByPrimaryKey" parameterType="com.peashoot.blog.batis.entity.SysUser">
+    <update id="updateByPrimaryKey" parameterType="com.peashoot.blog.batis.entity.SysUserDO">
     update bg_sysuser
     set roleIds = #{roleIds,jdbcType=VARCHAR},
       username = #{username,jdbcType=VARCHAR},

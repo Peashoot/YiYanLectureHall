@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class Role extends IntPrimaryEntity {
+public class RoleDO extends IntPrimaryEntity {
     /**
      * 角色名称
      */
@@ -36,11 +36,11 @@ public class Role extends IntPrimaryEntity {
     /**
      * 新增的用户
      */
-    private SysUser insertUser;
+    private SysUserDO insertUser;
     /**
      * 修改的用户
      */
-    private SysUser updateUser;
+    private SysUserDO updateUser;
     /**
      * 访问者
      */

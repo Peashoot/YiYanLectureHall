@@ -1,6 +1,6 @@
 package com.peashoot.blog.batis.mapper;
 
-import com.peashoot.blog.batis.entity.Article;
+import com.peashoot.blog.batis.entity.ArticleDO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -8,23 +8,23 @@ import java.util.List;
 
 @Repository
 public interface ArticleMapper {
-    int deleteByPrimaryKey(Integer id);
+    int deleteByPrimaryKey(String id);
 
     int deleteRangeByPrimaryKeys(@Param("articleIds")Integer[] articleIds);
 
-    int insert(Article record);
+    int insert(ArticleDO record);
 
-    int insertSelective(Article record);
+    int insertSelective(ArticleDO record);
 
-    Article selectByPrimaryKey(Integer id);
+    ArticleDO selectByPrimaryKey(String id);
 
-    List<Article> selectAll();
+    List<ArticleDO> selectAll();
 
-    int updateByPrimaryKeySelective(Article record);
+    int updateByPrimaryKeySelective(ArticleDO record);
 
-    int updateByPrimaryKey(Article record);
+    int updateByPrimaryKey(ArticleDO record);
 
-    List<Article> getArticlesByPage(int indexStart, int selectCount, String keywordLike, String titleLike);
+    List<ArticleDO> listPagedArticles(int indexStart, int selectCount, String authorLike, String keywordLike, String titleLike);
 
-    int getMatchedArticleTotalCount(String keywordLike, String titleLike);
+    int countTotalRecords(String authorLike, String keywordLike, String titleLike);
 }

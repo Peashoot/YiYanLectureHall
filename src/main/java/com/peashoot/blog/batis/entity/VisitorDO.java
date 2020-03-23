@@ -8,19 +8,23 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class Visitor extends LongPrimaryEntity {
+public class VisitorDO extends LongPrimaryEntity {
     /**
-     * jwt生成的token
+     * 访客名称
      */
-    private String token;
+    private String visitor;
+    /**
+     * 系统用户账号信息
+     */
+    private String sysUserName;
+    /**
+     * 系统用户昵称
+     */
+    private String sysUserNickName;
     /**
      * 访客登录时间
      */
-    private Date loginTime;
-    /**
-     * 系统用户登录后过期时间为2小时；访客登录过期时间1个月
-     */
-    private Date expireTime;
+    private Date firstVisitTime;
     /**
      * 访客访问的ip地址（ipv4或ipv6）
      */
@@ -37,20 +41,4 @@ public class Visitor extends LongPrimaryEntity {
      * 访客使用的操作系统
      */
     private String os;
-    /**
-     * 访客的角色类型id
-     */
-    private Integer roleId;
-    /**
-     * 访客的角色类型
-     */
-    private Role role;
-    /**
-     * 系统用户id
-     */
-    private Integer userId;
-    /**
-     * 系统用户
-     */
-    private SysUser user;
 }

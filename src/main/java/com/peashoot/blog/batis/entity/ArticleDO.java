@@ -1,6 +1,6 @@
 package com.peashoot.blog.batis.entity;
 
-import com.peashoot.blog.batis.entity.base.IntPrimaryEntity;
+import com.peashoot.blog.batis.entity.base.UUIDPrimaryEntity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class Article extends IntPrimaryEntity {
+public class ArticleDO extends UUIDPrimaryEntity {
     /**
      * 作者
      */
@@ -52,7 +52,7 @@ public class Article extends IntPrimaryEntity {
     /**
      * 文件创建人
      */
-    private SysUser createUser;
+    private SysUserDO createUser;
     /**
      * 文件修改日期
      */
@@ -64,7 +64,7 @@ public class Article extends IntPrimaryEntity {
     /**
      * 文件修改人
      */
-    private SysUser modifyUser;
+    private SysUserDO modifyUser;
     /**
      * 文件状态：0: 编辑中；200: 已发布; 404: 已删除
      */

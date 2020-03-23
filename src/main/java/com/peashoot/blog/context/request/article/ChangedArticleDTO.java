@@ -1,6 +1,6 @@
 package com.peashoot.blog.context.request.article;
 
-import com.peashoot.blog.batis.entity.Article;
+import com.peashoot.blog.batis.entity.ArticleDO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,11 +8,11 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class ChangedArticle {
+public class ChangedArticleDTO {
     /**
      * 记录id
      */
-    private int id;
+    private String id;
     /**
      * 标题
      */
@@ -48,7 +48,7 @@ public class ChangedArticle {
     /**
      * 文件状态：0: 编辑中；200: 已发布; 404: 已删除
      */
-    private int status;
+    private Integer status;
     /**
      * 文件概述
      */
@@ -62,7 +62,7 @@ public class ChangedArticle {
      * 将修改信息保存到数据库实体中
      * @param articleEntity 数据库实体
      */
-    public void copyTo(Article articleEntity) {
+    public void copyTo(ArticleDO articleEntity) {
         articleEntity.setArticleURL(articleURL);
         articleEntity.setAuthor(author);
         articleEntity.setFilePath(filePath);

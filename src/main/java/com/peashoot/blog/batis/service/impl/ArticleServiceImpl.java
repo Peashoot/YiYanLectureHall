@@ -1,6 +1,6 @@
 package com.peashoot.blog.batis.service.impl;
 
-import com.peashoot.blog.batis.entity.Article;
+import com.peashoot.blog.batis.entity.ArticleDO;
 import com.peashoot.blog.batis.mapper.ArticleMapper;
 import com.peashoot.blog.batis.mapper.SysUserMapper;
 import com.peashoot.blog.batis.service.ArticleService;
@@ -17,7 +17,7 @@ public class ArticleServiceImpl implements ArticleService {
     private SysUserMapper sysuserMapper;
 
     @Override
-    public int insert(Article insertItem) {
+    public int insert(ArticleDO insertItem) {
        if (insertItem.getCreateUser() != null) {
            insertItem.setCreateUserId(insertItem.getCreateUser().getId());
            insertItem.setModifyUserId(insertItem.getCreateUser().getId());
@@ -27,19 +27,19 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public int remove(Integer removeId) {
+    public int remove(String removeId) {
         return articleMapper.deleteByPrimaryKey(removeId);
     }
 
     @Override
-    public int removeRange(List<Integer> removeIdList) {
+    public int removeRange(List<String> removeIdList) {
         return articleMapper.deleteRangeByPrimaryKeys(removeIdList.toArray(new Integer[0]));
     }
 
     @Override
-    public List<Article> selectAll() {
-        List<Article> retList = articleMapper.selectAll();
-        for (Article article : retList) {
+    public List<ArticleDO> selectAll() {
+        List<ArticleDO> retList = articleMapper.selectAll();
+        for (ArticleDO article : retList) {
             article.setCreateUser(sysuserMapper.selectByPrimaryKey(article.getCreateUserId()));
             article.setModifyUser(sysuserMapper.selectByPrimaryKey(article.getModifyUserId()));
         }
@@ -47,15 +47,15 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public Article selectById(Integer id) {
-        Article article = articleMapper.selectByPrimaryKey(id);
+    public ArticleDO selectById(String id) {
+        ArticleDO article = articleMapper.selectByPrimaryKey(id);
         article.setCreateUser(sysuserMapper.selectByPrimaryKey(article.getCreateUserId()));
         article.setModifyUser(sysuserMapper.selectByPrimaryKey(article.getModifyUserId()));
         return article;
     }
 
     @Override
-    public int update(Article updateItem) {
+    public int update(ArticleDO updateItem) {
         if (updateItem.getCreateUser() != null) {
             updateItem.setCreateUserId(updateItem.getCreateUser().getId());
         }
@@ -66,12 +66,12 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public List<Article> getArticlesByPage(int pageSize, int pageIndex, String keywordLike, String titleLike) {
-        return articleMapper.getArticlesByPage(pageSize * pageIndex, pageIndex, keywordLike, titleLike);
+    public List<ArticleDO> listPagedArticles(int pageSize, int pageIndex, String authorLike, String keywordLike, String titleLike) {
+        return articleMapper.listPagedArticles(pageSize * pageIndex, pageIndex, authorLike, keywordLike, titleLike);
     }
 
     @Override
-    public int getMatchedArticleTotalCount(String keywordLike, String titleLike) {
-        return articleMapper.getMatchedArticleTotalCount(keywordLike, titleLike);
+    public int countTotalRecords(String keywordLike, String authorLike, String titleLike) {
+        return articleMapper.countTotalRecords(authorLike, keywordLike, titleLike);
     }
 }

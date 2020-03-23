@@ -1,7 +1,7 @@
 package com.peashoot.blog.context.request.sysuser;
 
-import com.peashoot.blog.batis.entity.SysUser;
-import com.peashoot.blog.context.request.ApiReq;
+import com.peashoot.blog.batis.entity.SysUserDO;
+import com.peashoot.blog.context.request.BaseApiReq;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 @ApiModel
-public class SysUserDetail extends ApiReq {
+public class SysUserDetailDTO extends BaseApiReq {
     /**
      * 昵称
      */
@@ -52,7 +52,7 @@ public class SysUserDetail extends ApiReq {
      * 将信息复制到系统用户中
      * @param sysUser 系统用户实体
      */
-    public void copyTo(@NotNull SysUser sysUser) {
+    public void copyTo(@NotNull SysUserDO sysUser) {
         sysUser.setNickName(nickname);
         sysUser.setLocation(location);
         sysUser.setContact(contract);

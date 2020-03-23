@@ -1,6 +1,6 @@
 package com.peashoot.blog.security.handle;
 
-import com.peashoot.blog.batis.entity.SysUser;
+import com.peashoot.blog.batis.entity.SysUserDO;
 import com.peashoot.blog.util.StringUtils;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,8 +25,8 @@ public class LoginAuthenticationProvider extends DaoAuthenticationProvider {
             throw new BadCredentialsException(this.messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
         } else {
             String presentedPassword = authentication.getCredentials().toString();
-            if (userDetails.getClass().isAssignableFrom(SysUser.class)) {
-                presentedPassword = StringUtils.mixSaltWithPassword(presentedPassword, ((SysUser)userDetails).getSalt());
+            if (userDetails.getClass().isAssignableFrom(SysUserDO.class)) {
+                presentedPassword = StringUtils.mixSaltWithPassword(presentedPassword, ((SysUserDO)userDetails).getSalt());
             }
             if (!this.getPasswordEncoder().matches(presentedPassword, userDetails.getPassword())) {
                 this.logger.debug("Authentication failed: password does not match stored value");

@@ -2,18 +2,16 @@ package com.peashoot.blog.controller;
 
 import com.peashoot.blog.context.request.sysuser.*;
 import com.peashoot.blog.crypto.annotation.DecryptRequest;
-import com.peashoot.blog.batis.entity.Role;
-import com.peashoot.blog.batis.entity.SysUser;
+import com.peashoot.blog.batis.entity.RoleDO;
+import com.peashoot.blog.batis.entity.SysUserDO;
 import com.peashoot.blog.context.response.ApiResp;
 import com.peashoot.blog.batis.service.AuthService;
 import com.peashoot.blog.batis.service.SysUserService;
 import com.peashoot.blog.exception.UserNameOccupiedException;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -43,7 +41,7 @@ public class SysUserController {
     @PostMapping(path = "login")
     @ApiOperation("根据用户名或者邮箱进行登录")
     @DecryptRequest
-    public ApiResp<String> loginByUserNameAndPassword(@RequestBody LoginUser loginUser) {
+    public ApiResp<String> loginByUserNameAndPassword(@RequestBody LoginUserDTO loginUser) {
         ApiResp<String> resp = new ApiResp<>();
         String token = authService.login(loginUser.getUsername(), loginUser.getPassword(), loginUser.getVisitorIP(), loginUser.getBrowserFingerprint());
         resp.success().setData(token);
@@ -60,17 +58,17 @@ public class SysUserController {
     @PostMapping(path = "register")
     @ApiOperation("注册用户")
     @DecryptRequest
-    public ApiResp<Boolean> registerSysUser(@RequestBody RegisterUser detail) {
-        SysUser sysUser = new SysUser();
+    public ApiResp<Boolean> registerSysUser(@RequestBody RegisterUserDTO detail) {
+        SysUserDO sysUser = new SysUserDO();
         detail.copyTo(sysUser);
         sysUser.setUsername(detail.getUsername());
         sysUser.setEmail(detail.getEmail());
         sysUser.setPassword(detail.getPassword());
         String salt = UUID.randomUUID().toString().replace("-", "");
-        sysUser.initialize(new Date(), String.valueOf(Role.VISITOR), salt);
+        sysUser.initialize(new Date(), String.valueOf(RoleDO.VISITOR), salt);
         ApiResp<Boolean> resp = new ApiResp<>();
         try {
-            boolean success = authService.register(sysUser);
+            boolean success = authService.insertSysUser(sysUser);
             resp.success().setData(success);
         } catch (UserNameOccupiedException ex) {
             resp.setCode(HttpStatus.BAD_REQUEST.value());
@@ -88,7 +86,7 @@ public class SysUserController {
      */
     @PostMapping(path = "changePwd")
     @ApiOperation("修改用户密码")
-    public ApiResp<Boolean> changePassword(@RequestBody ChangePwd changePwd) {
+    public ApiResp<Boolean> changePassword(@RequestBody ChangePwdDTO changePwd) {
         boolean success = authService.changePassword(changePwd.getUsername(), changePwd.getOldPassword(), changePwd.getNewPassword());
         ApiResp<Boolean> resp = new ApiResp<>();
         resp.success().setData(success);
@@ -103,8 +101,8 @@ public class SysUserController {
      */
     @PostMapping(path = "changeDetail")
     @ApiOperation("修改用户信息")
-    public ApiResp<Boolean> changeUserInfo(@RequestBody ChangeDetail changeDetail) {
-        SysUser sysUser = sysUserService.selectById(changeDetail.getId());
+    public ApiResp<Boolean> changeUserInfo(@RequestBody ChangeDetailDTO changeDetail) {
+        SysUserDO sysUser = sysUserService.selectById(changeDetail.getId());
         ApiResp<Boolean> resp = new ApiResp<>();
         if (sysUser == null) {
             resp.setCode(301);
@@ -136,7 +134,7 @@ public class SysUserController {
     @ApiOperation("申请重置密码")
     public ApiResp<Boolean> applyResetPassword(@RequestParam String username) {
         ApiResp<Boolean> resp = new ApiResp<>();
-        SysUser user = (SysUser) sysUserService.loadUserByUsername(username);
+        SysUserDO user = (SysUserDO) sysUserService.loadUserByUsername(username);
         if (user == null) {
             resp.setCode(301);
             resp.setMessage("Please check you account carefully.");
@@ -149,7 +147,7 @@ public class SysUserController {
 
     @RequestMapping(path = "resetPwd")
     @ApiOperation("重置密码")
-    public ApiResp<Boolean> resetPassword(@RequestParam("applyId") String applySerial, @RequestBody ChangePwd changePwd) {
+    public ApiResp<Boolean> resetPassword(@RequestParam("applyId") String applySerial, @RequestBody ChangePwdDTO changePwd) {
         boolean success = authService.resetPassword(changePwd.getUsername(), applySerial, changePwd.getNewPassword());
         ApiResp<Boolean> resp = new ApiResp<>();
         resp.success().setData(success);

@@ -6,6 +6,11 @@ import java.io.UnsupportedEncodingException;
 
 public class StringUtils {
     /**
+     * 空字符串
+     */
+    public static final String Empty = "";
+
+    /**
      * 将密码和盐通过隔位拼接的方式串在一起
      * password 密码
      * salt 盐
@@ -62,8 +67,8 @@ public class StringUtils {
 
     /**
      * 检查字符串是否为空
-     * @param needCheck 待检查字符串
      *
+     * @param needCheck 待检查字符串
      * @return 是否为空
      */
     public static boolean isNullOrEmpty(String needCheck) {
@@ -76,7 +81,7 @@ public class StringUtils {
      * @param needCheck 待检查字符串
      * @return 是否不为空
      */
-    public static boolean isNotNullOrEmpty(String needCheck) {
+    public static boolean isNotNullAndEmpty(String needCheck) {
         return !isNullOrEmpty(needCheck);
     }
 

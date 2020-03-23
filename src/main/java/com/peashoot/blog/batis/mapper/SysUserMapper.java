@@ -1,6 +1,6 @@
 package com.peashoot.blog.batis.mapper;
 
-import com.peashoot.blog.batis.entity.SysUser;
+import com.peashoot.blog.batis.entity.SysUserDO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -12,21 +12,23 @@ public interface SysUserMapper {
 
     int deleteRangeByPrimaryKeys(@Param("userIds") Integer[] userIds);
 
-    int insert(SysUser record);
+    int insert(SysUserDO record);
 
-    int insertSelective(SysUser record);
+    int insertSelective(SysUserDO record);
 
-    SysUser selectByPrimaryKey(Integer id);
+    SysUserDO selectByPrimaryKey(Integer id);
 
-    SysUser selectByUsername(String username);
+    SysUserDO selectByUsername(String username);
 
-    SysUser selectByUsernameOrEmail(String usernameOrEmail);
+    SysUserDO selectByUsernameOrEmail(String usernameOrEmail);
 
-    SysUser selectByEmail(String email);
+    SysUserDO selectByEmail(String email);
 
-    List<SysUser> selectAll();
+    List<SysUserDO> selectAll();
 
-    int updateByPrimaryKeySelective(SysUser record);
+    int updateByPrimaryKeySelective(SysUserDO record);
 
-    int updateByPrimaryKey(SysUser record);
+    int updateByPrimaryKey(SysUserDO record);
+
+    int getIdByUsername(String username);
 }

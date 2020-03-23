@@ -1,6 +1,6 @@
 package com.peashoot.blog.jwt;
 
-import com.peashoot.blog.batis.entity.SysUser;
+import com.peashoot.blog.batis.entity.SysUserDO;
 import com.peashoot.blog.redis.service.SysUserRedisService;
 import com.peashoot.blog.util.Constant;
 import io.jsonwebtoken.Claims;
@@ -227,7 +227,7 @@ public class JwtTokenUtil implements Serializable {
      * @return 有效性
      */
     public Boolean validateToken(String token, UserDetails userDetails) {
-        SysUser user = (SysUser) userDetails;
+        SysUserDO user = (SysUserDO) userDetails;
         final String username = getUsernameFromToken(token);
         final Date created = getCreatedDateFromToken(token);
         return (

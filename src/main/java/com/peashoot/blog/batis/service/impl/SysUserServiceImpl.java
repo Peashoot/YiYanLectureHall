@@ -1,8 +1,8 @@
 package com.peashoot.blog.batis.service.impl;
 
 import com.peashoot.blog.batis.mapper.SysUserMapper;
-import com.peashoot.blog.batis.entity.Role;
-import com.peashoot.blog.batis.entity.SysUser;
+import com.peashoot.blog.batis.entity.RoleDO;
+import com.peashoot.blog.batis.entity.SysUserDO;
 import com.peashoot.blog.batis.mapper.RoleMapper;
 import com.peashoot.blog.batis.service.SysUserService;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +22,7 @@ public class SysUserServiceImpl implements SysUserService {
     private RoleMapper roleMapper;
 
     @Override
-    public int insert(SysUser insertItem) {
+    public int insert(SysUserDO insertItem) {
         combineRoleIds(insertItem);
         insertItem.setUpdateTime(insertItem.getRegisterTime());
         insertItem.setLastPasswordResetDate(insertItem.getRegisterTime());
@@ -40,22 +40,22 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
-    public List<SysUser> selectAll() {
-        List<SysUser> retList = sysuserMapper.selectAll();
-        for (SysUser sysUser : retList) {
+    public List<SysUserDO> selectAll() {
+        List<SysUserDO> retList = sysuserMapper.selectAll();
+        for (SysUserDO sysUser : retList) {
             resolveIdToRoles(sysUser);
         }
         return retList;
     }
 
     @Override
-    public SysUser selectById(Integer id) {
-        SysUser sysUser = sysuserMapper.selectByPrimaryKey(id);
+    public SysUserDO selectById(Integer id) {
+        SysUserDO sysUser = sysuserMapper.selectByPrimaryKey(id);
         return sysUser;
     }
 
     @Override
-    public int update(SysUser updateItem) {
+    public int update(SysUserDO updateItem) {
         combineRoleIds(updateItem);
         return sysuserMapper.updateByPrimaryKey(updateItem);
     }
@@ -65,12 +65,12 @@ public class SysUserServiceImpl implements SysUserService {
      *
      * @param user 用户
      */
-    private void resolveIdToRoles(SysUser user) {
+    private void resolveIdToRoles(SysUserDO user) {
         if (user == null || user.getRoleIds() == null || user.getRoleIds().isEmpty()) {
             return;
         }
         String[] splitIds = user.getRoleIds().split(",");
-        List<Role> roleList = new ArrayList<>();
+        List<RoleDO> roleList = new ArrayList<>();
         for (String strId : splitIds) {
             roleList.add(roleMapper.selectByPrimaryKey(Integer.parseInt(strId)));
         }
@@ -83,12 +83,12 @@ public class SysUserServiceImpl implements SysUserService {
      *
      * @param user 用户
      */
-    private void combineRoleIds(SysUser user) {
+    private void combineRoleIds(SysUserDO user) {
         if (user == null || user.getRoles() == null || user.getRoles().size() < 1) {
             return;
         }
         StringBuilder roleIds = new StringBuilder();
-        for (Role role : user.getRoles()) {
+        for (RoleDO role : user.getRoles()) {
             roleIds.append(role.getId()).append(',');
         }
         roleIds.deleteCharAt(roleIds.length() - 1);
@@ -97,11 +97,16 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        SysUser user = sysuserMapper.selectByUsernameOrEmail(username);
+        SysUserDO user = sysuserMapper.selectByUsernameOrEmail(username);
         if (user == null) {
             throw new UsernameNotFoundException("Check username and password.");
         }
         resolveIdToRoles(user);
         return user;
+    }
+
+    @Override
+    public int getIdByUsername(String username) {
+        return sysuserMapper.getIdByUsername(username);
     }
 }

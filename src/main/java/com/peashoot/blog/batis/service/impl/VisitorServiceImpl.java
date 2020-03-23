@@ -1,6 +1,6 @@
 package com.peashoot.blog.batis.service.impl;
 
-import com.peashoot.blog.batis.entity.Visitor;
+import com.peashoot.blog.batis.entity.VisitorDO;
 import com.peashoot.blog.batis.mapper.SysUserMapper;
 import com.peashoot.blog.batis.mapper.VisitorMapper;
 import com.peashoot.blog.batis.mapper.RoleMapper;
@@ -20,31 +20,27 @@ public class VisitorServiceImpl implements VisitorService {
     private SysUserMapper sysUserMapper;
 
     @Override
-    public int insert(Visitor insertItem) {
-        if (insertItem.getRole() != null) {
-            insertItem.setRoleId(insertItem.getRole().getId());
-        }
-        if (insertItem.getUser() != null) {
-            insertItem.setUserId(insertItem.getUser().getId());
-        }
+    public int insert(VisitorDO insertItem) {
         return visitorMapper.insert(insertItem);
     }
 
     @Override
-    public List<Visitor> selectAll() {
-        List<Visitor> retList = visitorMapper.selectAll();
-        for (Visitor v : retList) {
-            v.setRole(roleMapper.selectByPrimaryKey(v.getRoleId()));
-            v.setUser(sysUserMapper.selectByPrimaryKey(v.getUserId()));
-        }
-        return retList;
+    public long insertWithReturnRecordID(VisitorDO insertItem) {
+        return visitorMapper.insertWithReturnRecordID(insertItem);
     }
 
     @Override
-    public Visitor selectById(Long id) {
-        Visitor retObj = visitorMapper.selectByPrimaryKey(id);
-        retObj.setRole(roleMapper.selectByPrimaryKey(retObj.getRoleId()));
-        retObj.setUser(sysUserMapper.selectByPrimaryKey(retObj.getUserId()));
-        return retObj;
+    public List<VisitorDO> selectAll() {
+        return visitorMapper.selectAll();
+    }
+
+    @Override
+    public VisitorDO selectById(Long id) {
+        return visitorMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public VisitorDO selectVisitorByIPAndBrowser(String visitIP, String browser) {
+        return visitorMapper.selectByIPAndBrowser(visitIP, browser);
     }
 }

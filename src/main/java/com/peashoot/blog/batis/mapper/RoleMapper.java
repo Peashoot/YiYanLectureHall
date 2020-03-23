@@ -1,6 +1,6 @@
 package com.peashoot.blog.batis.mapper;
 
-import com.peashoot.blog.batis.entity.Role;
+import com.peashoot.blog.batis.entity.RoleDO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -12,15 +12,15 @@ public interface RoleMapper {
 
     int deleteRangeByPrimaryKeys(@Param("roleIds")Integer[] roleIds);
 
-    int insert(Role record);
+    int insert(RoleDO record);
 
-    int insertSelective(Role record);
+    int insertSelective(RoleDO record);
 
-    Role selectByPrimaryKey(Integer id);
+    RoleDO selectByPrimaryKey(Integer id);
 
-    List<Role> selectAll();
+    List<RoleDO> selectAll();
 
-    int updateByPrimaryKeySelective(Role record);
+    int updateByPrimaryKeySelective(RoleDO record);
 
-    int updateByPrimaryKey(Role record);
+    int updateByPrimaryKey(RoleDO record);
 }

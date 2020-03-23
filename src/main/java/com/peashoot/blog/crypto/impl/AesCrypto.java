@@ -9,6 +9,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.validation.constraints.NotNull;
 
+import com.peashoot.blog.util.EncryptUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.codec.binary.Base64;
@@ -55,25 +56,11 @@ public class AesCrypto implements Crypto {
 
     @Override
     public String encrypt(String original, String charset) throws Exception {
-        byte[] raw = cryptoKey.getBytes(charset);
-        SecretKeySpec keySpec = new SecretKeySpec(raw, "AES");
-        Cipher cipher = Cipher.getInstance(cipherMode);
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec);
-        byte[] encrypted = cipher.doFinal(original.getBytes(charset));
-        //此处使用BASE64做转码功能，同时能起到2次加密的作用。
-        return new Base64().encodeToString(encrypted);
+        return EncryptUtils.aesEncrypt(original, cryptoKey, cipherMode, charset);
     }
 
     @Override
     public String decrypt(String encrypted, String charset) throws Exception {
-        byte[] raw = cryptoKey.getBytes(charset);
-        SecretKeySpec keySpec = new SecretKeySpec(raw, "AES");
-        Cipher cipher = Cipher.getInstance(cipherMode);
-        cipher.init(Cipher.DECRYPT_MODE, keySpec);
-        //先用base64解密
-        byte[] afterBase64Decrypt = new Base64().decode(encrypted);
-        byte[] originalByte = cipher.doFinal(afterBase64Decrypt);
-        String original = new String(originalByte, charset);
-        return original;
+        return EncryptUtils.aesDecrypt(encrypted, cryptoKey, cipherMode, charset);
     }
 }

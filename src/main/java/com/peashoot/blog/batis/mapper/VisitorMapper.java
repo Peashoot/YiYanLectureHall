@@ -1,6 +1,7 @@
 package com.peashoot.blog.batis.mapper;
 
-import com.peashoot.blog.batis.entity.Visitor;
+import com.peashoot.blog.batis.entity.VisitorDO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -9,15 +10,21 @@ import java.util.List;
 public interface VisitorMapper {
     int deleteByPrimaryKey(Long id);
 
-    int insert(Visitor record);
+    int insert(VisitorDO record);
 
-    int insertSelective(Visitor record);
+    long insertWithReturnRecordID(VisitorDO record);
 
-    Visitor selectByPrimaryKey(Long id);
+    int insertSelective(VisitorDO record);
 
-    List<Visitor> selectAll();
+    VisitorDO selectByPrimaryKey(Long id);
 
-    int updateByPrimaryKeySelective(Visitor record);
+    List<VisitorDO> selectAll();
 
-    int updateByPrimaryKey(Visitor record);
+    int updateByPrimaryKeySelective(VisitorDO record);
+
+    int updateByPrimaryKey(VisitorDO record);
+
+    VisitorDO selectByIPAndBrowser(@Param("visitIP") String visitIP, @Param("browser") String browser);
+
+    VisitorDO selectByVisitorName(String visitorName);
 }

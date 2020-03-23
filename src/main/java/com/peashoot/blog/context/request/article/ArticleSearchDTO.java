@@ -1,20 +1,20 @@
 package com.peashoot.blog.context.request.article;
 
-import com.peashoot.blog.context.request.ApiReq;
+import com.peashoot.blog.context.request.BaseApiReq;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class ArticleSearch extends ApiReq {
+public class ArticleSearchDTO extends BaseApiReq {
     /**
      * 单页可容纳最大数据条数
      */
-    private int pageSize;
+    private Integer pageSize;
     /**
      * 当前页数
      */
-    private int pageIndex;
+    private Integer pageIndex;
     /**
      * 根据关键字查询
      */

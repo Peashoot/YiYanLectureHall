@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.peashoot.blog.batis.mapper.RoleMapper">
-  <resultMap id="BaseResultMap" type="com.peashoot.blog.batis.entity.Role">
+  <resultMap id="BaseResultMap" type="com.peashoot.blog.batis.entity.RoleDO">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="roleName" jdbcType="VARCHAR" property="roleName" />
     <result column="insertTime" jdbcType="TIMESTAMP" property="insertTime" />
@@ -36,7 +36,7 @@
     </foreach>
     )
   </delete>
-  <insert id="insert" parameterType="com.peashoot.blog.batis.entity.Role">
+  <insert id="insert" parameterType="com.peashoot.blog.batis.entity.RoleDO">
     insert into bg_role (id, roleName, insertTime, 
       updateTime, permission, insertUserId, 
       updateUserId)
@@ -44,7 +44,7 @@
       #{updateTime,jdbcType=TIMESTAMP}, #{permission,jdbcType=VARCHAR}, #{insertUserId,jdbcType=INTEGER}, 
       #{updateUserId,jdbcType=INTEGER})
   </insert>
-  <insert id="insertSelective" parameterType="com.peashoot.blog.batis.entity.Role">
+  <insert id="insertSelective" parameterType="com.peashoot.blog.batis.entity.RoleDO">
     insert into bg_role
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -93,7 +93,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.peashoot.blog.batis.entity.Role">
+  <update id="updateByPrimaryKeySelective" parameterType="com.peashoot.blog.batis.entity.RoleDO">
     update bg_role
     <set>
       <if test="roleName != null">
@@ -117,7 +117,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.peashoot.blog.batis.entity.Role">
+  <update id="updateByPrimaryKey" parameterType="com.peashoot.blog.batis.entity.RoleDO">
     update bg_role
     set roleName = #{roleName,jdbcType=VARCHAR},
       insertTime = #{insertTime,jdbcType=TIMESTAMP},

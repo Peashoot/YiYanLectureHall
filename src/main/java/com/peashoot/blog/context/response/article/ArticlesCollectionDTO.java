@@ -7,11 +7,11 @@ import java.util.List;
 
 @Getter
 @Setter
-public class ArticlesCollection {
+public class ArticlesCollectionDTO {
     /**
      * 文章信息列表
      */
-    private List<ArticleIntroduction> articleList;
+    private List<ArticleIntroductionDTO> articleList;
     /**
      * 单页最大数据条数
      */

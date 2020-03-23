@@ -1,15 +1,16 @@
 package com.peashoot.blog.controller;
 
-import com.peashoot.blog.batis.entity.Article;
-import com.peashoot.blog.batis.entity.SysUser;
+import com.peashoot.blog.batis.entity.ArticleDO;
+import com.peashoot.blog.batis.entity.SysUserDO;
 import com.peashoot.blog.batis.service.ArticleService;
 import com.peashoot.blog.batis.service.SysUserService;
-import com.peashoot.blog.context.request.article.ArticleSearch;
-import com.peashoot.blog.context.request.article.ChangedArticle;
+import com.peashoot.blog.context.request.article.ArticleSearchDTO;
+import com.peashoot.blog.context.request.article.ChangedArticleDTO;
 import com.peashoot.blog.context.response.ApiResp;
-import com.peashoot.blog.context.response.article.ArticleIntroduction;
-import com.peashoot.blog.context.response.article.ArticlesCollection;
+import com.peashoot.blog.context.response.article.ArticleIntroductionDTO;
+import com.peashoot.blog.context.response.article.ArticlesCollectionDTO;
 import com.peashoot.blog.util.SecurityUtil;
+import com.peashoot.blog.util.StringUtils;
 import io.swagger.annotations.Api;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,12 +43,12 @@ public class ArticleController {
      * @return 符合条件的Article
      */
     @RequestMapping
-    public ApiResp<ArticlesCollection> getArticles(@RequestBody ArticleSearch searchCondition) {
-        List<Article> matchedList = articleService.getArticlesByPage(searchCondition.getPageSize(), searchCondition.getPageIndex(), searchCondition.getAuthorLike(), searchCondition.getKeywordLike(), searchCondition.getTitleLike());
-        int totalCount = articleService.getMatchedArticleTotalCount(searchCondition.getAuthorLike(), searchCondition.getKeywordLike(), searchCondition.getTitleLike());
-        ApiResp<ArticlesCollection> retResp = new ApiResp<ArticlesCollection>().success();
-        ArticlesCollection data = new ArticlesCollection();
-        data.setArticleList(matchedList.stream().map(a -> ArticleIntroduction.createArticlesInfo(a)).collect(Collectors.toList()));
+    public ApiResp<ArticlesCollectionDTO> getArticles(@RequestBody ArticleSearchDTO searchCondition) {
+        List<ArticleDO> matchedList = articleService.listPagedArticles(searchCondition.getPageSize(), searchCondition.getPageIndex(), searchCondition.getAuthorLike(), searchCondition.getKeywordLike(), searchCondition.getTitleLike());
+        int totalCount = articleService.countTotalRecords(searchCondition.getAuthorLike(), searchCondition.getKeywordLike(), searchCondition.getTitleLike());
+        ApiResp<ArticlesCollectionDTO> retResp = new ApiResp<ArticlesCollectionDTO>().success();
+        ArticlesCollectionDTO data = new ArticlesCollectionDTO();
+        data.setArticleList(matchedList.stream().map(a -> ArticleIntroductionDTO.createArticlesInfo(a)).collect(Collectors.toList()));
         data.setPageSize(searchCondition.getPageSize());
         data.setPageIndex(searchCondition.getPageIndex());
         data.setTotalRecordsCount(totalCount);
@@ -61,11 +62,11 @@ public class ArticleController {
      * @return 是否成功
      */
     @PostMapping
-    public ApiResp<Boolean> insertOrUpdateArticle(@RequestBody ChangedArticle changedArticle) {
-        boolean isInsert = changedArticle.getId() == 0;
-        Article articleEntity = isInsert ? new Article() : articleService.selectById(changedArticle.getId());
+    public ApiResp<Boolean> insertOrUpdateArticle(@RequestBody ChangedArticleDTO changedArticle) {
+        boolean isInsert = StringUtils.isNullOrEmpty(changedArticle.getId());
+        ArticleDO articleEntity = isInsert ? new ArticleDO() : articleService.selectById(changedArticle.getId());
         changedArticle.copyTo(articleEntity);
-        SysUser curUser = SecurityUtil.getCurrentUser();
+        SysUserDO curUser = SecurityUtil.getCurrentUser();
         if (curUser != null) {
             articleEntity.setModifyUserId(sysUserService.getIdByUsername(curUser.getUsername()));
         }
@@ -97,7 +98,7 @@ public class ArticleController {
      * @return 是否删除成功
      */
     @PostMapping
-    public ApiResp<Boolean> deleteArticle(@Param("articleId") int id) {
+    public ApiResp<Boolean> deleteArticle(@Param("articleId") String id) {
         boolean result = articleService.remove(id) > 0;
         if (result) {
             ApiResp<Boolean> retResp = new ApiResp<Boolean>().success();
