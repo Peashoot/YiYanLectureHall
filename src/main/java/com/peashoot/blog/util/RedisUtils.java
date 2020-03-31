@@ -6,13 +6,14 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 public class RedisUtils {
     /**
      * 如果hash表中的值和原来的值不同，则进行修改
-     * @param stringRedisTemplate
-     * @param redisKey
-     * @param hashKey
-     * @param newHashValue
-     * @param <HK>
-     * @param <HV>
-     * @return
+     *
+     * @param stringRedisTemplate redis操作类
+     * @param redisKey            redisHash名
+     * @param hashKey             键
+     * @param newHashValue        新值
+     * @param <HK>                键类型
+     * @param <HV>                值类型
+     * @return 是否更新
      */
     public static <HK, HV> boolean updateIfValueNotEqual(StringRedisTemplate stringRedisTemplate, String redisKey, HK hashKey, HV newHashValue) {
         boolean result = false;
@@ -27,7 +28,7 @@ public class RedisUtils {
                 result = true;
             }
             stringRedisTemplate.exec();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             stringRedisTemplate.discard();
             result = false;
         }

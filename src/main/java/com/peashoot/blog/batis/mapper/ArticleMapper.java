@@ -27,4 +27,6 @@ public interface ArticleMapper {
     List<ArticleDO> listPagedArticles(int indexStart, int selectCount, String authorLike, String keywordLike, String titleLike);
 
     int countTotalRecords(String authorLike, String keywordLike, String titleLike);
+
+    ArticleDO selectByPrimaryKeyForUpdate(String articleId);
 }

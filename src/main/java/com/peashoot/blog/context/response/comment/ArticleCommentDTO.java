@@ -3,11 +3,13 @@ package com.peashoot.blog.context.response.comment;
 import com.peashoot.blog.batis.entity.CommentDO;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Date;
 
 @Getter
 @Setter
+@ToString(callSuper = true, includeFieldNames = false)
 public class ArticleCommentDTO {
     /**
      * 评论id

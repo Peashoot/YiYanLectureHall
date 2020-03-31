@@ -3,11 +3,13 @@ package com.peashoot.blog.context.request.article;
 import com.peashoot.blog.batis.entity.ArticleDO;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Date;
 
 @Getter
 @Setter
+@ToString(callSuper = true, includeFieldNames = false)
 public class ChangedArticleDTO {
     /**
      * 记录id

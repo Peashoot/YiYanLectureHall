@@ -3,9 +3,11 @@ package com.peashoot.blog.context.response.article;
 import com.peashoot.blog.batis.entity.ArticleDO;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString(callSuper = true, includeFieldNames = false)
 public class ArticleIntroductionDTO {
     /**
      * 标题

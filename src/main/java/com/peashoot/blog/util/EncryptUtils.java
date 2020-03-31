@@ -7,18 +7,16 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESedeKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 public class EncryptUtils {
-    private static final String CHARSETUTF8 = "UTF-8";
+    private static final String CHARSET_UTF8 = "UTF-8";
 
     /**
      * 32位MD5加密
@@ -28,7 +26,7 @@ public class EncryptUtils {
      * @throws Exception
      */
     public static String md5Encrypt(String original) throws Exception {
-        return md5Encrypt(original, CHARSETUTF8);
+        return md5Encrypt(original, CHARSET_UTF8);
     }
 
     /**
@@ -81,7 +79,7 @@ public class EncryptUtils {
      * @return 加密后的结果
      */
     public static String aesEncrypt(String original, String cryptoKey) throws Exception {
-        return aesEncrypt(original, cryptoKey, "AES/ECB/PKCS5Padding", CHARSETUTF8);
+        return aesEncrypt(original, cryptoKey, "AES/ECB/PKCS5Padding", CHARSET_UTF8);
     }
 
     /**
@@ -111,7 +109,7 @@ public class EncryptUtils {
      * @return 解密后的内容
      */
     public static String aesDecrypt(String encrypted, String cryptoKey) throws Exception {
-        return aesDecrypt(encrypted, cryptoKey, "AES/ECB/PKCS5Padding", CHARSETUTF8);
+        return aesDecrypt(encrypted, cryptoKey, "AES/ECB/PKCS5Padding", CHARSET_UTF8);
     }
 
     /**
@@ -143,7 +141,7 @@ public class EncryptUtils {
      * @return 加密后的内容
      */
     public static String rsaEncrypt(String original, String publicKeyString) throws Exception {
-        return rsaEncrypt(original, publicKeyString, CHARSETUTF8);
+        return rsaEncrypt(original, publicKeyString, CHARSET_UTF8);
     }
 
     /**
@@ -173,7 +171,7 @@ public class EncryptUtils {
      * @return 解密后的内容
      */
     public static String rsaDecrypt(String encrypted, String privateKeyString) throws Exception {
-        return rsaDecrypt(encrypted, privateKeyString, CHARSETUTF8);
+        return rsaDecrypt(encrypted, privateKeyString, CHARSET_UTF8);
     }
 
     /**
@@ -203,7 +201,7 @@ public class EncryptUtils {
      * @return 加密后的内容
      */
     public static String trippleDESEncrypt(String original, String cryptoKey) throws Exception {
-        return trippleDESEncrypt(original, cryptoKey, "DESede/ECB/PKCS5Padding", CHARSETUTF8);
+        return trippleDESEncrypt(original, cryptoKey, "DESede/ECB/PKCS5Padding", CHARSET_UTF8);
     }
     /**
      * 3DES加密
@@ -232,7 +230,7 @@ public class EncryptUtils {
      * @return 解密后的内容
      */
     public static String trippleDESDecrypt(String encrypted, String cryptoKey) throws Exception {
-        return trippleDESDecrypt(encrypted, cryptoKey, "DESede/ECB/PKCS5Padding", CHARSETUTF8);
+        return trippleDESDecrypt(encrypted, cryptoKey, "DESede/ECB/PKCS5Padding", CHARSET_UTF8);
     }
 
     /**

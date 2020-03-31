@@ -1,5 +1,6 @@
 package com.peashoot.blog.controller;
 
+import com.peashoot.blog.aspect.annotation.ErrorRecord;
 import com.peashoot.blog.context.request.sysuser.*;
 import com.peashoot.blog.crypto.annotation.DecryptRequest;
 import com.peashoot.blog.batis.entity.RoleDO;
@@ -12,14 +13,23 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * 用户管理相关接口
+ *
+ * @author peashoot
+ */
 @RestController
 @Api(tags = "用户管理相关接口")
-@RequestMapping(path = "auth")
+@RequestMapping(path = "system")
+@EnableAsync
+@ErrorRecord
 public class SysUserController {
     /**
      * 用户信息操作类
@@ -35,15 +45,15 @@ public class SysUserController {
     /**
      * 根据用户名密码进行登录
      *
-     * @param loginUser 用户账户信息
+     * @param apiReq 用户账户信息
      * @return 带有token的报文
      */
     @PostMapping(path = "login")
     @ApiOperation("根据用户名或者邮箱进行登录")
     @DecryptRequest
-    public ApiResp<String> loginByUserNameAndPassword(@RequestBody LoginUserDTO loginUser) {
+    public ApiResp<String> loginByUserNameAndPassword(@RequestBody LoginUserDTO apiReq) {
         ApiResp<String> resp = new ApiResp<>();
-        String token = authService.login(loginUser.getUsername(), loginUser.getPassword(), loginUser.getVisitorIP(), loginUser.getBrowserFingerprint());
+        String token = authService.login(apiReq.getUsername(), apiReq.getPassword(), apiReq.getVisitorIP(), apiReq.getBrowserFingerprint());
         resp.success().setData(token);
         resp.setTimestamp(System.currentTimeMillis());
         return resp;
@@ -52,18 +62,18 @@ public class SysUserController {
     /**
      * 注册系统用户
      *
-     * @param detail 注册信息
+     * @param apiReq 注册信息
      * @return 返回是否注册成功
      */
     @PostMapping(path = "register")
     @ApiOperation("注册用户")
     @DecryptRequest
-    public ApiResp<Boolean> registerSysUser(@RequestBody RegisterUserDTO detail) {
+    public ApiResp<Boolean> registerSysUser(@RequestBody RegisterUserDTO apiReq) {
         SysUserDO sysUser = new SysUserDO();
-        detail.copyTo(sysUser);
-        sysUser.setUsername(detail.getUsername());
-        sysUser.setEmail(detail.getEmail());
-        sysUser.setPassword(detail.getPassword());
+        apiReq.copyTo(sysUser);
+        sysUser.setUsername(apiReq.getUsername());
+        sysUser.setEmail(apiReq.getEmail());
+        sysUser.setPassword(apiReq.getPassword());
         String salt = UUID.randomUUID().toString().replace("-", "");
         sysUser.initialize(new Date(), String.valueOf(RoleDO.VISITOR), salt);
         ApiResp<Boolean> resp = new ApiResp<>();
@@ -81,13 +91,14 @@ public class SysUserController {
     /**
      * 修改用户密码
      *
-     * @param changePwd 修改密码
+     * @param apiReq 修改密码
      * @return 修改结果
      */
-    @PostMapping(path = "changePwd")
+    @PostMapping(path = "change/pwd")
     @ApiOperation("修改用户密码")
-    public ApiResp<Boolean> changePassword(@RequestBody ChangePwdDTO changePwd) {
-        boolean success = authService.changePassword(changePwd.getUsername(), changePwd.getOldPassword(), changePwd.getNewPassword());
+    @PreAuthorize("hasRole('user')")
+    public ApiResp<Boolean> changePassword(@RequestBody ChangePwdDTO apiReq) {
+        boolean success = authService.changePassword(apiReq.getUsername(), apiReq.getOldPassword(), apiReq.getNewPassword());
         ApiResp<Boolean> resp = new ApiResp<>();
         resp.success().setData(success);
         return resp;
@@ -96,13 +107,14 @@ public class SysUserController {
     /**
      * 修改用户信息
      *
-     * @param changeDetail 修改后的用户信息
+     * @param apiReq 修改后的用户信息
      * @return 是否修改成功
      */
-    @PostMapping(path = "changeDetail")
+    @PostMapping(path = "change/other")
     @ApiOperation("修改用户信息")
-    public ApiResp<Boolean> changeUserInfo(@RequestBody ChangeDetailDTO changeDetail) {
-        SysUserDO sysUser = sysUserService.selectById(changeDetail.getId());
+    @PreAuthorize("hasRole('user')")
+    public ApiResp<Boolean> changeUserInfo(@RequestBody ChangeDetailDTO apiReq) {
+        SysUserDO sysUser = sysUserService.selectById(apiReq.getId());
         ApiResp<Boolean> resp = new ApiResp<>();
         if (sysUser == null) {
             resp.setCode(301);
@@ -110,7 +122,7 @@ public class SysUserController {
             resp.setData(false);
             return resp;
         }
-        changeDetail.copyTo(sysUser);
+        apiReq.copyTo(sysUser);
         boolean result = sysUserService.update(sysUser) > 0;
         if (result) {
             resp.success().setData(true);
@@ -124,6 +136,7 @@ public class SysUserController {
 
     @RequestMapping(path = "logout")
     @ApiOperation("用户登出")
+    @PreAuthorize("hasRole('user')")
     public ApiResp<Boolean> logOut(@RequestParam String username) {
         ApiResp<Boolean> resp = new ApiResp<Boolean>().success();
         resp.setData(authService.logOut(username));
@@ -147,6 +160,7 @@ public class SysUserController {
 
     @RequestMapping(path = "resetPwd")
     @ApiOperation("重置密码")
+    @PreAuthorize("hasRole('pwd_resetter')")
     public ApiResp<Boolean> resetPassword(@RequestParam("applyId") String applySerial, @RequestBody ChangePwdDTO changePwd) {
         boolean success = authService.resetPassword(changePwd.getUsername(), applySerial, changePwd.getNewPassword());
         ApiResp<Boolean> resp = new ApiResp<>();

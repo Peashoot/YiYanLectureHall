@@ -2,13 +2,16 @@ package com.peashoot.blog.util;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 public class StringUtils {
     /**
      * 空字符串
      */
-    public static final String Empty = "";
+    public static final String EMPTY = "";
 
     /**
      * 将密码和盐通过隔位拼接的方式串在一起
@@ -38,7 +41,7 @@ public class StringUtils {
      * @return 对应编码格式的字符串
      * @throws UnsupportedEncodingException 不支持的编码格式异常
      */
-    public static String convertByteArrayToString(@NotNull byte[] array, int length, String charset) throws UnsupportedEncodingException {
+    static String convertByteArrayToString(@NotNull byte[] array, int length, String charset) throws UnsupportedEncodingException {
         return new String(array, 0, length, charset);
     }
 
@@ -62,7 +65,7 @@ public class StringUtils {
      * @throws UnsupportedEncodingException 不支持的编码格式异常
      */
     public static String convertByteArrayToString(@NotNull byte[] array) throws UnsupportedEncodingException {
-        return new String(array, 0, array.length, "UTF-8");
+        return new String(array, 0, array.length, StandardCharsets.UTF_8);
     }
 
     /**
@@ -72,7 +75,7 @@ public class StringUtils {
      * @return 是否为空
      */
     public static boolean isNullOrEmpty(String needCheck) {
-        return needCheck == null || needCheck == "";
+        return needCheck == null || EMPTY.equals(needCheck);
     }
 
     /**
@@ -92,6 +95,30 @@ public class StringUtils {
      * @return 是否为空
      */
     public static boolean isNullOrWhitespace(String needCheck) {
-        return isNullOrEmpty(needCheck) || needCheck.trim() == "";
+        return isNullOrEmpty(needCheck) || EMPTY.equals(needCheck.trim());
+    }
+
+    /**
+     * 对特殊字符进行转义
+     *
+     * @param original 原始字符串
+     * @return 转移后的字符串
+     */
+    public static String getSpecialEscape(@NotNull String original) {
+        return original.replace(":", "\\:")
+                .replace(":", "\\;")
+                .replace("null", "<null>");
+    }
+
+    /**
+     * 将异常的调用堆栈保存到字符串中
+     *
+     * @param e 异常
+     * @return 堆栈字符串
+     */
+    public static String getStackTraceString(@NotNull Throwable e) {
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw, true));
+        return sw.getBuffer().toString();
     }
 }

@@ -3,11 +3,13 @@ package com.peashoot.blog.batis.entity;
 import com.peashoot.blog.batis.entity.base.UUIDPrimaryEntity;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Date;
 
 @Getter
 @Setter
+@ToString(callSuper = true, includeFieldNames = false)
 public class ArticleDO extends UUIDPrimaryEntity {
     /**
      * 作者
@@ -81,4 +83,12 @@ public class ArticleDO extends UUIDPrimaryEntity {
      * 文章URL链接
      */
     private String articleURL;
+    /**
+     * 赞成数
+     */
+    private Integer supportCount;
+    /**
+     * 反对数
+     */
+    private Integer againstCount;
 }

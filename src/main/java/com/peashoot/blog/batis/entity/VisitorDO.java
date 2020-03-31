@@ -3,11 +3,13 @@ package com.peashoot.blog.batis.entity;
 import com.peashoot.blog.batis.entity.base.LongPrimaryEntity;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Date;
 
 @Getter
 @Setter
+@ToString(callSuper = true, includeFieldNames = false)
 public class VisitorDO extends LongPrimaryEntity {
     /**
      * 访客名称

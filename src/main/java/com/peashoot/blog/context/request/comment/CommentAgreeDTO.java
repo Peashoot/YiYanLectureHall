@@ -4,9 +4,11 @@ import com.peashoot.blog.batis.entity.VisitActionEnum;
 import com.peashoot.blog.context.request.BaseApiReq;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString(callSuper = true, includeFieldNames = false)
 public class CommentAgreeDTO extends BaseApiReq {
     /**
      * 访客ID

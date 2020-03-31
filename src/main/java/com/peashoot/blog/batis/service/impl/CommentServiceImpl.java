@@ -1,14 +1,11 @@
 package com.peashoot.blog.batis.service.impl;
 
 import com.peashoot.blog.batis.entity.CommentDO;
-import com.peashoot.blog.batis.entity.VisitRecordDO;
 import com.peashoot.blog.batis.mapper.CommentMapper;
-import com.peashoot.blog.batis.mapper.SysUserMapper;
 import com.peashoot.blog.batis.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 

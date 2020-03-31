@@ -3,11 +3,13 @@ package com.peashoot.blog.batis.entity;
 import com.peashoot.blog.batis.entity.base.IntPrimaryEntity;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Date;
 
 @Getter
 @Setter
+@ToString(callSuper = true, includeFieldNames = false)
 public class RoleDO extends IntPrimaryEntity {
     /**
      * 角色名称

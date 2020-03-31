@@ -5,6 +5,7 @@ import com.peashoot.blog.util.StringUtils;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@ToString(callSuper = true, includeFieldNames = false)
 public class SysUserDO extends IntPrimaryEntity implements UserDetails {
     /**
      * 角色类型id
@@ -58,9 +60,17 @@ public class SysUserDO extends IntPrimaryEntity implements UserDetails {
      */
     private Date lastLogin;
     /**
+     * 上一次登录IP
+     */
+    private String lastLoginIP;
+    /**
      * 注册时间
      */
     private Date registerTime;
+    /**
+     * 注册IP
+     */
+    private String registerIP;
     /**
      * 更新时间
      */
@@ -119,16 +129,19 @@ public class SysUserDO extends IntPrimaryEntity implements UserDetails {
 
     /**
      * 密码加盐混合
+     *
      * @return 混合后的密钥
      */
     public String saltPatchWork() {
         return StringUtils.mixSaltWithPassword(password, salt);
     }
+
     /**
      * 初始化参数
+     *
      * @param initDate 初始化日期
-     * @param roleIds 角色id
-     * @param salt 盐
+     * @param roleIds  角色id
+     * @param salt     盐
      */
     public void initialize(Date initDate, String roleIds, String salt) {
         registerTime = lastLogin = lastPasswordResetDate = updateTime = initDate;

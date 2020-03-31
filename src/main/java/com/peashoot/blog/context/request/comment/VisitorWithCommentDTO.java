@@ -4,11 +4,13 @@ import com.peashoot.blog.batis.entity.CommentDO;
 import com.peashoot.blog.context.request.BaseApiReq;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Date;
 
 @Getter
 @Setter
+@ToString(callSuper = true, includeFieldNames = false)
 public class VisitorWithCommentDTO extends BaseApiReq {
     /**
      * 用户名

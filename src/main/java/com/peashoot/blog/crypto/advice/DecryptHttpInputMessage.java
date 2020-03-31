@@ -1,7 +1,7 @@
 package com.peashoot.blog.crypto.advice;
 
 import com.peashoot.blog.crypto.definition.Crypto;
-import com.peashoot.blog.util.IOUtils;
+import com.peashoot.blog.util.IoUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
@@ -24,7 +24,7 @@ public class DecryptHttpInputMessage implements HttpInputMessage {
 
     @Override
     public InputStream getBody() throws IOException {
-        String content = IOUtils.read(inputMessage.getBody(), charset);
+        String content = IoUtils.read(inputMessage.getBody(), charset);
         String decryptBody = "";
         try {
             decryptBody = crypto.decrypt(content, charset);

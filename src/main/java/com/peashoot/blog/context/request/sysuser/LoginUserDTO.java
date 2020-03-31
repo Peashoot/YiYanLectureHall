@@ -5,10 +5,12 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @ApiModel
+@ToString(callSuper = true, includeFieldNames = false)
 public class LoginUserDTO extends BaseApiReq {
     /**
      * 用户名

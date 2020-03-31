@@ -3,9 +3,11 @@ package com.peashoot.blog.context.request.article;
 import com.peashoot.blog.context.request.BaseApiReq;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString(callSuper = true, includeFieldNames = false)
 public class ArticleSearchDTO extends BaseApiReq {
     /**
      * 单页可容纳最大数据条数

@@ -30,6 +30,11 @@ public class VisitorServiceImpl implements VisitorService {
     }
 
     @Override
+    public VisitorDO selectByVisitorName(String visitorName) {
+        return visitorMapper.selectByVisitorName(visitorName);
+    }
+
+    @Override
     public List<VisitorDO> selectAll() {
         return visitorMapper.selectAll();
     }
@@ -40,7 +45,12 @@ public class VisitorServiceImpl implements VisitorService {
     }
 
     @Override
-    public VisitorDO selectVisitorByIPAndBrowser(String visitIP, String browser) {
+    public VisitorDO selectByIPAndBrowser(String visitIP, String browser) {
         return visitorMapper.selectByIPAndBrowser(visitIP, browser);
+    }
+
+    @Override
+    public int update(VisitorDO updateItem) {
+        return visitorMapper.updateByPrimaryKey(updateItem);
     }
 }

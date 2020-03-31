@@ -4,11 +4,14 @@ import com.peashoot.blog.batis.entity.VisitorDO;
 import com.peashoot.blog.context.request.BaseApiReq;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
+import javax.validation.Valid;
 import java.util.Date;
 
 @Setter
 @Getter
+@ToString(callSuper = true, includeFieldNames = false)
 public class VisitorVisitInfoDTO extends BaseApiReq {
     /**
      * 根据IP地址解析的地区名称

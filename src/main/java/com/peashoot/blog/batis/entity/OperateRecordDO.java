@@ -3,12 +3,14 @@ package com.peashoot.blog.batis.entity;
 import com.peashoot.blog.batis.entity.base.LongPrimaryEntity;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Date;
 
 @Getter
 @Setter
-public class VisitRecordDO extends LongPrimaryEntity {
+@ToString(callSuper = true, includeFieldNames = false)
+public class OperateRecordDO extends LongPrimaryEntity {
     /**
      * 访客id
      */
@@ -20,7 +22,7 @@ public class VisitRecordDO extends LongPrimaryEntity {
     /**
      * 访客操作对象
      */
-    private Integer operateObjectId;
+    private String operateObjectId;
     /**
      * 具体访问记录
      */

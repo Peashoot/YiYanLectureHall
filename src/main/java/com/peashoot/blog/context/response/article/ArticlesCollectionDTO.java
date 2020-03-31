@@ -2,11 +2,13 @@ package com.peashoot.blog.context.response.article;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
 @Getter
 @Setter
+@ToString(callSuper = true, includeFieldNames = false)
 public class ArticlesCollectionDTO {
     /**
      * 文章信息列表
