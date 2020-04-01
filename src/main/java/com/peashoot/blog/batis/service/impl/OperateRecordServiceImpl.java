@@ -15,8 +15,11 @@ import java.util.concurrent.Future;
 
 @Service
 public class OperateRecordServiceImpl implements OperateRecordService {
-    @Autowired
-    private OperateRecordMapper visitRecordMapper;
+    private final OperateRecordMapper visitRecordMapper;
+
+    public OperateRecordServiceImpl(OperateRecordMapper visitRecordMapper) {
+        this.visitRecordMapper = visitRecordMapper;
+    }
 
     @Override
     public OperateRecordDO selectLastRecordByVisitorIdAndCommentId(long visitorId, int commentId) {
@@ -30,7 +33,7 @@ public class OperateRecordServiceImpl implements OperateRecordService {
 
     @Async
     @Override
-    public Future<Boolean> insertNewRecord(long visitorId, String objectId, VisitActionEnum action, Date operateDate, String record) {
+    public Future<Boolean> insertNewRecordAsync(long visitorId, String objectId, VisitActionEnum action, Date operateDate, String record) {
         OperateRecordDO visitRecordDO = new OperateRecordDO();
         visitRecordDO.setVisitorId(visitorId);
         visitRecordDO.setAction(action);

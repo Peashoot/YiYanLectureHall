@@ -12,12 +12,11 @@ import java.util.List;
 
 @Service("visitorService")
 public class VisitorServiceImpl implements VisitorService {
-    @Autowired
-    private VisitorMapper visitorMapper;
-    @Autowired
-    private RoleMapper roleMapper;
-    @Autowired
-    private SysUserMapper sysUserMapper;
+    private final VisitorMapper visitorMapper;
+
+    public VisitorServiceImpl(VisitorMapper visitorMapper) {
+        this.visitorMapper = visitorMapper;
+    }
 
     @Override
     public int insert(VisitorDO insertItem) {
@@ -25,7 +24,7 @@ public class VisitorServiceImpl implements VisitorService {
     }
 
     @Override
-    public long insertWithReturnRecordID(VisitorDO insertItem) {
+    public long insertWithReturnRecordId(VisitorDO insertItem) {
         return visitorMapper.insertWithReturnRecordID(insertItem);
     }
 
@@ -45,8 +44,8 @@ public class VisitorServiceImpl implements VisitorService {
     }
 
     @Override
-    public VisitorDO selectByIPAndBrowser(String visitIP, String browser) {
-        return visitorMapper.selectByIPAndBrowser(visitIP, browser);
+    public VisitorDO selectByIpAndBrowser(String visitIp, String browser) {
+        return visitorMapper.selectByIPAndBrowser(visitIp, browser);
     }
 
     @Override

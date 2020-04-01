@@ -1,6 +1,7 @@
 package com.peashoot.blog.controller;
 
 import com.peashoot.blog.aspect.annotation.ErrorRecord;
+import com.peashoot.blog.aspect.annotation.VisitLimit;
 import com.peashoot.blog.batis.entity.CommentDO;
 import com.peashoot.blog.batis.entity.VisitActionEnum;
 import com.peashoot.blog.batis.entity.OperateRecordDO;
@@ -63,9 +64,11 @@ public class CommentController {
      */
     @PostMapping(path = "insert")
     @ApiOperation("新增访客评论")
+    @VisitLimit(value = 5)
     public ApiResp<Boolean> insertCommentOfVisitor(@RequestBody VisitorWithCommentDTO apiReq) {
         ApiResp<Boolean> resp = new ApiResp<>();
         CommentDO comment = apiReq.createCommentEntity();
+        visitRecordService.insertNewRecordAsync(apiReq.getVisitorId(), apiReq.getArticleId(), VisitActionEnum.COMMENT, new Date(), "Comment to article：" + apiReq.getArticleId());
         resp.success().setData(commentService.insert(comment) > 0);
         return resp;
     }
@@ -134,6 +137,7 @@ public class CommentController {
      */
     @PostMapping(path = "reviews")
     @ApiOperation("点赞或反对评论")
+    @VisitLimit(value = 5)
     private ApiResp<Boolean> agreeOrDisagreeComment(@RequestBody CommentAgreeDTO apiReq) {
         ApiResp<Boolean> resp = new ApiResp<>();
         resp.setCode(406);
@@ -174,7 +178,7 @@ public class CommentController {
             return resp;
         }
         // 新增访客操作记录并修改评论点赞反对数
-        visitRecordService.insertNewRecord(apiReq.getVisitorId(), apiReq.getCommentId().toString(), apiReq.getAction(), new Date(), "");
+        visitRecordService.insertNewRecordAsync(apiReq.getVisitorId(), apiReq.getCommentId().toString(), apiReq.getAction(), new Date(), "");
         boolean result = commentService.updateSupportAndDisagreeState(apiReq.getCommentId(), agree, disagree);
         resp.success().setData(result);
         return resp;

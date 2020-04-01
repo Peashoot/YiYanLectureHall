@@ -14,6 +14,10 @@ import javax.validation.constraints.*;
 @ToString(callSuper = true, includeFieldNames = false)
 public class RegisterUserDTO extends SysUserDetailDTO {
     /**
+     * 访客id
+     */
+    private Long visitorId;
+    /**
      * 邮箱
      */
     @Email(message = "", regexp = "^[A-Za-z0-9!#$%&'+/=?^_`{|}~-]+(.[A-Za-z0-9!#$%&'+/=?^_`{|}~-]+)*" +

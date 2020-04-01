@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @ApiModel
@@ -22,6 +24,6 @@ public abstract class BaseApiReq {
     /**
      * 访问时间
      */
-    @ApiModelProperty(value = "访问时间，格式yyyy-MM-dd HH:mm:ss")
-    private String visitTime;
+    @ApiModelProperty(value = "访问时间，时间戳")
+    private Date visitTime;
 }

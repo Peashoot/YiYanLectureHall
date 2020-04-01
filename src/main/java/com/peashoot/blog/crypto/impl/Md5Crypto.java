@@ -10,12 +10,12 @@ import java.security.NoSuchAlgorithmException;
 
 public class Md5Crypto implements Crypto {
     @Override
-    public String encrypt(String original, String charset) throws Exception {
+    public String encrypt(String original, String charset) {
         return EncryptUtils.md5Encrypt(original, charset);
     }
 
     @Override
-    public String decrypt(String encrypted, String charset) throws Exception {
+    public String decrypt(String encrypted, String charset) {
         throw new UnsupportedOperationException();
     }
 }

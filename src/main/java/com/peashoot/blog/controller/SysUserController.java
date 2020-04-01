@@ -1,6 +1,9 @@
 package com.peashoot.blog.controller;
 
 import com.peashoot.blog.aspect.annotation.ErrorRecord;
+import com.peashoot.blog.aspect.annotation.VisitLimit;
+import com.peashoot.blog.batis.entity.VisitActionEnum;
+import com.peashoot.blog.batis.service.OperateRecordService;
 import com.peashoot.blog.context.request.sysuser.*;
 import com.peashoot.blog.crypto.annotation.DecryptRequest;
 import com.peashoot.blog.batis.entity.RoleDO;
@@ -41,6 +44,11 @@ public class SysUserController {
      */
     @Autowired
     private AuthService authService;
+    /**
+     * 用户操作记录
+     */
+    @Autowired
+    private OperateRecordService operateRecordService;
 
     /**
      * 根据用户名密码进行登录
@@ -51,8 +59,12 @@ public class SysUserController {
     @PostMapping(path = "login")
     @ApiOperation("根据用户名或者邮箱进行登录")
     @DecryptRequest
+    @VisitLimit
     public ApiResp<String> loginByUserNameAndPassword(@RequestBody LoginUserDTO apiReq) {
         ApiResp<String> resp = new ApiResp<>();
+        int userId = sysUserService.getIdByUsername(apiReq.getUsername());
+        operateRecordService.insertNewRecordAsync(userId, String.valueOf(userId), VisitActionEnum.USER_LOGIN, new Date(),
+                "User " + apiReq.getUsername() + " try to login in.");
         String token = authService.login(apiReq.getUsername(), apiReq.getPassword(), apiReq.getVisitorIP(), apiReq.getBrowserFingerprint());
         resp.success().setData(token);
         resp.setTimestamp(System.currentTimeMillis());
@@ -78,6 +90,8 @@ public class SysUserController {
         sysUser.initialize(new Date(), String.valueOf(RoleDO.VISITOR), salt);
         ApiResp<Boolean> resp = new ApiResp<>();
         try {
+            operateRecordService.insertNewRecordAsync(apiReq.getVisitorId(), apiReq.getUsername(), VisitActionEnum.USER_REGISTER, new Date(),
+                    "Visitor try to register " + apiReq.getUsername() + ".");
             boolean success = authService.insertSysUser(sysUser);
             resp.success().setData(success);
         } catch (UserNameOccupiedException ex) {
@@ -98,6 +112,9 @@ public class SysUserController {
     @ApiOperation("修改用户密码")
     @PreAuthorize("hasRole('user')")
     public ApiResp<Boolean> changePassword(@RequestBody ChangePwdDTO apiReq) {
+        int userId = sysUserService.getIdByUsername(apiReq.getUsername());
+        operateRecordService.insertNewRecordAsync(userId, String.valueOf(userId), VisitActionEnum.USER_CHANGE_PASSWORD, new Date(),
+                "User " + apiReq.getUsername() + " try to change password.");
         boolean success = authService.changePassword(apiReq.getUsername(), apiReq.getOldPassword(), apiReq.getNewPassword());
         ApiResp<Boolean> resp = new ApiResp<>();
         resp.success().setData(success);
@@ -123,6 +140,8 @@ public class SysUserController {
             return resp;
         }
         apiReq.copyTo(sysUser);
+        operateRecordService.insertNewRecordAsync(sysUser.getId(), sysUser.getId().toString(), VisitActionEnum.USER_CHANGE_INFORMATION, new Date(),
+                "User " + sysUser.getUsername() + " try to change information.");
         boolean result = sysUserService.update(sysUser) > 0;
         if (result) {
             resp.success().setData(true);
@@ -139,6 +158,9 @@ public class SysUserController {
     @PreAuthorize("hasRole('user')")
     public ApiResp<Boolean> logOut(@RequestParam String username) {
         ApiResp<Boolean> resp = new ApiResp<Boolean>().success();
+        int userId = sysUserService.getIdByUsername(username);
+        operateRecordService.insertNewRecordAsync(userId, String.valueOf(userId), VisitActionEnum.USER_LOGOUT, new Date(),
+                "User " + username + " try to log out.");
         resp.setData(authService.logOut(username));
         return resp;
     }
@@ -153,6 +175,8 @@ public class SysUserController {
             resp.setMessage("Please check you account carefully.");
             return resp;
         }
+        operateRecordService.insertNewRecordAsync(user.getId(), user.getId().toString(), VisitActionEnum.USER_APPLY_RETRIEVE_PASSWORD, new Date(),
+                "User " + username + " apply to change password.");
         // 发送邮件到用户注册邮箱
         resp.success().setData(authService.sendResetPasswordEmail(user));
         return resp;
@@ -162,9 +186,27 @@ public class SysUserController {
     @ApiOperation("重置密码")
     @PreAuthorize("hasRole('pwd_resetter')")
     public ApiResp<Boolean> resetPassword(@RequestParam("applyId") String applySerial, @RequestBody ChangePwdDTO changePwd) {
+        int userId = sysUserService.getIdByUsername(changePwd.getUsername());
+        operateRecordService.insertNewRecordAsync(userId, String.valueOf(userId), VisitActionEnum.USER_RETRIEVE_PASSWORD, new Date(),
+                "User " + changePwd.getUsername() + " try to retrieve password.");
         boolean success = authService.resetPassword(changePwd.getUsername(), applySerial, changePwd.getNewPassword());
         ApiResp<Boolean> resp = new ApiResp<>();
         resp.success().setData(success);
+        return resp;
+    }
+    @RequestMapping(path = "retrieve")
+    public ApiResp<Boolean> applyRetrieveAccount(@RequestParam("applyEmail") String applyEmail) {
+        ApiResp<Boolean> resp = new ApiResp<>();
+        resp.setCode(406);
+        resp.setMessage("Failure to apply retrieve account.");
+        SysUserDO user = (SysUserDO) sysUserService.loadUserByUsername(applyEmail);
+        if (user == null) {
+            return resp;
+        }
+        operateRecordService.insertNewRecordAsync(user.getId(), user.getId().toString(), VisitActionEnum.USER_APPLY_RETRIEVE_ACCOUNT, new Date(),
+                "User " + user.getUsername() + " apply to change password.");
+        // 发送邮件到用户注册邮箱
+        resp.success().setData(authService.sendRetrieveAccount(user));
         return resp;
     }
 }

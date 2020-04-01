@@ -11,8 +11,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
@@ -26,21 +24,24 @@ public class ErrorRecordAspect {
     /**
      * 注入Service用于把日志保存数据库，实际项目入库采用队列做异步
      */
-    @Autowired
-    private ExceptionRecordService exceptionRecordService;
+    private final ExceptionRecordService exceptionRecordService;
+
+    public ErrorRecordAspect(ExceptionRecordService exceptionRecordService) {
+        this.exceptionRecordService = exceptionRecordService;
+    }
 
     /**
      * Controller层切点
      */
     @Pointcut("@within(com.peashoot.blog.aspect.annotation.ErrorRecord)")
-    public void handlerAspect() {
+    public void controllerErrorHandlerAspect() {
     }
 
     /**
      * 异常记录保存
      */
-    @AfterThrowing(pointcut = "handlerAspect()", throwing = "e")
-    public void doAfterThrowing(JoinPoint joinPoint, Throwable e) {
+    @AfterThrowing(pointcut = "controllerErrorHandlerAspect()", throwing = "e")
+    public void recordThrowInfoAfterThrowing(JoinPoint joinPoint, Throwable e) {
         try {
             // TODO 异常通知处理
             ExceptionRecordDO exceptionRecord = new ExceptionRecordDO();
@@ -49,7 +50,7 @@ public class ErrorRecordAspect {
             Object[] arguments = joinPoint.getArgs();
             Class targetClass = Class.forName(className);
             Method[] methods = targetClass.getMethods();
-            StringBuffer paramWithValues = new StringBuffer();
+            StringBuilder paramWithValues = new StringBuilder();
             for (Method method : methods) {
                 if (method.getName().equals(methodName)) {
                     Parameter[] params = method.getParameters();

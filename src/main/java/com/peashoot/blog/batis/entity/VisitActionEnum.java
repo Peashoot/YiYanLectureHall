@@ -2,6 +2,18 @@ package com.peashoot.blog.batis.entity;
 
 public enum VisitActionEnum {
     /**
+     * 新增文章
+     */
+    CREATE_ARTICLE(80),
+    /**
+     * 更新文章
+     */
+    UPDATE_ARTICLE(90),
+    /**
+     * 删除文章
+     */
+    DELETE_ARTICLE(99),
+    /**
      * 点赞文章
      */
     AGREE_ARTICLE(101),
@@ -44,7 +56,43 @@ public enum VisitActionEnum {
     /**
      * 修改名称
      */
-    CHANGE_NAME(301) {
+    CHANGE_NAME(301),
+    /**
+     * 上传文件
+     */
+    UPLOAD_FILE(501),
+    /**
+     * 用户登录
+     */
+    USER_LOGIN(701),
+    /**
+     * 用户注册
+     */
+    USER_REGISTER(702),
+    /**
+     * 用户登出
+     */
+    USER_LOGOUT(703),
+    /**
+     * 用户修改密码
+     */
+    USER_CHANGE_PASSWORD(704),
+    /**
+     * 用户申请找回密码
+     */
+    USER_APPLY_RETRIEVE_PASSWORD(705),
+    /**
+     *  用户申请找回账户
+     */
+    USER_APPLY_RETRIEVE_ACCOUNT(706),
+    /**
+     * 用户找回密码
+     */
+    USER_RETRIEVE_PASSWORD(707),
+    /**
+     * 用户修改信息
+     */
+    USER_CHANGE_INFORMATION(708){
     };
 
     private int value;

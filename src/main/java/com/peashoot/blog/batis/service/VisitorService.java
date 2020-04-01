@@ -13,7 +13,7 @@ public interface VisitorService extends InsertService<VisitorDO>, SelectService<
      * @param browser 浏览器指纹
      * @return 访客信息
      */
-    VisitorDO selectByIPAndBrowser(String visitIP, String browser);
+    VisitorDO selectByIpAndBrowser(String visitIP, String browser);
 
     /**
      * 新增访客并返回新增id
@@ -21,7 +21,7 @@ public interface VisitorService extends InsertService<VisitorDO>, SelectService<
      * @param visitor 访客信息
      * @return 新增访客id
      */
-    long insertWithReturnRecordID(VisitorDO visitor);
+    long insertWithReturnRecordId(VisitorDO visitor);
 
     /**
      * 根据访客名称进行查询

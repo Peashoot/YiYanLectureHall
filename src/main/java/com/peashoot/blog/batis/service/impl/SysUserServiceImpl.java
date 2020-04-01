@@ -16,10 +16,13 @@ import java.util.List;
 
 @Service("sysUserService")
 public class SysUserServiceImpl implements SysUserService {
-    @Autowired
-    private SysUserMapper sysuserMapper;
-    @Autowired
-    private RoleMapper roleMapper;
+    private final SysUserMapper sysuserMapper;
+    private final RoleMapper roleMapper;
+
+    public SysUserServiceImpl(SysUserMapper sysuserMapper, RoleMapper roleMapper) {
+        this.sysuserMapper = sysuserMapper;
+        this.roleMapper = roleMapper;
+    }
 
     @Override
     public int insert(SysUserDO insertItem) {
@@ -50,8 +53,7 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public SysUserDO selectById(Integer id) {
-        SysUserDO sysUser = sysuserMapper.selectByPrimaryKey(id);
-        return sysUser;
+        return sysuserMapper.selectByPrimaryKey(id);
     }
 
     @Override
@@ -75,7 +77,6 @@ public class SysUserServiceImpl implements SysUserService {
             roleList.add(roleMapper.selectByPrimaryKey(Integer.parseInt(strId)));
         }
         user.setRoles(roleList);
-        return;
     }
 
     /**

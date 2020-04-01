@@ -29,9 +29,8 @@ public interface SysUserRedisService {
     /**
      * 保存重置密码的申请编号
      * @param username 用户名
-     * @param applySerial 申请编号
      */
-    void saveResetPwdApplySerial(String username, String applySerial);
+    String saveResetPwdApplySerial(String username, long idempotentInterval, long expiration);
 
     /**
      * 检查重置密码的申请编号

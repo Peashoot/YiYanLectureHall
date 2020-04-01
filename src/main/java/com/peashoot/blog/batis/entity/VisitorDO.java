@@ -43,4 +43,8 @@ public class VisitorDO extends LongPrimaryEntity {
      * 访客使用的操作系统
      */
     private String os;
+    /**
+     * 角色id
+     */
+    private String roleIds;
 }

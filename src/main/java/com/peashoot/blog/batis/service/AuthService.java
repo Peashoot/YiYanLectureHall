@@ -66,4 +66,11 @@ public interface AuthService {
      * @return
      */
     boolean resetPassword(String username, String applySerial, String newPassword);
+
+    /**
+     * 发送找回账号邮件
+     * @param sysUser 用户信息
+     * @return 是否成功
+     */
+    boolean sendRetrieveAccount(SysUserDO sysUser);
 }

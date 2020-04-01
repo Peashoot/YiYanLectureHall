@@ -133,7 +133,7 @@ public class JwtTokenUtil implements Serializable {
      * @return 过期日期
      */
     private Date generateExpirationDate() {
-        return new Date(System.currentTimeMillis() + expiration * Constant.ONE_MILLISECONDS_PEY_SECOND);
+        return new Date(System.currentTimeMillis() + expiration * Constant.MILLISECONDS_PEY_SECOND);
     }
 
     /**
@@ -174,7 +174,7 @@ public class JwtTokenUtil implements Serializable {
             claims.put(CLAIM_KEY_BROWSERFINGERPRINT, browserFingerprint);
         }
         String token =  generateToken(claims);
-        sysUserRedisService.recordGenerateToken(userDetails.getUsername(), token, System.currentTimeMillis() + expiration * Constant.ONE_MILLISECONDS_PEY_SECOND);
+        sysUserRedisService.recordGenerateToken(userDetails.getUsername(), token, System.currentTimeMillis() + expiration * Constant.MILLISECONDS_PEY_SECOND);
         return token;
     }
 

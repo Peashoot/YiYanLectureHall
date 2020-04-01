@@ -11,10 +11,14 @@ import java.util.List;
 
 @Service("roleService")
 public class RoleServiceImpl implements RoleService {
-    @Autowired
-    private RoleMapper roleMapper;
-    @Autowired
-    private SysUserMapper sysuserMapper;
+    private final RoleMapper roleMapper;
+    private final SysUserMapper sysuserMapper;
+
+    public RoleServiceImpl(RoleMapper roleMapper, SysUserMapper sysuserMapper) {
+        this.roleMapper = roleMapper;
+        this.sysuserMapper = sysuserMapper;
+    }
+
     @Override
     public int insert(RoleDO insertItem) {
         if (insertItem.getInsertUser() != null) {

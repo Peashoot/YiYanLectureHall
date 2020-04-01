@@ -1,6 +1,7 @@
 package com.peashoot.blog.controller;
 
 import com.peashoot.blog.aspect.annotation.ErrorRecord;
+import com.peashoot.blog.aspect.annotation.VisitLimit;
 import com.peashoot.blog.batis.entity.ArticleDO;
 import com.peashoot.blog.batis.entity.SysUserDO;
 import com.peashoot.blog.batis.entity.VisitActionEnum;
@@ -14,6 +15,7 @@ import com.peashoot.blog.context.request.article.ChangedArticleDTO;
 import com.peashoot.blog.context.response.ApiResp;
 import com.peashoot.blog.context.response.article.ArticleIntroductionDTO;
 import com.peashoot.blog.context.response.article.ArticlesCollectionDTO;
+import com.peashoot.blog.util.Constant;
 import com.peashoot.blog.util.SecurityUtil;
 import com.peashoot.blog.util.StringUtils;
 import io.swagger.annotations.Api;
@@ -87,32 +89,31 @@ public class ArticleController {
     @ApiOperation("新增或更新文章")
     @PreAuthorize("hasRole('writer')")
     public ApiResp<Boolean> insertOrUpdateArticle(@RequestBody ChangedArticleDTO apiReq) {
+        ApiResp<Boolean> retResp = new ApiResp<>();
+        retResp.setCode(501);
+        retResp.setMessage("Failure to save article.");
         boolean isInsert = StringUtils.isNullOrEmpty(apiReq.getId());
         ArticleDO articleEntity = isInsert ? new ArticleDO() : articleService.selectById(apiReq.getId());
         apiReq.copyTo(articleEntity);
         SysUserDO curUser = SecurityUtil.getCurrentUser();
-        if (curUser != null) {
-            articleEntity.setModifyUserId(sysUserService.getIdByUsername(curUser.getUsername()));
+        if (curUser == null) {
+            return retResp;
         }
-        boolean result = false;
+        articleEntity.setModifyUserId(sysUserService.getIdByUsername(curUser.getUsername()));
+        boolean result;
         if (isInsert) {
             articleEntity.setCreateTime(articleEntity.getModifyTime());
             articleEntity.setCreateUserId(articleEntity.getModifyUserId());
+            visitRecordService.insertNewRecordAsync(articleEntity.getCreateUserId(), apiReq.getId(), VisitActionEnum.CREATE_ARTICLE, new Date(), "Add an article：" + apiReq.getTitle());
             result = articleService.insert(articleEntity) > 0;
         } else {
+            visitRecordService.insertNewRecordAsync(articleEntity.getModifyUserId(), apiReq.getId(), VisitActionEnum.UPDATE_ARTICLE, new Date(), "Modify an article：" + apiReq.getTitle());
             result = articleService.update(articleEntity) > 0;
         }
         if (result) {
-            ApiResp<Boolean> retResp = new ApiResp<Boolean>().success();
-            retResp.setData(true);
-            return retResp;
-        } else {
-            ApiResp<Boolean> retResp = new ApiResp<Boolean>();
-            retResp.setCode(501);
-            retResp.setMessage("保存Article信息到数据库失败");
-            retResp.setData(false);
-            return retResp;
+            retResp.success().setData(true);
         }
+        return retResp;
     }
 
     /**
@@ -125,18 +126,20 @@ public class ArticleController {
     @ApiOperation("删除文章")
     @PreAuthorize("hasRole('writer')")
     public ApiResp<Boolean> deleteArticle(@RequestParam("articleId") String id) {
-        boolean result = articleService.remove(id) > 0;
-        if (result) {
-            ApiResp<Boolean> retResp = new ApiResp<Boolean>().success();
-            retResp.setData(true);
-            return retResp;
-        } else {
-            ApiResp<Boolean> retResp = new ApiResp<Boolean>();
-            retResp.setCode(501);
-            retResp.setMessage("数据库删除Article信息失败");
-            retResp.setData(false);
+        ApiResp<Boolean> retResp = new ApiResp<>();
+        retResp.setCode(501);
+        retResp.setMessage("Failure to remove article.");
+        SysUserDO curUser = SecurityUtil.getCurrentUser();
+        if (curUser == null) {
             return retResp;
         }
+        visitRecordService.insertNewRecordAsync(sysUserService.getIdByUsername(curUser.getUsername()), id, VisitActionEnum.DELETE_ARTICLE, new Date(), "Delete an article, it's id is " + id);
+        // 逻辑删除设置IsDelete为true
+        boolean result = articleService.remove(id) > 0;
+        if (result) {
+            retResp.success().setData(true);
+        }
+        return retResp;
     }
 
     /**
@@ -147,6 +150,7 @@ public class ArticleController {
      */
     @PostMapping(path = "reviews")
     @ApiOperation("文章点赞或反对")
+    @VisitLimit(value = 5)
     public ApiResp<Boolean> agreeOrDisagreeArticle(@RequestBody ArticleAgreeDTO apiReq) {
         ApiResp<Boolean> resp = new ApiResp<>();
         resp.setCode(406);
@@ -187,7 +191,7 @@ public class ArticleController {
             return resp;
         }
         // 新增访客操作记录并修改评论点赞反对数
-        visitRecordService.insertNewRecord(apiReq.getVisitorId(), apiReq.getArticleId(), apiReq.getAction(), new Date(), "");
+        visitRecordService.insertNewRecordAsync(apiReq.getVisitorId(), apiReq.getArticleId(), apiReq.getAction(), new Date(), "");
         boolean result = articleService.updateSupportAndDisagreeState(apiReq.getArticleId(), agree, disagree);
         resp.success().setData(result);
         return resp;

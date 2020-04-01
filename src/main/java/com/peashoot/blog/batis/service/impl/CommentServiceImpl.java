@@ -11,8 +11,11 @@ import java.util.List;
 
 @Service("commentService")
 public class CommentServiceImpl implements CommentService {
-    @Autowired
-    private CommentMapper commentMapper;
+    private final CommentMapper commentMapper;
+
+    public CommentServiceImpl(CommentMapper commentMapper) {
+        this.commentMapper = commentMapper;
+    }
 
     @Override
     public int insert(CommentDO insertItem) {

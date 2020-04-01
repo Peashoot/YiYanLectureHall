@@ -16,8 +16,12 @@ import java.util.concurrent.Future;
 @Service
 @EnableAsync
 public class ExceptionRecordServiceImpl implements ExceptionRecordService {
-    @Autowired
-    private ExceptionRecordMapper exceptionRecordMapper;
+    private final ExceptionRecordMapper exceptionRecordMapper;
+
+    public ExceptionRecordServiceImpl(ExceptionRecordMapper exceptionRecordMapper) {
+        this.exceptionRecordMapper = exceptionRecordMapper;
+    }
+
     @Override
     public List<ExceptionRecordDO> listPagedRecords(int pageSize, int pageIndex, Date searchStart, Date searchEnd) {
         return null;

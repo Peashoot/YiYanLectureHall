@@ -4,12 +4,7 @@ import com.peashoot.blog.crypto.definition.Crypto;
 import com.peashoot.blog.util.EncryptUtils;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.codec.binary.Base64;
 
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.DESedeKeySpec;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -28,11 +23,11 @@ public class TrippleDesCrypto implements Crypto {
     private final String cipherMode = "DESede/ECB/PKCS5Padding";
     @Override
     public String encrypt(String original, String charset) throws Exception {
-        return EncryptUtils.trippleDESEncrypt(original, cryptoKey, cipherMode, charset);
+        return EncryptUtils.trippleDesEncrypt(original, cryptoKey, cipherMode, charset);
     }
 
     @Override
     public String decrypt(String encrypted, String charset) throws Exception {
-        return EncryptUtils.trippleDESDecrypt(encrypted, cryptoKey, cipherMode, charset);
+        return EncryptUtils.trippleDesDecrypt(encrypted, cryptoKey, cipherMode, charset);
     }
 }

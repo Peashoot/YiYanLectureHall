@@ -20,6 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.util.Date;
 import java.util.UUID;
 
@@ -28,18 +29,15 @@ public class AuthServiceImpl implements AuthService {
     /**
      * 用户信息操作类
      */
-    @Autowired
-    private SysUserService sysUserService;
+    private final SysUserService sysUserService;
     /**
      * token生成
      */
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenUtil jwtTokenUtil;
     /**
      * 身份认证
      */
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
     /**
      * token头
      */
@@ -49,22 +47,38 @@ public class AuthServiceImpl implements AuthService {
      * 登录过期时间
      */
     @Value("${peashoot.blog.jwt.expiration}")
-    private Long expiration;
+    private Long loginExpiration;
     /**
      * 是否支持单点登录
      */
     @Value("${peashoot.blog.sso.enabled}")
     private boolean singleSignOn = false;
     /**
+     * 申请过期时间
+     */
+    @Value("${peashoot.blog.apply.expiration}")
+    private Long applyExpiration;
+    /**
+     * 申请幂等时间
+     */
+    @Value("${peashoot.blog.apply.idempotent.interval}")
+    private Long applyIdempotentInterval;
+    /**
      * 加密方式
      */
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     /**
      * RedisToken操作类
      */
-    @Autowired
-    private SysUserRedisService sysUserRedisService;
+    private final SysUserRedisService sysUserRedisService;
+
+    public AuthServiceImpl(SysUserService sysUserService, JwtTokenUtil jwtTokenUtil, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, SysUserRedisService sysUserRedisService) {
+        this.sysUserService = sysUserService;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.authenticationManager = authenticationManager;
+        this.passwordEncoder = passwordEncoder;
+        this.sysUserRedisService = sysUserRedisService;
+    }
 
     @Override
     public boolean insertSysUser(@NotNull SysUserDO userToAdd) throws UserNameOccupiedException {
@@ -86,7 +100,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String login(String username, String password, String loginIP, String browserFingerprint) {
+    public String login(String username, String password, String loginIp, String browserFingerprint) {
         UsernamePasswordAuthenticationToken upToken = new UsernamePasswordAuthenticationToken(username, password);
         // 检查密码
         final Authentication authentication = authenticationManager.authenticate(upToken);
@@ -94,8 +108,7 @@ public class AuthServiceImpl implements AuthService {
         // Reload password post-security so we can generate token
         final UserDetails userDetails = sysUserService.loadUserByUsername(username);
         // 生成新的token
-        final String token = jwtTokenUtil.generateToken(userDetails, loginIP, browserFingerprint);
-        return token;
+        return jwtTokenUtil.generateToken(userDetails, loginIp, browserFingerprint);
     }
 
     @Override
@@ -124,8 +137,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public boolean sendResetPasswordEmail(SysUserDO sysUser) {
         try {
-            String serialNumber = new Md5Crypto().encrypt(UUID.randomUUID().toString() + sysUser.getUsername(), "UTF-8");
-            sysUserRedisService.saveResetPwdApplySerial(sysUser.getUsername(), serialNumber);
+            String serialNumber = sysUserRedisService.saveResetPwdApplySerial(sysUser.getUsername(), applyExpiration, applyIdempotentInterval);
             // TODO：生成重置链接，发送邮件
             // 链接模板、邮件模板
         } catch (Exception ex) {
@@ -142,10 +154,16 @@ public class AuthServiceImpl implements AuthService {
         return updateUserPassword(username, newPwd);
     }
 
+    @Override
+    public boolean sendRetrieveAccount(SysUserDO sysUser) {
+        return false;
+    }
+
     /**
      * 更新用户密码
+     *
      * @param username 用户名
-     * @param newPwd 密码
+     * @param newPwd   密码
      * @return 是否成功
      */
     private boolean updateUserPassword(String username, String newPwd) {

@@ -28,7 +28,7 @@ public interface OperateRecordService extends InsertService<OperateRecordDO>,
     OperateRecordDO selectLastRecordByVisitorIdAndArticleId(long visitorId, String articleId);
 
     /**
-     * 新增一条记录
+     * 异步新增一条记录
      * @param visitorId 访客id
      * @param objectId 操作对象id
      * @param action 操作类型
@@ -36,5 +36,5 @@ public interface OperateRecordService extends InsertService<OperateRecordDO>,
      * @param record 操作具体内容
      * @return 是否新增成功
      */
-    Future<Boolean> insertNewRecord(long visitorId, String objectId, VisitActionEnum action, Date operateDate, String record);
+    Future<Boolean> insertNewRecordAsync(long visitorId, String objectId, VisitActionEnum action, Date operateDate, String record);
 }

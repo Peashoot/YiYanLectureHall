@@ -1,6 +1,7 @@
 package com.peashoot.blog.controller;
 
 import com.peashoot.blog.aspect.annotation.ErrorRecord;
+import com.peashoot.blog.aspect.annotation.VisitLimit;
 import com.peashoot.blog.batis.entity.VisitActionEnum;
 import com.peashoot.blog.batis.entity.VisitorDO;
 import com.peashoot.blog.batis.service.OperateRecordService;
@@ -60,7 +61,7 @@ public class VisitorController {
         ApiResp<VisitorIDAndNamesDTO> resp = new ApiResp<>();
         resp.setCode(501);
         resp.setMessage("Failure to generate name of visitor.");
-        VisitorDO existVisitor = visitorService.selectByIPAndBrowser(apiReq.getVisitorIP(), apiReq.getBrowserFingerprint());
+        VisitorDO existVisitor = visitorService.selectByIpAndBrowser(apiReq.getVisitorIP(), apiReq.getBrowserFingerprint());
         if (existVisitor != null) {
             VisitorIDAndNamesDTO visitorIDAndNames = new VisitorIDAndNamesDTO();
             visitorIDAndNames.setSysUserNickname(existVisitor.getSysUserNickName());
@@ -79,7 +80,7 @@ public class VisitorController {
                 }
                 if (!isExist) {
                     VisitorDO visitor = apiReq.createNewInstance(tempVisitorName, System.currentTimeMillis());
-                    long insertId = visitorService.insertWithReturnRecordID(visitor);
+                    long insertId = visitorService.insertWithReturnRecordId(visitor);
                     if (insertId > 0) {
                         VisitorIDAndNamesDTO visitorIDAndNames = new VisitorIDAndNamesDTO();
                         visitorIDAndNames.setVisitorId(visitor.getId());
@@ -103,6 +104,7 @@ public class VisitorController {
      */
     @PostMapping("path = bind")
     @ApiOperation("将访客信息和用户信息进行绑定")
+    @VisitLimit(value = 10)
     public ApiResp<Boolean> syncUserInfoToVisitor(@RequestBody UserNameAndVisitorDTO apiReq) {
         VisitorDO visitor = visitorService.selectByVisitorName(apiReq.getVisitorName());
         ApiResp<Boolean> resp = new ApiResp<>();
@@ -116,7 +118,7 @@ public class VisitorController {
             return resp;
         }
         String record = "Visitor " + apiReq.getVisitorName() + " connect with system user " + apiReq.getSysUsername() + ".";
-        visitRecordService.insertNewRecord(visitor.getId(), visitor.getId().toString(), VisitActionEnum.BIND_SYS_USER, new Date(), record);
+        visitRecordService.insertNewRecordAsync(visitor.getId(), visitor.getId().toString(), VisitActionEnum.BIND_SYS_USER, new Date(), record);
         visitor.setSysUserName(apiReq.getSysUsername());
         resp.success().setData(visitorService.update(visitor) > 0);
         return resp;
@@ -144,7 +146,7 @@ public class VisitorController {
         } else {
             // 新增访客操作记录,并修改访客名称
             String record = "Visitor change name from \"" + apiReq.getOldVisitorName() + "\" to \"" + apiReq.getNewVisitorName() + "\".";
-            visitRecordService.insertNewRecord(apiReq.getVisitorId(), apiReq.getVisitorId().toString(), VisitActionEnum.CHANGE_NAME, new Date(), record);
+            visitRecordService.insertNewRecordAsync(apiReq.getVisitorId(), apiReq.getVisitorId().toString(), VisitActionEnum.CHANGE_NAME, new Date(), record);
             existVisitor.setVisitor(apiReq.getNewVisitorName());
             resp.setData(visitorService.update(existVisitor) > 0);
         }

@@ -13,10 +13,13 @@ import java.util.List;
 
 @Service("articleService")
 public class ArticleServiceImpl implements ArticleService {
-    @Autowired
-    private ArticleMapper articleMapper;
-    @Autowired
-    private SysUserMapper sysuserMapper;
+    private final ArticleMapper articleMapper;
+    private final SysUserMapper sysuserMapper;
+
+    public ArticleServiceImpl(ArticleMapper articleMapper, SysUserMapper sysuserMapper) {
+        this.articleMapper = articleMapper;
+        this.sysuserMapper = sysuserMapper;
+    }
 
     @Override
     public int insert(ArticleDO insertItem) {

@@ -7,9 +7,11 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESedeKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -23,9 +25,8 @@ public class EncryptUtils {
      *
      * @param original 原始字符串
      * @return 加密结果
-     * @throws Exception
      */
-    public static String md5Encrypt(String original) throws Exception {
+    public static String md5Encrypt(String original) {
         return md5Encrypt(original, CHARSET_UTF8);
     }
 
@@ -34,9 +35,8 @@ public class EncryptUtils {
      *
      * @param original 原始字符串
      * @return 加密结果
-     * @throws Exception
      */
-    public static String md5EncryptLen16(String original) throws Exception {
+    public static String md5EncryptLen16(String original) {
         return md5Encrypt(original).substring(8, 24);
     }
 
@@ -46,17 +46,21 @@ public class EncryptUtils {
      * @param original 原始字符串
      * @param charset  编码方式
      * @return 加密结果
-     * @throws Exception
      */
-    public static String md5Encrypt(String original, String charset) throws Exception {
-        // 生成一个MD5加密计算摘要
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        // 计算md5函数
-        md.update(original.getBytes(charset));
-        // digest()最后确定返回md5 hash值，返回值为8位字符串。因为md5 hash值是16位的hex值，实际上就是8位的字符
-        // BigInteger函数则将8位的字符串转换成16位hex值，用字符串来表示；得到字符串形式的hash值
-        //一个byte是八位二进制，也就是2位十六进制字符（2的8次方等于16的2次方）
-        return new BigInteger(1, md.digest()).toString(16);
+    public static String md5Encrypt(String original, String charset) {
+        try {
+            // 生成一个MD5加密计算摘要
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            // 计算md5函数
+            md.update(original.getBytes(charset));
+            // digest()最后确定返回md5 hash值，返回值为8位字符串。因为md5 hash值是16位的hex值，实际上就是8位的字符
+            // BigInteger函数则将8位的字符串转换成16位hex值，用字符串来表示；得到字符串形式的hash值
+            //一个byte是八位二进制，也就是2位十六进制字符（2的8次方等于16的2次方）
+            return new BigInteger(1, md.digest()).toString(16);
+        } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return StringUtils.EMPTY;
+        }
     }
 
     /**
@@ -65,9 +69,8 @@ public class EncryptUtils {
      * @param original 原始字符串
      * @param charset  编码方式
      * @return 加密结果
-     * @throws Exception
      */
-    public static String mdEncryptLen16(String original, String charset) throws Exception {
+    public static String mdEncryptLen16(String original, String charset) {
         return md5Encrypt(original, charset).substring(8, 24);
     }
 
@@ -159,8 +162,7 @@ public class EncryptUtils {
         //RSA加密
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.ENCRYPT_MODE, pubKey);
-        String outStr = org.apache.tomcat.util.codec.binary.Base64.encodeBase64String(cipher.doFinal(original.getBytes(charset)));
-        return outStr;
+        return org.apache.tomcat.util.codec.binary.Base64.encodeBase64String(cipher.doFinal(original.getBytes(charset)));
     }
 
     /**
@@ -191,27 +193,30 @@ public class EncryptUtils {
         //RSA解密
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.DECRYPT_MODE, priKey);
-        String outStr = new String(cipher.doFinal(inputByte));
-        return outStr;
+        return new String(cipher.doFinal(inputByte));
     }
+
     /**
      * 3DES加密
-     * @param original 原始字符串
+     *
+     * @param original  原始字符串
      * @param cryptoKey 加密密钥
      * @return 加密后的内容
      */
-    public static String trippleDESEncrypt(String original, String cryptoKey) throws Exception {
-        return trippleDESEncrypt(original, cryptoKey, "DESede/ECB/PKCS5Padding", CHARSET_UTF8);
+    public static String trippleDesEncrypt(String original, String cryptoKey) throws Exception {
+        return trippleDesEncrypt(original, cryptoKey, "DESede/ECB/PKCS5Padding", CHARSET_UTF8);
     }
+
     /**
      * 3DES加密
-     * @param original 原始字符串
-     * @param cryptoKey 加密密钥
+     *
+     * @param original   原始字符串
+     * @param cryptoKey  加密密钥
      * @param cipherMode 加密模式
-     * @param charset 编码方式
+     * @param charset    编码方式
      * @return 加密后的内容
      */
-    public static String trippleDESEncrypt(String original, String cryptoKey, String cipherMode, String charset) throws Exception {
+    public static String trippleDesEncrypt(String original, String cryptoKey, String cipherMode, String charset) throws Exception {
         byte[] src = original.getBytes(charset);
         //DESedeKeySpec会帮你生成24位秘钥，key可以是任意长度
         DESedeKeySpec spec = new DESedeKeySpec(cryptoKey.getBytes(charset));
@@ -223,25 +228,28 @@ public class EncryptUtils {
         //encodeBase64会对字符串3位一组自动补全，因而最后可能会出现 == 或者 =
         return new String(Base64.encodeBase64(res), charset);
     }
+
     /**
      * 3DES解密
+     *
      * @param encrypted 待解密的内容
      * @param cryptoKey 解密密钥
      * @return 解密后的内容
      */
-    public static String trippleDESDecrypt(String encrypted, String cryptoKey) throws Exception {
-        return trippleDESDecrypt(encrypted, cryptoKey, "DESede/ECB/PKCS5Padding", CHARSET_UTF8);
+    public static String trippleDesDecrypt(String encrypted, String cryptoKey) throws Exception {
+        return trippleDesDecrypt(encrypted, cryptoKey, "DESede/ECB/PKCS5Padding", CHARSET_UTF8);
     }
 
     /**
      * 3DES解密
-     * @param encrypted 待解密的内容
-     * @param cryptoKey 解密密钥
+     *
+     * @param encrypted  待解密的内容
+     * @param cryptoKey  解密密钥
      * @param cipherMode 解密模式
-     * @param charset 编码方式
+     * @param charset    编码方式
      * @return 解密后的内容
      */
-    public static String trippleDESDecrypt(String encrypted, String cryptoKey, String cipherMode, String charset) throws Exception {
+    public static String trippleDesDecrypt(String encrypted, String cryptoKey, String cipherMode, String charset) throws Exception {
         //DESedeKeySpec会帮你生成24位秘钥，key可以是任意长度
         DESedeKeySpec spec = new DESedeKeySpec(cryptoKey.getBytes(charset));
         SecretKeyFactory factory = SecretKeyFactory.getInstance("DESede");

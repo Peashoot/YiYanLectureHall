@@ -3,7 +3,9 @@ package com.peashoot.blog.controller;
 import com.peashoot.blog.aspect.annotation.ErrorRecord;
 import com.peashoot.blog.batis.entity.FileDo;
 import com.peashoot.blog.batis.entity.FileTypeEnum;
+import com.peashoot.blog.batis.entity.VisitActionEnum;
 import com.peashoot.blog.batis.service.FileService;
+import com.peashoot.blog.batis.service.OperateRecordService;
 import com.peashoot.blog.context.response.ApiResp;
 import com.peashoot.blog.exception.FilePathCreateFailureException;
 import com.peashoot.blog.util.IoUtils;
@@ -16,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.UUID;
 
 @RestController
@@ -42,6 +44,8 @@ public class FileController {
 
     @Autowired
     private FileService fileService;
+    @Autowired
+    private OperateRecordService operateRecordService;
 
     /**
      * 上传本地文件到服务器
@@ -71,6 +75,7 @@ public class FileController {
         FileDo fileEntity = new FileDo(visitorId, sysUserId, type, localFilePath, netFileUrl, md5);
         fileEntity.setOriginalName(file.getName());
         fileEntity.setId(uuid);
+        operateRecordService.insertNewRecordAsync(visitorId, uuid, VisitActionEnum.UPLOAD_FILE, new Date(), "Upload local file to " + localFilePath);
         if (fileService.insert(fileEntity) > 0) {
             resp.success().setData(netFileUrl);
         }
@@ -105,6 +110,7 @@ public class FileController {
         FileDo fileEntity = new FileDo(visitorId, sysUserId, type, localFilePath, netFileUrl, md5);
         fileEntity.setOriginalNetUrl(originalNetUrl);
         fileEntity.setId(uuid);
+        operateRecordService.insertNewRecordAsync(visitorId, uuid, VisitActionEnum.UPLOAD_FILE, new Date(), "Download net file to " + localFilePath);
         if (fileService.insert(fileEntity) > 0) {
             resp.success().setData(netFileUrl);
         }
