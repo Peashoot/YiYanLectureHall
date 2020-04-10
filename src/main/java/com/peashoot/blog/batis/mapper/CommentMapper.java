@@ -26,7 +26,7 @@ public interface CommentMapper {
 
     int updateByPrimaryKey(CommentDO record);
 
-    List<CommentDO> listPagedComments(int pageSize, int pageIndex, String articleId);
+    List<CommentDO> listPagedComments(@Param("pageSize") int pageSize, @Param("pageIndex") int pageIndex, @Param("articleId") String articleId);
 
     int countTotalRecords(String articleId);
 }

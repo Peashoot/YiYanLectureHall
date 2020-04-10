@@ -1,7 +1,7 @@
 package com.peashoot.blog.controller;
 
 import com.peashoot.blog.aspect.annotation.ErrorRecord;
-import com.peashoot.blog.batis.entity.FileDo;
+import com.peashoot.blog.batis.entity.FileDO;
 import com.peashoot.blog.batis.entity.FileTypeEnum;
 import com.peashoot.blog.batis.entity.VisitActionEnum;
 import com.peashoot.blog.batis.service.FileService;
@@ -29,23 +29,26 @@ public class FileController {
     /**
      * 资源网络路径
      */
-    @Value("peashoot.blog.file.resource.directory.net")
+    @Value("${peashoot.blog.file.resource.directory.net}")
     private String resourceNetDirectory;
     /**
      * 资源本地路径
      */
-    @Value("peashoot.blog.file.resource.directory.local")
+    @Value("${peashoot.blog.file.resource.directory.local}")
     private String resourceLocalDirectory;
     /**
      * 允许上传文件的最大大小
      */
-    @Value("peashoot.blog.file.max-file-size")
-    private int maxFileSize;
+    @Value("${peashoot.blog.file.max-file-size}")
+    private Integer maxFileSize;
 
-    @Autowired
-    private FileService fileService;
-    @Autowired
-    private OperateRecordService operateRecordService;
+    private final FileService fileService;
+    private final OperateRecordService operateRecordService;
+
+    public FileController(FileService fileService, OperateRecordService operateRecordService) {
+        this.fileService = fileService;
+        this.operateRecordService = operateRecordService;
+    }
 
     /**
      * 上传本地文件到服务器
@@ -72,7 +75,7 @@ public class FileController {
         String localFilePath = IoUtils.combineLocalFilePath(resourceLocalDirectory, type, localFileName);
         String netFileUrl = IoUtils.combineNetFilePath(resourceNetDirectory, type, localFileName);
         String md5 = IoUtils.saveFileAndGetMd5(file, localFilePath);
-        FileDo fileEntity = new FileDo(visitorId, sysUserId, type, localFilePath, netFileUrl, md5);
+        FileDO fileEntity = new FileDO(visitorId, sysUserId, type, localFilePath, netFileUrl, md5);
         fileEntity.setOriginalName(file.getName());
         fileEntity.setId(uuid);
         operateRecordService.insertNewRecordAsync(visitorId, uuid, VisitActionEnum.UPLOAD_FILE, new Date(), "Upload local file to " + localFilePath);
@@ -107,7 +110,7 @@ public class FileController {
         String localFilePath = IoUtils.combineLocalFilePath(resourceLocalDirectory, type, localFileName);
         String netFileUrl = IoUtils.combineNetFilePath(resourceNetDirectory, type, localFileName);
         String md5 = IoUtils.downloadNetFileAndGetMd5(originalNetUrl, localFilePath);
-        FileDo fileEntity = new FileDo(visitorId, sysUserId, type, localFilePath, netFileUrl, md5);
+        FileDO fileEntity = new FileDO(visitorId, sysUserId, type, localFilePath, netFileUrl, md5);
         fileEntity.setOriginalNetUrl(originalNetUrl);
         fileEntity.setId(uuid);
         operateRecordService.insertNewRecordAsync(visitorId, uuid, VisitActionEnum.UPLOAD_FILE, new Date(), "Download net file to " + localFilePath);

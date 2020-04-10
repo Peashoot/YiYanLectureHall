@@ -62,7 +62,7 @@ public class SysUserDO extends IntPrimaryEntity implements UserDetails {
     /**
      * 上一次登录IP
      */
-    private String lastLoginIP;
+    private String lastLoginIp;
     /**
      * 注册时间
      */
@@ -70,7 +70,7 @@ public class SysUserDO extends IntPrimaryEntity implements UserDetails {
     /**
      * 注册IP
      */
-    private String registerIP;
+    private String registerIp;
     /**
      * 更新时间
      */

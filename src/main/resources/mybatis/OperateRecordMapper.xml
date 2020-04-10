@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.peashoot.blog.batis.mapper.OperateRecordMapper">
+    <resultMap id="BaseResultMap" type="com.peashoot.blog.batis.entity.OperateRecordDO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="operatorId" jdbcType="BIGINT" property="operatorId"/>
+        <result column="action" jdbcType="INTEGER" property="action"/>
+        <result column="operateObjectId" jdbcType="VARCHAR" property="operateObjectId"/>
+        <result column="record" jdbcType="VARCHAR" property="record"/>
+        <result column="actionDate" jdbcType="TIMESTAMP" property="actionDate"/>
+        <result column="actionResult" jdbcType="BIT" property="actionResult"/>
+        <result column="operatorType" jdbcType="INTEGER" property="operatorType"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, operatorId, action, operateObjectId, record, actionDate, actionResult, operatorType
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from bg_operaterecord
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from bg_operaterecord
+    </select>
+    <insert id="insert" parameterType="com.peashoot.blog.batis.entity.OperateRecordDO">
+        insert into bg_operaterecord (id, operatorId, action,
+                                      operateObjectId, record, actionDate,
+                                      actionResult, operatorType)
+        values (#{id,jdbcType=BIGINT}, #{operatorId,jdbcType=BIGINT}, #{action,jdbcType=INTEGER},
+                #{operateObjectId,jdbcType=VARCHAR}, #{record,jdbcType=VARCHAR}, #{actionDate,jdbcType=TIMESTAMP},
+                #{actionResult,jdbcType=BIT}, #{operatorType,jdbcType=INTEGER})
+    </insert>
+    <select id="selectLastRecordByVisitorIdAndObjectId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from bg_operaterecord
+        where operatorId = #{visitorId,jdbcType=BIGINT} and operateObjectId=#{objectId, jdbcType=VARCHAR}
+        <if test="action != null">
+            and action in (
+            <foreach collection="actions" item="action" index="index" separator=",">
+                #{action,jdbcType=INTEGER}
+            </foreach>
+            )
+        </if>
+    </select>
+</mapper>

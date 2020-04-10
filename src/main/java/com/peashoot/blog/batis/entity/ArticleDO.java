@@ -20,25 +20,9 @@ public class ArticleDO extends UUIDPrimaryEntity {
      */
     private String title;
     /**
-     * 关键字1
+     * 关键字（多个关键字用';'隔开）
      */
-    private String keyword1;
-    /**
-     * 关键字2
-     */
-    private String keyword2;
-    /**
-     * 关键字3
-     */
-    private String keyword3;
-    /**
-     * 关键字4
-     */
-    private String keyword4;
-    /**
-     * 关键字5
-     */
-    private String keyword5;
+    private String keywords;
     /**
      * 文件相对路径
      */
@@ -82,7 +66,7 @@ public class ArticleDO extends UUIDPrimaryEntity {
     /**
      * 文章URL链接
      */
-    private String articleURL;
+    private String articleUrl;
     /**
      * 赞成数
      */

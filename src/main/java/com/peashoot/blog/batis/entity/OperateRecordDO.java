@@ -14,7 +14,7 @@ public class OperateRecordDO extends LongPrimaryEntity {
     /**
      * 访客id
      */
-    private Long visitorId;
+    private Long operatorId;
     /**
      * 访客行为
      */
@@ -31,4 +31,12 @@ public class OperateRecordDO extends LongPrimaryEntity {
      * 操作时间
      */
     private Date actionDate;
+    /**
+     * 操作状态 0 失败 1 成功
+     */
+    private Boolean actionResult;
+    /**
+     * 操作员类型 0 访客 1 系统操作员
+     */
+    private Integer operatorType;
 }

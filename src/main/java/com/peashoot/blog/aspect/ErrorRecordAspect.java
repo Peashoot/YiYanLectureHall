@@ -1,6 +1,5 @@
 package com.peashoot.blog.aspect;
 
-import com.peashoot.blog.aspect.annotation.ErrorRecord;
 import com.peashoot.blog.batis.entity.ExceptionRecordDO;
 import com.peashoot.blog.batis.service.ExceptionRecordService;
 import com.peashoot.blog.util.StringUtils;
@@ -8,9 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
@@ -72,7 +69,7 @@ public class ErrorRecordAspect {
             exceptionRecord.setParamValues(paramWithValues.toString());
             exceptionRecord.setExceptionMsg(e.getMessage());
             exceptionRecord.setInvokeStack(StringUtils.getStackTraceString(e));
-            exceptionRecord.setAppearDate(new Date());
+            exceptionRecord.setAppearTime(new Date());
             exceptionRecordService.insertNewRecordAsync(exceptionRecord);
         } catch (Exception ex) {
             //记录本地异常日志

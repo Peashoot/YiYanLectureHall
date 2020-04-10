@@ -11,6 +11,9 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,16 +37,34 @@ public class SysUserRedisServiceImpl implements SysUserRedisService {
      * 默认的编码方式
      */
     private final String DEFAULT_ENCODING = "UTF-8";
-
     /**
-     * 用户登录redis存储hash值正则
+     * Redis 存储键值间分隔符
      */
-    private final Pattern USER_LOGIN_REDIS_HASH_VALUE_PATTERN = Pattern.compile("^token:(.+);expireTime:(.+)$");
-
+    private final String REDIS_VALUE_KEY_VALUE_DELIMITER = ":";
     /**
-     * 申请单号redis存储hash值正则
+     * Redis 存储键值对间分隔符
      */
-    private final Pattern APPLY_SERIAL_REDIS_HASH_VALUE_PATTERN = Pattern.compile("^applySerial:(.+);idempotent:(.+);expireTime:(.+)$");
+    private final String REDIS_VALUE_PAIRS_DELIMITER = ";";
+    /**
+     * 用户Token存储Redis token字段名
+     */
+    private final String USER_TOKEN_REDIS_VALUE_TOKEN = "token";
+    /**
+     * 用户Token存储Redis 超时时间字段名
+     */
+    private final String USER_TOKEN_REDIS_VALUE_EXPIRE_TIME = "expireTime";
+    /**
+     * 用户申请单号存储Redis 编号字段名
+     */
+    private final String APPLY_REDIS_VALUE_SERIAL = "applySerial";
+    /**
+     * 用户申请单号存储Redis 幂等字段名
+     */
+    private final String APPLY_REDIS_VALUE_IDEMPOTENT = "idempotent";
+    /**
+     * 用户申请单号存储Redis 超期时间字段名
+     */
+    private final String APPLY_REDIS_VALUE_EXPIRE_TIME = "expireTime";
 
     public SysUserRedisServiceImpl(StringRedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
@@ -51,10 +72,23 @@ public class SysUserRedisServiceImpl implements SysUserRedisService {
 
     @Override
     public void recordGenerateToken(String username, String token, long expireTime) {
-        String storeMsgInfo = "token:" + token + ";expireTime:" + expireTime;
+        Map<String, Object> userTokenMap = new TreeMap<>();
+        userTokenMap.put(USER_TOKEN_REDIS_VALUE_TOKEN, token);
+        userTokenMap.put(USER_TOKEN_REDIS_VALUE_EXPIRE_TIME, expireTime);
+        saveMapInfoIntoRedis(userTokenMap, USER_LOGIN_TOKEN_HASH_REDIS_KEY, username);
+    }
+
+    /**
+     * 将Map信息保存到Redis中
+     * @param map map
+     * @param redisKey redis键
+     * @param hashKey hash键
+     */
+    private void saveMapInfoIntoRedis(Map<String, Object> map, String redisKey, String hashKey) {
+        String storeMsgInfo = StringUtils.joinMapWithConnectSymbols(map, REDIS_VALUE_KEY_VALUE_DELIMITER, REDIS_VALUE_PAIRS_DELIMITER);
         try {
             String afterEncodingByBase64 = new String(Base64.encodeBase64(storeMsgInfo.getBytes(DEFAULT_ENCODING)), DEFAULT_ENCODING);
-            redisTemplate.opsForHash().put(USER_LOGIN_TOKEN_HASH_REDIS_KEY, username, afterEncodingByBase64);
+            redisTemplate.opsForHash().put(redisKey, hashKey, afterEncodingByBase64);
         } catch (UnsupportedEncodingException ex) {
             log.throwing(getClass().getName(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex);
         }
@@ -69,18 +103,13 @@ public class SysUserRedisServiceImpl implements SysUserRedisService {
         String recordMsgInfo = recordInfo.toString();
         try {
             String afterDecodeFromBase64 = new String(Base64.decodeBase64(recordMsgInfo.getBytes(DEFAULT_ENCODING)), DEFAULT_ENCODING);
-            Matcher matcher = USER_LOGIN_REDIS_HASH_VALUE_PATTERN.matcher(afterDecodeFromBase64);
-            if (matcher.find()) {
-                String oldToken = matcher.group(1);
-                long oldExpireTime = Long.valueOf(matcher.group(2));
-                // 当前时间 大于 过期时间 或 token不等于oldToken 时认为用户需要重新登录
-                return System.currentTimeMillis() > oldExpireTime || !oldToken.equals(token);
-            } else {
-                log.info(getClass().getName() + "->" + Thread.currentThread().getStackTrace()[1].getMethodName() + ":" + "redis登录存储信息解析失败");
-                return true;
-            }
-        } catch (UnsupportedEncodingException ex) {
-            log.throwing(getClass().getName(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex);
+            Map<String, String> userTokenMap = StringUtils.splitStringInToMap(afterDecodeFromBase64, REDIS_VALUE_KEY_VALUE_DELIMITER, REDIS_VALUE_PAIRS_DELIMITER);
+            String oldToken = userTokenMap.get(USER_TOKEN_REDIS_VALUE_TOKEN);
+            long oldExpireTime = Long.valueOf(userTokenMap.get(USER_TOKEN_REDIS_VALUE_EXPIRE_TIME));
+            // 当前时间 大于 过期时间 或 token不等于oldToken 时认为用户需要重新登录
+            return System.currentTimeMillis() > oldExpireTime || !oldToken.equals(token);
+        } catch (Exception e) {
+            log.throwing(getClass().getName(), Thread.currentThread().getStackTrace()[1].getMethodName(), e);
             return true;
         }
     }
@@ -102,16 +131,14 @@ public class SysUserRedisServiceImpl implements SysUserRedisService {
         } else {
             try {
                 String afterDecodeFromBase64 = new String(Base64.decodeBase64(oldApplyInfo.getBytes(DEFAULT_ENCODING)), DEFAULT_ENCODING);
-                Matcher matcher = APPLY_SERIAL_REDIS_HASH_VALUE_PATTERN.matcher(afterDecodeFromBase64);
-                if (matcher.find()) {
-                    applySerial = matcher.group(1);
-                    long idempotentTime = Long.valueOf(matcher.group(2));
-                    // 当前时间 大于 幂等时间 需要重新生成申请单号
-                    if (System.currentTimeMillis() > idempotentTime) {
-                        applySerial = createApplyInfo(username, idempotentInterval, expiration);
-                    }
+                Map<String, String> appInfoMap = StringUtils.splitStringInToMap(afterDecodeFromBase64, REDIS_VALUE_KEY_VALUE_DELIMITER, REDIS_VALUE_PAIRS_DELIMITER);
+                applySerial = appInfoMap.get(APPLY_REDIS_VALUE_SERIAL);
+                long idempotentTime = Long.valueOf(appInfoMap.get(APPLY_REDIS_VALUE_IDEMPOTENT));
+                // 当前时间 大于 幂等时间 需要重新生成申请单号
+                if (System.currentTimeMillis() > idempotentTime) {
+                    applySerial = createApplyInfo(username, idempotentInterval, expiration);
                 }
-            } catch (UnsupportedEncodingException e) {
+            } catch (Exception e) {
                 log.throwing(getClass().getName(), Thread.currentThread().getStackTrace()[1].getMethodName(), e);
             }
         }
@@ -128,15 +155,11 @@ public class SysUserRedisServiceImpl implements SysUserRedisService {
      */
     private String createApplyInfo(String username, long idempotentInterval, long expiration) {
         String applySerial = EncryptUtils.md5Encrypt(UUID.randomUUID().toString() + username);
-        String applyInfo = "applySerial:" + applySerial +
-                ";idempotent:" + (System.currentTimeMillis() + idempotentInterval) +
-                ";expireTime:" + (System.currentTimeMillis() + expiration);
-        try {
-            String afterEncodingByBase64 = new String(Base64.encodeBase64(applyInfo.getBytes(DEFAULT_ENCODING)), DEFAULT_ENCODING);
-            redisTemplate.opsForHash().put(USER_RESET_PWD_SERIAL_HASH_REDIS_KEY, username, afterEncodingByBase64);
-        } catch (UnsupportedEncodingException ex) {
-            log.throwing(getClass().getName(), Thread.currentThread().getStackTrace()[1].getMethodName(), ex);
-        }
+        Map<String, Object> applyInfoMap = new TreeMap<>();
+        applyInfoMap.put(APPLY_REDIS_VALUE_SERIAL, applySerial);
+        applyInfoMap.put(APPLY_REDIS_VALUE_IDEMPOTENT, System.currentTimeMillis() + idempotentInterval);
+        applyInfoMap.put(APPLY_REDIS_VALUE_EXPIRE_TIME, System.currentTimeMillis() + expiration);
+        saveMapInfoIntoRedis(applyInfoMap, USER_RESET_PWD_SERIAL_HASH_REDIS_KEY, username);
         return applySerial;
     }
 
@@ -149,16 +172,14 @@ public class SysUserRedisServiceImpl implements SysUserRedisService {
         }
         try {
             String afterDecodeFromBase64 = new String(Base64.decodeBase64(oldApplyInfo.getBytes(DEFAULT_ENCODING)), DEFAULT_ENCODING);
-            Matcher matcher = APPLY_SERIAL_REDIS_HASH_VALUE_PATTERN.matcher(afterDecodeFromBase64);
-            if (matcher.find()) {
-                String oldApplySerial = matcher.group(1);
-                long expireTime = Long.valueOf(matcher.group(3));
-                if (System.currentTimeMillis() <= expireTime && oldApplySerial.equals(applySerial)) {
-                    redisTemplate.opsForHash().delete(USER_RESET_PWD_SERIAL_HASH_REDIS_KEY, username);
-                    return true;
-                }
+            Map<String, String> appInfoMap = StringUtils.splitStringInToMap(afterDecodeFromBase64, REDIS_VALUE_KEY_VALUE_DELIMITER, REDIS_VALUE_PAIRS_DELIMITER);
+            String oldApplySerial = appInfoMap.get(APPLY_REDIS_VALUE_SERIAL);
+            long expireTime = Long.valueOf(appInfoMap.get(APPLY_REDIS_VALUE_EXPIRE_TIME));
+            if (System.currentTimeMillis() <= expireTime && oldApplySerial.equals(applySerial)) {
+                redisTemplate.opsForHash().delete(USER_RESET_PWD_SERIAL_HASH_REDIS_KEY, username);
+                return true;
             }
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             log.throwing(getClass().getName(), Thread.currentThread().getStackTrace()[1].getMethodName(), e);
         }
         return false;

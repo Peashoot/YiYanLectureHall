@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.validation.Valid;
 import java.util.Date;
 
 @Setter
@@ -31,7 +30,7 @@ public class VisitorVisitInfoDTO extends BaseApiReq {
     public VisitorDO createNewInstance(String visitorName, long firstVisitTimestamp) {
         VisitorDO visitor =  new VisitorDO();
         visitor.setFirstVisitTime(new Date(firstVisitTimestamp));
-        visitor.setIp(getVisitorIP());
+        visitor.setVisitFromIp(getVisitorIP());
         visitor.setVisitor(visitorName);
         visitor.setBrowser(getBrowserFingerprint());
         visitor.setLocation(location);

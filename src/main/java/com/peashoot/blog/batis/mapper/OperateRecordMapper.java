@@ -1,23 +1,19 @@
 package com.peashoot.blog.batis.mapper;
 
 import com.peashoot.blog.batis.entity.OperateRecordDO;
+import com.peashoot.blog.batis.entity.VisitActionEnum;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
 public interface OperateRecordMapper {
-    OperateRecordDO selectLastRecordByVisitorIdAndCommentId(long visitorId, int commentId);
-
-    OperateRecordDO selectLastRecordByVisitorIdAndArticleId(long visitorId, String articleId);
+    OperateRecordDO selectLastRecordByVisitorIdAndObjectId(@Param("visitorId") Long visitorId, @Param("objectId") String objectId, @Param("actions")VisitActionEnum[] actions);
 
     int insert(OperateRecordDO insertItem);
 
-    int remove(Long removeId);
-
-    int removeRange(List<Long> removeIdList);
-
     List<OperateRecordDO> selectAll();
 
-    OperateRecordDO selectById(Long id);
+    OperateRecordDO selectByPrimaryKey(Long id);
 }

@@ -41,12 +41,12 @@ public class AuthServiceImpl implements AuthService {
     /**
      * token头
      */
-    @Value("${peashoot.blog.jwt.tokenHead}")
+    @Value("${peashoot.blog.http.jwt.tokenHead}")
     private String tokenHead;
     /**
      * 登录过期时间
      */
-    @Value("${peashoot.blog.jwt.expiration}")
+    @Value("${peashoot.blog.http.jwt.expiration}")
     private Long loginExpiration;
     /**
      * 是否支持单点登录
@@ -56,12 +56,12 @@ public class AuthServiceImpl implements AuthService {
     /**
      * 申请过期时间
      */
-    @Value("${peashoot.blog.apply.expiration}")
+    @Value("${peashoot.blog.http.apply.expiration}")
     private Long applyExpiration;
     /**
      * 申请幂等时间
      */
-    @Value("${peashoot.blog.apply.idempotent.interval}")
+    @Value("${peashoot.blog.http.apply.idempotent.interval}")
     private Long applyIdempotentInterval;
     /**
      * 加密方式

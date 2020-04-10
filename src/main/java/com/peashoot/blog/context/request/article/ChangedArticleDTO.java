@@ -22,23 +22,7 @@ public class ChangedArticleDTO {
     /**
      * 关键字1
      */
-    private String keyword1;
-    /**
-     * 关键字2
-     */
-    private String keyword2;
-    /**
-     * 关键字3
-     */
-    private String keyword3;
-    /**
-     * 关键字4
-     */
-    private String keyword4;
-    /**
-     * 关键字5
-     */
-    private String keyword5;
+    private String keywords;
     /**
      * 作者
      */
@@ -65,14 +49,10 @@ public class ChangedArticleDTO {
      * @param articleEntity 数据库实体
      */
     public void copyTo(ArticleDO articleEntity) {
-        articleEntity.setArticleURL(articleURL);
+        articleEntity.setArticleUrl(articleURL);
         articleEntity.setAuthor(author);
         articleEntity.setFilePath(filePath);
-        articleEntity.setKeyword1(keyword1);
-        articleEntity.setKeyword2(keyword2);
-        articleEntity.setKeyword3(keyword3);
-        articleEntity.setKeyword4(keyword4);
-        articleEntity.setKeyword5(keyword5);
+        articleEntity.setKeywords(keywords);
         articleEntity.setOverview(overview);
         articleEntity.setStatus(status);
         articleEntity.setTitle(title);

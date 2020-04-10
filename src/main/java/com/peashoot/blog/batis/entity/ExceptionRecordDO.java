@@ -34,5 +34,5 @@ public class ExceptionRecordDO extends LongPrimaryEntity {
     /**
      * 发生的时间
      */
-    private Date appearDate;
+    private Date appearTime;
 }

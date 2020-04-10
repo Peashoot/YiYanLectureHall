@@ -24,23 +24,7 @@ public class ArticleIntroductionDTO {
     /**
      * 关键词1
      */
-    private String keyword1;
-    /**
-     * 关键词2
-     */
-    private String keyword2;
-    /**
-     * 关键词3
-     */
-    private String keyword3;
-    /**
-     * 关键词4
-     */
-    private String keyword4;
-    /**
-     * 关键词5
-     */
-    private String keyword5;
+    private String keywords;
     /**
      * 文件URL链接
      */
@@ -51,14 +35,10 @@ public class ArticleIntroductionDTO {
     public static ArticleIntroductionDTO createArticlesInfo(ArticleDO articleEntity) {
         ArticleIntroductionDTO articleInfo = new ArticleIntroductionDTO();
         articleInfo.title = articleEntity.getTitle();
-        articleInfo.keyword1 = articleEntity.getKeyword1();
-        articleInfo.keyword2 = articleEntity.getKeyword2();
-        articleInfo.keyword3 = articleEntity.getKeyword3();
-        articleInfo.keyword4 =  articleEntity.getKeyword4();
-        articleInfo.keyword5 = articleEntity.getKeyword5();
+        articleInfo.keywords = articleEntity.getKeywords();
         articleInfo.overview = articleEntity.getOverview();
         articleInfo.pageview = articleEntity.getPageView();
-        articleInfo.articleURL = articleEntity.getArticleURL();
+        articleInfo.articleURL = articleEntity.getArticleUrl();
         return articleInfo;
     }
 }

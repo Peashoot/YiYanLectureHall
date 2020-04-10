@@ -1,17 +1,14 @@
 package com.peashoot.blog.batis.entity;
 
-import com.peashoot.blog.batis.entity.base.IntPrimaryEntity;
 import com.peashoot.blog.batis.entity.base.UUIDPrimaryEntity;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Getter
 @Setter
-public class FileDo extends UUIDPrimaryEntity {
+public class FileDO extends UUIDPrimaryEntity {
     /**
      * 创建者Id（访客id）
      */
@@ -39,7 +36,7 @@ public class FileDo extends UUIDPrimaryEntity {
     /**
      * 创建日期
      */
-    private Date createDate;
+    private Date createTime;
     /**
      * 原始网络路径
      */
@@ -49,11 +46,11 @@ public class FileDo extends UUIDPrimaryEntity {
      */
     private String md5Sign;
 
-    private FileDo() {
-        createDate = new Date();
+    private FileDO() {
+        createTime = new Date();
     }
 
-    public FileDo(long visitorId, int sysUserId, FileTypeEnum type, String localPath, String netPath, String md5Sign) {
+    public FileDO(long visitorId, int sysUserId, FileTypeEnum type, String localPath, String netPath, String md5Sign) {
         this();
         this.creatorId = visitorId;
         this.sysUserId = sysUserId;

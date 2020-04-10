@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.peashoot.blog.batis.mapper.ExceptionRecordMapper">
+    <resultMap id="BaseResultMap" type="com.peashoot.blog.batis.entity.ExceptionRecordDO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="className" jdbcType="VARCHAR" property="className"/>
+        <result column="methodName" jdbcType="VARCHAR" property="methodName"/>
+        <result column="paramValues" jdbcType="VARCHAR" property="paramValues"/>
+        <result column="exceptionMsg" jdbcType="VARCHAR" property="exceptionMsg"/>
+        <result column="invokeStack" jdbcType="VARCHAR" property="invokeStack"/>
+        <result column="appearTime" jdbcType="TIMESTAMP" property="appearTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, className, methodName, paramValues, exceptionMsg, invokeStack, appearTime
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from bg_exceptionrecord
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <insert id="insert" parameterType="com.peashoot.blog.batis.entity.ExceptionRecordDO">
+        insert into bg_exceptionrecord (id, className, methodName,
+                                        paramValues, exceptionMsg, invokeStack,
+                                        appearTime)
+        values (#{id,jdbcType=BIGINT}, #{className,jdbcType=VARCHAR}, #{methodName,jdbcType=VARCHAR},
+                #{paramValues,jdbcType=VARCHAR}, #{exceptionMsg,jdbcType=VARCHAR}, #{invokeStack,jdbcType=VARCHAR},
+                #{appearTime,jdbcType=TIMESTAMP})
+    </insert>
+    <select id="listPagedRecords" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from bg_exceptionrecord
+        where appearTime between #{searchStart, jdbcType=TIMESTAMP} and #{searchEnd, jdbcType=TIMESTAMP}
+        order by id limit #{indexStart, jdbcType=INTEGER},#{selectCount, jdbcType=INTEGER}
+    </select>
+    <select id="countTotalRecords" resultType="java.lang.Integer">
+        select count(1) from bg_exceptionrecord
+        where appearTime between #{searchStart, jdbcType=TIMESTAMP} and #{searchEnd, jdbcType=TIMESTAMP}
+    </select>
+</mapper>

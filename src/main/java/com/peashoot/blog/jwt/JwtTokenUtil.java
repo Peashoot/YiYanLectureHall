@@ -38,29 +38,32 @@ public class JwtTokenUtil implements Serializable {
     /**
      * token加密密钥
      */
-    @Value("${peashoot.blog.jwt.secret}")
+    @Value("${peashoot.blog.http.jwt.secret}")
     private String secret;
 
     /**
      * token有效时间（秒）
      */
-    @Value("${peashoot.blog.jwt.expiration}")
+    @Value("${peashoot.blog.http.jwt.expiration}")
     private Long expiration = 3600L;
     /**
      * token中是否包含访问IP信息
      */
-    @Value("${peashoot.blog.jwt.contains.visit_ip}")
-    private Boolean tokenWithVisitIP = true;
+    @Value("${peashoot.blog.http.jwt.contains.visit_ip}")
+    private Boolean tokenWithVisitIp = true;
     /**
      * token中是否包含浏览器指纹信息
      */
-    @Value("${peashoot.blog.jwt.contains.browser_fingerprint}")
+    @Value("${peashoot.blog.http.jwt.contains.browser_fingerprint}")
     private Boolean tokenWithBrowserFingerprint = true;
     /**
      * RedisToken操作类
      */
-    @Autowired
-    private SysUserRedisService sysUserRedisService;
+    private final SysUserRedisService sysUserRedisService;
+
+    public JwtTokenUtil(SysUserRedisService sysUserRedisService) {
+        this.sysUserRedisService = sysUserRedisService;
+    }
 
     /**
      * 从token中获取用户名
@@ -83,7 +86,7 @@ public class JwtTokenUtil implements Serializable {
      * @param token token
      * @return 创建日期
      */
-    public Date getCreatedDateFromToken(String token) {
+    private Date getCreatedDateFromToken(String token) {
         Date created;
         try {
             final Claims claims = getClaimsFromToken(token);
@@ -99,7 +102,7 @@ public class JwtTokenUtil implements Serializable {
      * @param token token
      * @return 创建日期
      */
-    public Date getExpirationDateFromToken(String token) {
+    private Date getExpirationDateFromToken(String token) {
         Date expiration;
         try {
             final Claims claims = getClaimsFromToken(token);
@@ -159,16 +162,16 @@ public class JwtTokenUtil implements Serializable {
     /**
      * 生成token
      * @param userDetails 用户信息
-     * @param loginIP 登录IP
+     * @param loginIp 登录IP
      * @param browserFingerprint 浏览器指纹
      * @return token
      */
-    public String generateToken(UserDetails userDetails, String loginIP, String browserFingerprint) {
-        Map<String, Object> claims = new HashMap<>();
+    public String generateToken(UserDetails userDetails, String loginIp, String browserFingerprint) {
+        Map<String, Object> claims = new HashMap<>(2);
         claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
         claims.put(CLAIM_KEY_CREATED, new Date());
-        if (tokenWithVisitIP) {
-            claims.put(CLAIM_KEY_LOGINIP, loginIP);
+        if (tokenWithVisitIp) {
+            claims.put(CLAIM_KEY_LOGINIP, loginIp);
         }
         if (tokenWithBrowserFingerprint) {
             claims.put(CLAIM_KEY_BROWSERFINGERPRINT, browserFingerprint);

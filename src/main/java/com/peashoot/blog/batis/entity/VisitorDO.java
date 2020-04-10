@@ -30,7 +30,7 @@ public class VisitorDO extends LongPrimaryEntity {
     /**
      * 访客访问的ip地址（ipv4或ipv6）
      */
-    private String ip;
+    private String visitFromIp;
     /**
      * 根据ip地址查询到的访问地址
      */

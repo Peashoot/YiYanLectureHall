@@ -1,130 +1,190 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.peashoot.blog.batis.mapper.CommentMapper">
-  <resultMap id="BaseResultMap" type="com.peashoot.blog.batis.entity.CommentDO">
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="nickName" jdbcType="VARCHAR" property="nickName" />
-    <result column="userId" jdbcType="INTEGER" property="userId" />
-    <result column="comment" jdbcType="VARCHAR" property="comment" />
-    <result column="articleId" jdbcType="INTEGER" property="articleId" />
-    <result column="commentTime" jdbcType="TIMESTAMP" property="commentTime" />
-    <result column="status" jdbcType="INTEGER" property="status" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    id, nickName, userId, comment, articleId, commentTime, status
-  </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from bg_comment
-    where id = #{id,jdbcType=INTEGER}
-  </select>
-  <select id="selectAll" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from bg_comment
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from bg_comment
-    where id = #{id,jdbcType=INTEGER}
-  </delete>
-  <delete id="deleteRangeByPrimaryKeys">
-    delete from bg_comment
-    where id in (
-    <foreach collection="commentIds" item="id" index="index" separator="," >
-      #{id,jdbcType=INTEGER}
-    </foreach>
-    )
-  </delete>
-  <insert id="insert" parameterType="com.peashoot.blog.batis.entity.CommentDO">
-    insert into bg_comment (id, nickName, userId, 
-      comment, articleId, commentTime, 
-      status)
-    values (#{id,jdbcType=INTEGER}, #{nickName,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER}, 
-      #{comment,jdbcType=VARCHAR}, #{articleId,jdbcType=INTEGER}, #{commentTime,jdbcType=TIMESTAMP}, 
-      #{status,jdbcType=INTEGER})
-  </insert>
-  <insert id="insertSelective" parameterType="com.peashoot.blog.batis.entity.CommentDO">
-    insert into bg_comment
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="nickName != null">
-        nickName,
-      </if>
-      <if test="userId != null">
-        userId,
-      </if>
-      <if test="comment != null">
-        comment,
-      </if>
-      <if test="articleId != null">
-        articleId,
-      </if>
-      <if test="commentTime != null">
-        commentTime,
-      </if>
-      <if test="status != null">
-        status,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=INTEGER},
-      </if>
-      <if test="nickName != null">
-        #{nickName,jdbcType=VARCHAR},
-      </if>
-      <if test="userId != null">
-        #{userId,jdbcType=INTEGER},
-      </if>
-      <if test="comment != null">
-        #{comment,jdbcType=VARCHAR},
-      </if>
-      <if test="articleId != null">
-        #{articleId,jdbcType=INTEGER},
-      </if>
-      <if test="commentTime != null">
-        #{commentTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="status != null">
-        #{status,jdbcType=INTEGER},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.peashoot.blog.batis.entity.CommentDO">
-    update bg_comment
-    <set>
-      <if test="nickName != null">
-        nickName = #{nickName,jdbcType=VARCHAR},
-      </if>
-      <if test="userId != null">
-        userId = #{userId,jdbcType=INTEGER},
-      </if>
-      <if test="comment != null">
-        comment = #{comment,jdbcType=VARCHAR},
-      </if>
-      <if test="articleId != null">
-        articleId = #{articleId,jdbcType=INTEGER},
-      </if>
-      <if test="commentTime != null">
-        commentTime = #{commentTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="status != null">
-        status = #{status,jdbcType=INTEGER},
-      </if>
-    </set>
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.peashoot.blog.batis.entity.CommentDO">
-    update bg_comment
-    set nickName = #{nickName,jdbcType=VARCHAR},
-      userId = #{userId,jdbcType=INTEGER},
-      comment = #{comment,jdbcType=VARCHAR},
-      articleId = #{articleId,jdbcType=INTEGER},
-      commentTime = #{commentTime,jdbcType=TIMESTAMP},
-      status = #{status,jdbcType=INTEGER}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
+    <resultMap id="BaseResultMap" type="com.peashoot.blog.batis.entity.CommentDO">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="visitorId" jdbcType="BIGINT" property="visitorId"/>
+        <result column="articleId" jdbcType="VARCHAR" property="articleId"/>
+        <result column="commentTime" jdbcType="TIMESTAMP" property="commentTime"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="anonymous" jdbcType="BIT" property="anonymous"/>
+        <result column="supportCount" jdbcType="INTEGER" property="supportCount"/>
+        <result column="againstCount" jdbcType="INTEGER" property="againstCount"/>
+        <result column="commentTo" jdbcType="INTEGER" property="commentTo"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, visitorId, articleId, commentTime, status, anonymous, supportCount, againstCount,
+        commentTo, comment
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from bg_comment
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from bg_comment
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from bg_comment
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <delete id="deleteRangeByPrimaryKeys">
+        delete from bg_comment
+        where id in (
+        <foreach collection="commentIds" item="id" index="index" separator=",">
+            #{id,jdbcType=INTEGER}
+        </foreach>
+        )
+    </delete>
+    <insert id="insert" parameterType="com.peashoot.blog.batis.entity.CommentDO">
+        insert into bg_comment (id, visitorId, articleId,
+                                commentTime, status, anonymous,
+                                supportCount, againstCount, commentTo,
+                                comment)
+        values (#{id,jdbcType=INTEGER}, #{visitorId,jdbcType=BIGINT}, #{articleId,jdbcType=VARCHAR},
+                #{commentTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, #{anonymous,jdbcType=BIT},
+                #{supportCount,jdbcType=INTEGER}, #{againstCount,jdbcType=INTEGER}, #{commentTo,jdbcType=INTEGER},
+                #{comment,jdbcType=LONGVARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.peashoot.blog.batis.entity.CommentDO">
+        insert into bg_comment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="visitorId != null">
+                visitorId,
+            </if>
+            <if test="articleId != null">
+                articleId,
+            </if>
+            <if test="commentTime != null">
+                commentTime,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="anonymous != null">
+                anonymous,
+            </if>
+            <if test="supportCount != null">
+                supportCount,
+            </if>
+            <if test="againstCount != null">
+                againstCount,
+            </if>
+            <if test="commentTo != null">
+                commentTo,
+            </if>
+            <if test="comment != null">
+                comment,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="visitorId != null">
+                #{visitorId,jdbcType=BIGINT},
+            </if>
+            <if test="articleId != null">
+                #{articleId,jdbcType=VARCHAR},
+            </if>
+            <if test="commentTime != null">
+                #{commentTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="anonymous != null">
+                #{anonymous,jdbcType=BIT},
+            </if>
+            <if test="supportCount != null">
+                #{supportCount,jdbcType=INTEGER},
+            </if>
+            <if test="againstCount != null">
+                #{againstCount,jdbcType=INTEGER},
+            </if>
+            <if test="commentTo != null">
+                #{commentTo,jdbcType=INTEGER},
+            </if>
+            <if test="comment != null">
+                #{comment,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.peashoot.blog.batis.entity.CommentDO">
+        update bg_comment
+        <set>
+            <if test="visitorId != null">
+                visitorId = #{visitorId,jdbcType=BIGINT},
+            </if>
+            <if test="articleId != null">
+                articleId = #{articleId,jdbcType=VARCHAR},
+            </if>
+            <if test="commentTime != null">
+                commentTime = #{commentTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="anonymous != null">
+                anonymous = #{anonymous,jdbcType=BIT},
+            </if>
+            <if test="supportCount != null">
+                supportCount = #{supportCount,jdbcType=INTEGER},
+            </if>
+            <if test="againstCount != null">
+                againstCount = #{againstCount,jdbcType=INTEGER},
+            </if>
+            <if test="commentTo != null">
+                commentTo = #{commentTo,jdbcType=INTEGER},
+            </if>
+            <if test="comment != null">
+                comment = #{comment,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.peashoot.blog.batis.entity.CommentDO">
+        update bg_comment
+        set visitorId    = #{visitorId,jdbcType=BIGINT},
+            articleId    = #{articleId,jdbcType=VARCHAR},
+            commentTime  = #{commentTime,jdbcType=TIMESTAMP},
+            status       = #{status,jdbcType=INTEGER},
+            anonymous    = #{anonymous,jdbcType=BIT},
+            supportCount = #{supportCount,jdbcType=INTEGER},
+            againstCount = #{againstCount,jdbcType=INTEGER},
+            commentTo    = #{commentTo,jdbcType=INTEGER},
+            comment      = #{comment,jdbcType=LONGVARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="listPagedComments" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from bg_comment
+        where 1=1
+    <if test="com.peashoot.blog.util.StringUtils@isNotNullAndEmpty(articleId)">
+        and articleId=#{articleId, jdbcType=VARCHAR}
+    </if>
+        order by id limit #{indexStart, jdbcType=INTEGER},#{selectCount, jdbcType=INTEGER}
+    </select>
+    <select id="countTotalRecords" resultType="java.lang.Integer">
+        select count(1)
+        from bg_comment
+        where 1=1
+        <if test="com.peashoot.blog.util.StringUtils@isNotNullAndEmpty(articleId)">
+            and articleId=#{articleId, jdbcType=VARCHAR}
+        </if>
+    </select>
+    <select id="selectByPrimaryKeyForUpdate" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from bg_comment
+        where id = #{id,jdbcType=INTEGER} for update
+    </select>
 </mapper>

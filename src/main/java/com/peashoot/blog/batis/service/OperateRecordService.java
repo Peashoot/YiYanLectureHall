@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.concurrent.Future;
 
 public interface OperateRecordService extends InsertService<OperateRecordDO>,
-        SelectService<OperateRecordDO, Long>, RemoveService<OperateRecordDO, Long> {
+        SelectService<OperateRecordDO, Long>{
     /**
      * 根据访客id和评论id获取最后一条记录
      * @param visitorId 访客id

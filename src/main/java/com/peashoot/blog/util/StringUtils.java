@@ -6,6 +6,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 public class StringUtils {
     /**
@@ -120,5 +122,76 @@ public class StringUtils {
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw, true));
         return sw.getBuffer().toString();
+    }
+
+    /**
+     * 去除尾随字符串
+     *
+     * @param oriStr 原始字符串
+     * @param suffix 后缀
+     * @return 截取后的字符串
+     */
+    public static String trimEnd(@NotNull String oriStr, @NotNull String suffix) {
+        if (suffix.equals(EMPTY)) {
+            return oriStr;
+        }
+        int lastIndex;
+        while ((lastIndex = oriStr.lastIndexOf(suffix)) > 0) {
+            oriStr = oriStr.substring(0, lastIndex);
+        }
+        return oriStr;
+    }
+
+    /**
+     * 去除前导字符串
+     * @param oriStr 原始字符串
+     * @param prefix 前缀
+     * @return 截取后的字符串
+     */
+    public static String trimBegin(@NotNull String oriStr, @NotNull String prefix) {
+        if (prefix.equals(EMPTY)) {
+            return oriStr;
+        }
+        int index;
+        while ((index = oriStr.indexOf(prefix)) > 0) {
+            oriStr = oriStr.substring(index);
+        }
+        return oriStr;
+    }
+
+    /**
+     * 使用连接字符串连接map
+     * @param oriMap 原始map
+     * @param connectBetweenKeyAndValue 键值间连接字符串
+     * @param connectBetweenPairs 键值对间连接字符串
+     * @param <K> map键类型
+     * @param <V> map值类型
+     * @return 拼接后的字符串
+     */
+    public static <K, V> String joinMapWithConnectSymbols(@NotNull Map<K, V> oriMap, @NotNull String connectBetweenKeyAndValue, @NotNull String connectBetweenPairs) {
+        StringBuilder strBud = new StringBuilder();
+        for (Map.Entry<K, V> entry : oriMap.entrySet()) {
+            strBud.append(entry.getKey()).append(connectBetweenKeyAndValue).append(entry.getValue()).append(connectBetweenPairs);
+        }
+        return trimEnd(strBud.toString(), connectBetweenPairs);
+    }
+
+    /**
+     * 将字符串按分隔字符串拆分成map
+     * @param oriStr 原始字符串
+     * @param splitBetweenKeyAndValue 键值间拆分字符串
+     * @param splitBetweenPairs 键值对间拆分字符串
+     * @return map 返回Map
+     */
+    public static Map<String, String> splitStringInToMap(@NotNull String oriStr, @NotNull String splitBetweenKeyAndValue, @NotNull String splitBetweenPairs) {
+        Map<String, String> retMap = new HashMap<String, String>(10);
+        String[] pairs = oriStr.split(splitBetweenPairs);
+        for (String keyAndValue : pairs) {
+            int index = oriStr.indexOf(splitBetweenKeyAndValue);
+            String key = keyAndValue.substring(0, index);
+            String value = keyAndValue.substring(index + 1);
+            retMap.put(key, value);
+        }
+        return retMap;
     }
 }

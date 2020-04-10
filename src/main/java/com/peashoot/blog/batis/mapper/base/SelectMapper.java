@@ -16,5 +16,5 @@ public interface SelectMapper<T1 extends BaseEntity<T2>, T2> {
      * @param id 主键id
      * @return 查询结果
      */
-    T1 selectById(T2 id);
+    T1 selectByPrimaryKey(T2 id);
 }
