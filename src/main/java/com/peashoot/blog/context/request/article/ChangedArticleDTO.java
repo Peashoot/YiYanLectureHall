@@ -42,14 +42,14 @@ public class ChangedArticleDTO {
     /**
      * 文章URL链接
      */
-    private String articleURL;
+    private String articleUrl;
 
     /**
      * 将修改信息保存到数据库实体中
      * @param articleEntity 数据库实体
      */
     public void copyTo(ArticleDO articleEntity) {
-        articleEntity.setArticleUrl(articleURL);
+        articleEntity.setArticleUrl(articleUrl);
         articleEntity.setAuthor(author);
         articleEntity.setFilePath(filePath);
         articleEntity.setKeywords(keywords);

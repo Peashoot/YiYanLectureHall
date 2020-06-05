@@ -1,5 +1,6 @@
 package com.peashoot.blog.util.json;
 
+import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
@@ -39,6 +40,9 @@ public class MyFastjsonConfig {
 
         config.setDateFormat("yyyy-MM-dd");
         config.setCharset(Charset.forName("UTF-8"));
+//        ParserConfig parserConfig = new ParserConfig();
+//        parserConfig.register();
+//        config.setParserConfig(parserConfig);
         config.setSerializerFeatures(
                 //json格式化
                 SerializerFeature.PrettyFormat

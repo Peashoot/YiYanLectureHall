@@ -1,7 +1,7 @@
 package com.peashoot.blog.batis.mapper;
 
 import com.peashoot.blog.batis.entity.OperateRecordDO;
-import com.peashoot.blog.batis.entity.VisitActionEnum;
+import com.peashoot.blog.batis.enums.VisitActionEnum;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 

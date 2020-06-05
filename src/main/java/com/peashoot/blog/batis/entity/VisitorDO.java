@@ -26,7 +26,7 @@ public class VisitorDO extends LongPrimaryEntity {
     /**
      * 访客登录时间
      */
-    private Date firstVisitTime;
+    private Long firstVisitTimestamp;
     /**
      * 访客访问的ip地址（ipv4或ipv6）
      */

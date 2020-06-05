@@ -6,7 +6,6 @@ import com.peashoot.blog.util.Constant;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -29,11 +28,11 @@ public class JwtTokenUtil implements Serializable {
     /**
      * 登录IP键名
      */
-    private static final String CLAIM_KEY_LOGINIP = "address";
+    private static final String CLAIM_KEY_LOGIN_IP = "address";
     /**
      * 浏览器指纹键名
      */
-    private static final String CLAIM_KEY_BROWSERFINGERPRINT = "bfp";
+    private static final String CLAIM_KEY_BROWSER_FINGERPRINT = "bfp";
 
     /**
      * token加密密钥
@@ -67,6 +66,7 @@ public class JwtTokenUtil implements Serializable {
 
     /**
      * 从token中获取用户名
+     *
      * @param token token
      * @return 用户名
      */
@@ -83,6 +83,7 @@ public class JwtTokenUtil implements Serializable {
 
     /**
      * 从token中获取创建日期
+     *
      * @param token token
      * @return 创建日期
      */
@@ -99,6 +100,7 @@ public class JwtTokenUtil implements Serializable {
 
     /**
      * 从token中获取过期日期
+     *
      * @param token token
      * @return 创建日期
      */
@@ -115,6 +117,7 @@ public class JwtTokenUtil implements Serializable {
 
     /**
      * 从token中获取其他信息
+     *
      * @param token token
      * @return 其他信息
      */
@@ -133,14 +136,19 @@ public class JwtTokenUtil implements Serializable {
 
     /**
      * 生成过期日期
+     *
      * @return 过期日期
      */
     private Date generateExpirationDate() {
-        return new Date(System.currentTimeMillis() + expiration * Constant.MILLISECONDS_PEY_SECOND);
+        long timestamp = System.currentTimeMillis() ;
+        timestamp += expiration * Constant.MILLISECONDS_PEY_SECOND;
+        return new Date(timestamp);
+        // return new Date(System.currentTimeMillis() + expiration * Constant.MILLISECONDS_PEY_SECOND);
     }
 
     /**
      * 判断token是否过期
+     *
      * @param token token
      * @return 是否过期
      */
@@ -151,7 +159,8 @@ public class JwtTokenUtil implements Serializable {
 
     /**
      * 判断token生成时间是否早于重置密码时间（用户重置密码后需要重新登录）
-     * @param created token创建时间
+     *
+     * @param created           token创建时间
      * @param lastPasswordReset 上一次密码重置时间
      * @return 是否需要重新生成token
      */
@@ -161,8 +170,9 @@ public class JwtTokenUtil implements Serializable {
 
     /**
      * 生成token
-     * @param userDetails 用户信息
-     * @param loginIp 登录IP
+     *
+     * @param userDetails        用户信息
+     * @param loginIp            登录IP
      * @param browserFingerprint 浏览器指纹
      * @return token
      */
@@ -171,18 +181,19 @@ public class JwtTokenUtil implements Serializable {
         claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
         claims.put(CLAIM_KEY_CREATED, new Date());
         if (tokenWithVisitIp) {
-            claims.put(CLAIM_KEY_LOGINIP, loginIp);
+            claims.put(CLAIM_KEY_LOGIN_IP, loginIp);
         }
         if (tokenWithBrowserFingerprint) {
-            claims.put(CLAIM_KEY_BROWSERFINGERPRINT, browserFingerprint);
+            claims.put(CLAIM_KEY_BROWSER_FINGERPRINT, browserFingerprint);
         }
-        String token =  generateToken(claims);
+        String token = generateToken(claims);
         sysUserRedisService.recordGenerateToken(userDetails.getUsername(), token, System.currentTimeMillis() + expiration * Constant.MILLISECONDS_PEY_SECOND);
         return token;
     }
 
     /**
      * 生成token
+     *
      * @param claims 附加内容
      * @return token
      */
@@ -196,7 +207,8 @@ public class JwtTokenUtil implements Serializable {
 
     /**
      * 判断token是否可以刷新
-     * @param token 原token
+     *
+     * @param token             原token
      * @param lastPasswordReset 上一次密码重置时间
      * @return 是否需要刷新
      */
@@ -208,6 +220,7 @@ public class JwtTokenUtil implements Serializable {
 
     /**
      * 刷新token
+     *
      * @param token 原token
      * @return 新token
      */
@@ -225,7 +238,8 @@ public class JwtTokenUtil implements Serializable {
 
     /**
      * 验证token是否有效
-     * @param token token
+     *
+     * @param token       token
      * @param userDetails 用户信息
      * @return 有效性
      */
@@ -236,7 +250,7 @@ public class JwtTokenUtil implements Serializable {
         return (
                 username.equals(user.getUsername())
                         && !isTokenExpired(token)
-                        && !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate()))
-                        && !sysUserRedisService.checkIfNeedReLogin(username, token);
+                        && !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetTime()))
+                && !sysUserRedisService.checkIfNeedReLogin(username, token);
     }
 }

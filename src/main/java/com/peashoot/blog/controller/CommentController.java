@@ -3,7 +3,7 @@ package com.peashoot.blog.controller;
 import com.peashoot.blog.aspect.annotation.ErrorRecord;
 import com.peashoot.blog.aspect.annotation.VisitLimit;
 import com.peashoot.blog.batis.entity.CommentDO;
-import com.peashoot.blog.batis.entity.VisitActionEnum;
+import com.peashoot.blog.batis.enums.VisitActionEnum;
 import com.peashoot.blog.batis.entity.OperateRecordDO;
 import com.peashoot.blog.batis.entity.VisitorDO;
 import com.peashoot.blog.batis.service.CommentService;
@@ -123,7 +123,7 @@ public class CommentController {
         if (comment.getVisitorId() > 0) {
             VisitorDO visitor = visitorService.selectById(comment.getVisitorId());
             if (visitor != null) {
-                visitorName = comment.isAnonymous() ? visitor.getVisitor() : visitor.getSysUserNickName();
+                visitorName = comment.getAnonymous() ? visitor.getVisitor() : visitor.getSysUserNickName();
             }
         }
         return ArticleCommentDTO.generateArticleComment(comment, commentTo, visitorName);

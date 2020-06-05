@@ -1,6 +1,6 @@
 package com.peashoot.blog.util;
 
-import com.peashoot.blog.batis.entity.FileTypeEnum;
+import com.peashoot.blog.batis.enums.FileTypeEnum;
 import com.peashoot.blog.exception.FilePathCreateFailureException;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,8 +11,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
-import static java.io.File.separator;
 
 /**
  * 文件读写扩展类

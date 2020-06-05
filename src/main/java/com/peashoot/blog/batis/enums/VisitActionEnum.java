@@ -1,6 +1,8 @@
-package com.peashoot.blog.batis.entity;
+package com.peashoot.blog.batis.enums;
 
-public enum VisitActionEnum {
+import com.peashoot.blog.batis.enums.base.BaseEnum;
+
+public enum VisitActionEnum implements BaseEnum<VisitActionEnum, Integer> {
     /**
      * 新增文章
      */
@@ -101,7 +103,8 @@ public enum VisitActionEnum {
         this.value = value;
     }
 
-    public int getValue() {
+    @Override
+    public Integer getValue() {
         return this.value;
     }
 }

@@ -34,7 +34,7 @@ public class CommentDO extends IntPrimaryEntity {
     /**
      * 是否匿名
      */
-    private boolean anonymous;
+    private Boolean anonymous;
     /**
      * 支持统计
      */

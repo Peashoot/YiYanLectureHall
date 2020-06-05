@@ -73,6 +73,7 @@ public class SysUserRedisServiceImpl implements SysUserRedisService {
     @Override
     public void recordGenerateToken(String username, String token, long expireTime) {
         Map<String, Object> userTokenMap = new TreeMap<>();
+        token = EncryptUtils.md5Encrypt(token);
         userTokenMap.put(USER_TOKEN_REDIS_VALUE_TOKEN, token);
         userTokenMap.put(USER_TOKEN_REDIS_VALUE_EXPIRE_TIME, expireTime);
         saveMapInfoIntoRedis(userTokenMap, USER_LOGIN_TOKEN_HASH_REDIS_KEY, username);
@@ -106,6 +107,7 @@ public class SysUserRedisServiceImpl implements SysUserRedisService {
             Map<String, String> userTokenMap = StringUtils.splitStringInToMap(afterDecodeFromBase64, REDIS_VALUE_KEY_VALUE_DELIMITER, REDIS_VALUE_PAIRS_DELIMITER);
             String oldToken = userTokenMap.get(USER_TOKEN_REDIS_VALUE_TOKEN);
             long oldExpireTime = Long.valueOf(userTokenMap.get(USER_TOKEN_REDIS_VALUE_EXPIRE_TIME));
+            token = EncryptUtils.md5Encrypt(token);
             // 当前时间 大于 过期时间 或 token不等于oldToken 时认为用户需要重新登录
             return System.currentTimeMillis() > oldExpireTime || !oldToken.equals(token);
         } catch (Exception e) {

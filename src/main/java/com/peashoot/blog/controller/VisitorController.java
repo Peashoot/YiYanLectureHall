@@ -2,7 +2,7 @@ package com.peashoot.blog.controller;
 
 import com.peashoot.blog.aspect.annotation.ErrorRecord;
 import com.peashoot.blog.aspect.annotation.VisitLimit;
-import com.peashoot.blog.batis.entity.VisitActionEnum;
+import com.peashoot.blog.batis.enums.VisitActionEnum;
 import com.peashoot.blog.batis.entity.VisitorDO;
 import com.peashoot.blog.batis.service.OperateRecordService;
 import com.peashoot.blog.batis.service.VisitorService;

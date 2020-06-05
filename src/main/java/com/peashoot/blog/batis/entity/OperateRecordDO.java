@@ -1,6 +1,8 @@
 package com.peashoot.blog.batis.entity;
 
 import com.peashoot.blog.batis.entity.base.LongPrimaryEntity;
+import com.peashoot.blog.batis.enums.OperatorTypeEnum;
+import com.peashoot.blog.batis.enums.VisitActionEnum;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -30,7 +32,7 @@ public class OperateRecordDO extends LongPrimaryEntity {
     /**
      * 操作时间
      */
-    private Date actionDate;
+    private Date actionTime;
     /**
      * 操作状态 0 失败 1 成功
      */
@@ -38,5 +40,5 @@ public class OperateRecordDO extends LongPrimaryEntity {
     /**
      * 操作员类型 0 访客 1 系统操作员
      */
-    private Integer operatorType;
+    private OperatorTypeEnum operatorType;
 }

@@ -1,6 +1,7 @@
 package com.peashoot.blog.context.request.sysuser;
 
 import com.peashoot.blog.batis.entity.SysUserDO;
+import com.peashoot.blog.batis.enums.GenderEnum;
 import com.peashoot.blog.context.request.BaseApiReq;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -8,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -19,6 +21,7 @@ public class SysUserDetailDTO extends BaseApiReq {
      * 昵称
      */
     @ApiModelProperty(value = "昵称", required = true)
+    @NotBlank(message = "no empty nickname")
     private String nickname;
     /**
      * 所在地区
@@ -31,20 +34,21 @@ public class SysUserDetailDTO extends BaseApiReq {
     @ApiModelProperty(value = "联系方式")
     private String contract;
     /**
-     * qq
+     * emsorqq
      */
-    @ApiModelProperty(value = "qq")
-    private String qq;
+    @ApiModelProperty(value = "社交账号")
+    private String socialAccount;
     /**
      * 头像照片（网络路径）
      */
     @ApiModelProperty(value = "头像照片（网络路径）")
+    @NotBlank(message = "no empty headPortrait")
     private String headPortrait;
     /**
      * 性别： 0 保密 1 男 2 女
      */
     @ApiModelProperty(value = "性别： 0 保密 1 男 2 女", required = true)
-    private int gender;
+    private GenderEnum gender;
     /**
      * 个人简介
      */
@@ -58,7 +62,7 @@ public class SysUserDetailDTO extends BaseApiReq {
         sysUser.setNickName(nickname);
         sysUser.setLocation(location);
         sysUser.setContact(contract);
-        sysUser.setQq(qq);
+        sysUser.setSocialAccount(socialAccount);
         sysUser.setHeadPortrait(headPortrait);
         sysUser.setGender(gender);
         sysUser.setPersonalProfile(personalProfile);

@@ -1,4 +1,4 @@
-package com.peashoot.blog.error.handle;
+package com.peashoot.blog.exception.handle;
 
 import com.peashoot.blog.context.response.ApiResp;
 import lombok.extern.slf4j.Slf4j;
@@ -8,8 +8,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
+import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 接口异常处理
@@ -18,14 +23,12 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Slf4j
 @RestControllerAdvice
-public class InterfaceExceptionHandler {
+public class InterfaceExceptionHandler implements HandlerExceptionResolver {
     /**
      * 系统抛出的没有处理过的异常
      *
      * @param request 请求上下文
      * @param e       异常
-     * @return
-     * @throws Exception
      */
     @ExceptionHandler(value = Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -75,5 +78,10 @@ public class InterfaceExceptionHandler {
         log.error("DefaultException Handler---Host: {} invokes url: {} field: {} error message: {}",
                 request.getRemoteHost(), request.getRequestURL(), fieldError.getField(), fieldError.getDefaultMessage());
         return ApiResp.createArgumentErrorResp(fieldError.getDefaultMessage());
+    }
+
+    @Override
+    public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        return null;
     }
 }

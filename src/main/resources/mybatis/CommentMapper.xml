@@ -5,7 +5,7 @@
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="visitorId" jdbcType="BIGINT" property="visitorId"/>
         <result column="articleId" jdbcType="VARCHAR" property="articleId"/>
-        <result column="commentTime" jdbcType="TIMESTAMP" property="commentTime"/>
+        <result column="commentTime" jdbcType="BIGINT" property="commentTime"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
         <result column="anonymous" jdbcType="BIT" property="anonymous"/>
         <result column="supportCount" jdbcType="INTEGER" property="supportCount"/>
@@ -46,7 +46,7 @@
                                 supportCount, againstCount, commentTo,
                                 comment)
         values (#{id,jdbcType=INTEGER}, #{visitorId,jdbcType=BIGINT}, #{articleId,jdbcType=VARCHAR},
-                #{commentTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, #{anonymous,jdbcType=BIT},
+                #{commentTime,jdbcType=BIGINT}, #{status,jdbcType=INTEGER}, #{anonymous,jdbcType=BIT},
                 #{supportCount,jdbcType=INTEGER}, #{againstCount,jdbcType=INTEGER}, #{commentTo,jdbcType=INTEGER},
                 #{comment,jdbcType=LONGVARCHAR})
     </insert>
@@ -95,7 +95,7 @@
                 #{articleId,jdbcType=VARCHAR},
             </if>
             <if test="commentTime != null">
-                #{commentTime,jdbcType=TIMESTAMP},
+                #{commentTime,jdbcType=BIGINT},
             </if>
             <if test="status != null">
                 #{status,jdbcType=INTEGER},
@@ -127,7 +127,7 @@
                 articleId = #{articleId,jdbcType=VARCHAR},
             </if>
             <if test="commentTime != null">
-                commentTime = #{commentTime,jdbcType=TIMESTAMP},
+                commentTime = #{commentTime,jdbcType=BIGINT},
             </if>
             <if test="status != null">
                 status = #{status,jdbcType=INTEGER},
@@ -154,7 +154,7 @@
         update bg_comment
         set visitorId    = #{visitorId,jdbcType=BIGINT},
             articleId    = #{articleId,jdbcType=VARCHAR},
-            commentTime  = #{commentTime,jdbcType=TIMESTAMP},
+            commentTime  = #{commentTime,jdbcType=BIGINT},
             status       = #{status,jdbcType=INTEGER},
             anonymous    = #{anonymous,jdbcType=BIT},
             supportCount = #{supportCount,jdbcType=INTEGER},
@@ -168,9 +168,9 @@
         <include refid="Base_Column_List"/>
         from bg_comment
         where 1=1
-    <if test="com.peashoot.blog.util.StringUtils@isNotNullAndEmpty(articleId)">
-        and articleId=#{articleId, jdbcType=VARCHAR}
-    </if>
+        <if test="com.peashoot.blog.util.StringUtils@isNotNullAndEmpty(articleId)">
+            and articleId=#{articleId, jdbcType=VARCHAR}
+        </if>
         order by id limit #{indexStart, jdbcType=INTEGER},#{selectCount, jdbcType=INTEGER}
     </select>
     <select id="countTotalRecords" resultType="java.lang.Integer">

@@ -14,6 +14,10 @@ public class StringUtils {
      * 空字符串
      */
     public static final String EMPTY = "";
+    /**
+     * null字符串
+     */
+    public static final String NULL = "null";
 
     /**
      * 将密码和盐通过隔位拼接的方式串在一起
@@ -136,7 +140,7 @@ public class StringUtils {
             return oriStr;
         }
         int lastIndex;
-        while ((lastIndex = oriStr.lastIndexOf(suffix)) > 0) {
+        while ((lastIndex = oriStr.lastIndexOf(suffix)) == oriStr.length()) {
             oriStr = oriStr.substring(0, lastIndex);
         }
         return oriStr;
@@ -187,7 +191,7 @@ public class StringUtils {
         Map<String, String> retMap = new HashMap<String, String>(10);
         String[] pairs = oriStr.split(splitBetweenPairs);
         for (String keyAndValue : pairs) {
-            int index = oriStr.indexOf(splitBetweenKeyAndValue);
+            int index = keyAndValue.indexOf(splitBetweenKeyAndValue);
             String key = keyAndValue.substring(0, index);
             String value = keyAndValue.substring(index + 1);
             retMap.put(key, value);

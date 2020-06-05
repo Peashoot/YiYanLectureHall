@@ -2,7 +2,7 @@ package com.peashoot.blog.controller;
 
 import com.peashoot.blog.aspect.annotation.ErrorRecord;
 import com.peashoot.blog.aspect.annotation.VisitLimit;
-import com.peashoot.blog.batis.entity.VisitActionEnum;
+import com.peashoot.blog.batis.enums.VisitActionEnum;
 import com.peashoot.blog.batis.service.OperateRecordService;
 import com.peashoot.blog.context.request.sysuser.*;
 import com.peashoot.blog.crypto.annotation.DecryptRequest;
@@ -12,14 +12,17 @@ import com.peashoot.blog.context.response.ApiResp;
 import com.peashoot.blog.batis.service.AuthService;
 import com.peashoot.blog.batis.service.SysUserService;
 import com.peashoot.blog.exception.UserNameOccupiedException;
+import com.peashoot.blog.exception.UserUnmatchedException;
+import com.peashoot.blog.util.SecurityUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.UUID;
 
@@ -37,18 +40,21 @@ public class SysUserController {
     /**
      * 用户信息操作类
      */
-    @Autowired
-    private SysUserService sysUserService;
+    private final SysUserService sysUserService;
     /**
      * 用户认证操作类
      */
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
     /**
      * 用户操作记录
      */
-    @Autowired
-    private OperateRecordService operateRecordService;
+    private final OperateRecordService operateRecordService;
+
+    public SysUserController(SysUserService sysUserService, AuthService authService, OperateRecordService operateRecordService) {
+        this.sysUserService = sysUserService;
+        this.authService = authService;
+        this.operateRecordService = operateRecordService;
+    }
 
     /**
      * 根据用户名密码进行登录
@@ -60,7 +66,7 @@ public class SysUserController {
     @ApiOperation("根据用户名或者邮箱进行登录")
     @DecryptRequest
     @VisitLimit
-    public ApiResp<String> loginByUserNameAndPassword(@RequestBody LoginUserDTO apiReq) {
+    public ApiResp<String> loginByUserNameAndPassword(@RequestBody @Validated LoginUserDTO apiReq) {
         ApiResp<String> resp = new ApiResp<>();
         int userId = sysUserService.getIdByUsername(apiReq.getUsername());
         operateRecordService.insertNewRecordAsync(userId, String.valueOf(userId), VisitActionEnum.USER_LOGIN, new Date(),
@@ -80,7 +86,7 @@ public class SysUserController {
     @PostMapping(path = "register")
     @ApiOperation("注册用户")
     @DecryptRequest
-    public ApiResp<Boolean> registerSysUser(@RequestBody RegisterUserDTO apiReq) {
+    public ApiResp<Boolean> registerSysUser(@RequestBody @Validated RegisterUserDTO apiReq) {
         SysUserDO sysUser = new SysUserDO();
         apiReq.copyTo(sysUser);
         sysUser.setUsername(apiReq.getUsername());
@@ -111,7 +117,11 @@ public class SysUserController {
     @PostMapping(path = "change/pwd")
     @ApiOperation("修改用户密码")
     @PreAuthorize("hasRole('user')")
-    public ApiResp<Boolean> changePassword(@RequestBody ChangePwdDTO apiReq) {
+    public ApiResp<Boolean> changePassword(@RequestBody @Validated ChangePwdDTO apiReq) {
+        SysUserDO curUser = SecurityUtil.getCurrentUser();
+        if (curUser == null || !curUser.getUsername().equals(apiReq.getUsername())) {
+            throw new UserUnmatchedException();
+        }
         int userId = sysUserService.getIdByUsername(apiReq.getUsername());
         operateRecordService.insertNewRecordAsync(userId, String.valueOf(userId), VisitActionEnum.USER_CHANGE_PASSWORD, new Date(),
                 "User " + apiReq.getUsername() + " try to change password.");
@@ -131,6 +141,10 @@ public class SysUserController {
     @ApiOperation("修改用户信息")
     @PreAuthorize("hasRole('user')")
     public ApiResp<Boolean> changeUserInfo(@RequestBody ChangeDetailDTO apiReq) {
+        SysUserDO curUser = SecurityUtil.getCurrentUser();
+        if (curUser == null || !curUser.getId().equals(apiReq.getId())) {
+            throw new UserUnmatchedException();
+        }
         SysUserDO sysUser = sysUserService.selectById(apiReq.getId());
         ApiResp<Boolean> resp = new ApiResp<>();
         if (sysUser == null) {
@@ -167,7 +181,7 @@ public class SysUserController {
 
     @RequestMapping(path = "apply/resetPwd")
     @ApiOperation("申请重置密码")
-    public ApiResp<Boolean> applyResetPassword(@RequestParam String username) {
+    public ApiResp<Boolean> applyResetPassword(@RequestParam @NotNull @Validated String username) {
         ApiResp<Boolean> resp = new ApiResp<>();
         SysUserDO user = (SysUserDO) sysUserService.loadUserByUsername(username);
         if (user == null) {

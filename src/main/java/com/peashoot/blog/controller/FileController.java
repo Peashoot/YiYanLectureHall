@@ -2,15 +2,14 @@ package com.peashoot.blog.controller;
 
 import com.peashoot.blog.aspect.annotation.ErrorRecord;
 import com.peashoot.blog.batis.entity.FileDO;
-import com.peashoot.blog.batis.entity.FileTypeEnum;
-import com.peashoot.blog.batis.entity.VisitActionEnum;
+import com.peashoot.blog.batis.enums.FileTypeEnum;
+import com.peashoot.blog.batis.enums.VisitActionEnum;
 import com.peashoot.blog.batis.service.FileService;
 import com.peashoot.blog.batis.service.OperateRecordService;
 import com.peashoot.blog.context.response.ApiResp;
 import com.peashoot.blog.exception.FilePathCreateFailureException;
 import com.peashoot.blog.util.IoUtils;
 import com.peashoot.blog.util.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

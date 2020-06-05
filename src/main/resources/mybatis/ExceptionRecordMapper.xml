@@ -8,7 +8,7 @@
         <result column="paramValues" jdbcType="VARCHAR" property="paramValues"/>
         <result column="exceptionMsg" jdbcType="VARCHAR" property="exceptionMsg"/>
         <result column="invokeStack" jdbcType="VARCHAR" property="invokeStack"/>
-        <result column="appearTime" jdbcType="TIMESTAMP" property="appearTime"/>
+        <result column="appearTime" jdbcType="BIGINT" property="appearTime"/>
     </resultMap>
     <sql id="Base_Column_List">
         id, className, methodName, paramValues, exceptionMsg, invokeStack, appearTime
@@ -25,7 +25,7 @@
                                         appearTime)
         values (#{id,jdbcType=BIGINT}, #{className,jdbcType=VARCHAR}, #{methodName,jdbcType=VARCHAR},
                 #{paramValues,jdbcType=VARCHAR}, #{exceptionMsg,jdbcType=VARCHAR}, #{invokeStack,jdbcType=VARCHAR},
-                #{appearTime,jdbcType=TIMESTAMP})
+                #{appearTime,jdbcType=BIGINT})
     </insert>
     <select id="listPagedRecords" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
@@ -35,7 +35,8 @@
         order by id limit #{indexStart, jdbcType=INTEGER},#{selectCount, jdbcType=INTEGER}
     </select>
     <select id="countTotalRecords" resultType="java.lang.Integer">
-        select count(1) from bg_exceptionrecord
+        select count(1)
+        from bg_exceptionrecord
         where appearTime between #{searchStart, jdbcType=TIMESTAMP} and #{searchEnd, jdbcType=TIMESTAMP}
     </select>
 </mapper>

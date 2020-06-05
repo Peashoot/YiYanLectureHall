@@ -1,6 +1,6 @@
 package com.peashoot.blog.context.request.article;
 
-import com.peashoot.blog.batis.entity.VisitActionEnum;
+import com.peashoot.blog.batis.enums.VisitActionEnum;
 import com.peashoot.blog.context.request.BaseApiReq;
 import lombok.Getter;
 import lombok.Setter;

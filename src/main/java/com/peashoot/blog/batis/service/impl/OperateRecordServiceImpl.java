@@ -1,6 +1,7 @@
 package com.peashoot.blog.batis.service.impl;
 
-import com.peashoot.blog.batis.entity.VisitActionEnum;
+import com.peashoot.blog.batis.enums.OperatorTypeEnum;
+import com.peashoot.blog.batis.enums.VisitActionEnum;
 import com.peashoot.blog.batis.entity.OperateRecordDO;
 import com.peashoot.blog.batis.mapper.OperateRecordMapper;
 import com.peashoot.blog.batis.service.OperateRecordService;
@@ -38,9 +39,11 @@ public class OperateRecordServiceImpl implements OperateRecordService {
         OperateRecordDO visitRecordDO = new OperateRecordDO();
         visitRecordDO.setOperatorId(visitorId);
         visitRecordDO.setAction(action);
-        visitRecordDO.setActionDate(operateDate);
+        visitRecordDO.setActionTime(operateDate);
         visitRecordDO.setOperateObjectId(objectId);
         visitRecordDO.setRecord(record);
+        visitRecordDO.setActionResult(false);
+        visitRecordDO.setOperatorType(OperatorTypeEnum.VISITOR);
         return new AsyncResult<>(operateRecordMapper.insert(visitRecordDO) > 0);
     }
 

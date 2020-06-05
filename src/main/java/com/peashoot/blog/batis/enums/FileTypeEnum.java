@@ -1,6 +1,8 @@
-package com.peashoot.blog.batis.entity;
+package com.peashoot.blog.batis.enums;
 
-public enum FileTypeEnum {
+import com.peashoot.blog.batis.enums.base.BaseEnum;
+
+public enum FileTypeEnum implements BaseEnum<FileTypeEnum, String> {
     /**
      * 图片
      */
@@ -20,6 +22,7 @@ public enum FileTypeEnum {
         this.value = value;
     }
 
+    @Override
     public String getValue() {
         return value;
     }

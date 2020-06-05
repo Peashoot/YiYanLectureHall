@@ -1,158 +1,159 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.peashoot.blog.batis.mapper.FileMapper">
-  <resultMap id="BaseResultMap" type="com.peashoot.blog.batis.entity.FileDO">
-    <id column="id" jdbcType="VARCHAR" property="id" />
-    <result column="creatorId" jdbcType="BIGINT" property="creatorId" />
-    <result column="sysUserId" jdbcType="INTEGER" property="sysUserId" />
-    <result column="originalName" jdbcType="VARCHAR" property="originalName" />
-    <result column="type" jdbcType="VARCHAR" property="type" />
-    <result column="localPath" jdbcType="VARCHAR" property="localPath" />
-    <result column="netPath" jdbcType="VARCHAR" property="netPath" />
-    <result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="originalNetUrl" jdbcType="VARCHAR" property="originalNetUrl" />
-    <result column="md5Sign" jdbcType="VARCHAR" property="md5Sign" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    id, creatorId, sysUserId, originalName, type, localPath, netPath, createTime, originalNetUrl, 
+    <resultMap id="BaseResultMap" type="com.peashoot.blog.batis.entity.FileDO">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="creatorId" jdbcType="BIGINT" property="creatorId"/>
+        <result column="sysUserId" jdbcType="INTEGER" property="sysUserId"/>
+        <result column="originalName" jdbcType="VARCHAR" property="originalName"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+        <result column="localPath" jdbcType="VARCHAR" property="localPath"/>
+        <result column="netPath" jdbcType="VARCHAR" property="netPath"/>
+        <result column="createTime" jdbcType="BIGINT" property="createTime"/>
+        <result column="originalNetUrl" jdbcType="VARCHAR" property="originalNetUrl"/>
+        <result column="md5Sign" jdbcType="VARCHAR" property="md5Sign"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, creatorId, sysUserId, originalName, type, localPath, netPath, createTime, originalNetUrl,
     md5Sign
-  </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from bg_file
-    where id = #{id,jdbcType=VARCHAR}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-    delete from bg_file
-    where id = #{id,jdbcType=VARCHAR}
-  </delete>
-  <insert id="insert" parameterType="com.peashoot.blog.batis.entity.FileDO">
-    insert into bg_file (id, creatorId, sysUserId, 
-      originalName, type, localPath, 
-      netPath, createTime, originalNetUrl, 
-      md5Sign)
-    values (#{id,jdbcType=VARCHAR}, #{creatorId,jdbcType=BIGINT}, #{sysUserId,jdbcType=INTEGER}, 
-      #{originalName,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{localPath,jdbcType=VARCHAR}, 
-      #{netPath,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{originalNetUrl,jdbcType=VARCHAR}, 
-      #{md5Sign,jdbcType=VARCHAR})
-  </insert>
-  <insert id="insertSelective" parameterType="com.peashoot.blog.batis.entity.FileDO">
-    insert into bg_file
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="creatorId != null">
-        creatorId,
-      </if>
-      <if test="sysUserId != null">
-        sysUserId,
-      </if>
-      <if test="originalName != null">
-        originalName,
-      </if>
-      <if test="type != null">
-        type,
-      </if>
-      <if test="localPath != null">
-        localPath,
-      </if>
-      <if test="netPath != null">
-        netPath,
-      </if>
-      <if test="createTime != null">
-        createTime,
-      </if>
-      <if test="originalNetUrl != null">
-        originalNetUrl,
-      </if>
-      <if test="md5Sign != null">
-        md5Sign,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=VARCHAR},
-      </if>
-      <if test="creatorId != null">
-        #{creatorId,jdbcType=BIGINT},
-      </if>
-      <if test="sysUserId != null">
-        #{sysUserId,jdbcType=INTEGER},
-      </if>
-      <if test="originalName != null">
-        #{originalName,jdbcType=VARCHAR},
-      </if>
-      <if test="type != null">
-        #{type,jdbcType=VARCHAR},
-      </if>
-      <if test="localPath != null">
-        #{localPath,jdbcType=VARCHAR},
-      </if>
-      <if test="netPath != null">
-        #{netPath,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="originalNetUrl != null">
-        #{originalNetUrl,jdbcType=VARCHAR},
-      </if>
-      <if test="md5Sign != null">
-        #{md5Sign,jdbcType=VARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.peashoot.blog.batis.entity.FileDO">
-    update bg_file
-    <set>
-      <if test="creatorId != null">
-        creatorId = #{creatorId,jdbcType=BIGINT},
-      </if>
-      <if test="sysUserId != null">
-        sysUserId = #{sysUserId,jdbcType=INTEGER},
-      </if>
-      <if test="originalName != null">
-        originalName = #{originalName,jdbcType=VARCHAR},
-      </if>
-      <if test="type != null">
-        type = #{type,jdbcType=VARCHAR},
-      </if>
-      <if test="localPath != null">
-        localPath = #{localPath,jdbcType=VARCHAR},
-      </if>
-      <if test="netPath != null">
-        netPath = #{netPath,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null">
-        createTime = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="originalNetUrl != null">
-        originalNetUrl = #{originalNetUrl,jdbcType=VARCHAR},
-      </if>
-      <if test="md5Sign != null">
-        md5Sign = #{md5Sign,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where id = #{id,jdbcType=VARCHAR}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.peashoot.blog.batis.entity.FileDO">
-    update bg_file
-    set creatorId = #{creatorId,jdbcType=BIGINT},
-      sysUserId = #{sysUserId,jdbcType=INTEGER},
-      originalName = #{originalName,jdbcType=VARCHAR},
-      type = #{type,jdbcType=VARCHAR},
-      localPath = #{localPath,jdbcType=VARCHAR},
-      netPath = #{netPath,jdbcType=VARCHAR},
-      createTime = #{createTime,jdbcType=TIMESTAMP},
-      originalNetUrl = #{originalNetUrl,jdbcType=VARCHAR},
-      md5Sign = #{md5Sign,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=VARCHAR}
-  </update>
-  <select id="selectAll"  resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from bg_file
-  </select>
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from bg_file
+        where id = #{id,jdbcType=VARCHAR}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+        delete
+        from bg_file
+        where id = #{id,jdbcType=VARCHAR}
+    </delete>
+    <insert id="insert" parameterType="com.peashoot.blog.batis.entity.FileDO">
+        insert into bg_file (id, creatorId, sysUserId,
+                             originalName, type, localPath,
+                             netPath, createTime, originalNetUrl,
+                             md5Sign)
+        values (#{id,jdbcType=VARCHAR}, #{creatorId,jdbcType=BIGINT}, #{sysUserId,jdbcType=INTEGER},
+                #{originalName,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{localPath,jdbcType=VARCHAR},
+                #{netPath,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{originalNetUrl,jdbcType=VARCHAR},
+                #{md5Sign,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.peashoot.blog.batis.entity.FileDO">
+        insert into bg_file
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="creatorId != null">
+                creatorId,
+            </if>
+            <if test="sysUserId != null">
+                sysUserId,
+            </if>
+            <if test="originalName != null">
+                originalName,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="localPath != null">
+                localPath,
+            </if>
+            <if test="netPath != null">
+                netPath,
+            </if>
+            <if test="createTime != null">
+                createTime,
+            </if>
+            <if test="originalNetUrl != null">
+                originalNetUrl,
+            </if>
+            <if test="md5Sign != null">
+                md5Sign,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="creatorId != null">
+                #{creatorId,jdbcType=BIGINT},
+            </if>
+            <if test="sysUserId != null">
+                #{sysUserId,jdbcType=INTEGER},
+            </if>
+            <if test="originalName != null">
+                #{originalName,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="localPath != null">
+                #{localPath,jdbcType=VARCHAR},
+            </if>
+            <if test="netPath != null">
+                #{netPath,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=BIGINT},
+            </if>
+            <if test="originalNetUrl != null">
+                #{originalNetUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="md5Sign != null">
+                #{md5Sign,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.peashoot.blog.batis.entity.FileDO">
+        update bg_file
+        <set>
+            <if test="creatorId != null">
+                creatorId = #{creatorId,jdbcType=BIGINT},
+            </if>
+            <if test="sysUserId != null">
+                sysUserId = #{sysUserId,jdbcType=INTEGER},
+            </if>
+            <if test="originalName != null">
+                originalName = #{originalName,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="localPath != null">
+                localPath = #{localPath,jdbcType=VARCHAR},
+            </if>
+            <if test="netPath != null">
+                netPath = #{netPath,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                createTime = #{createTime,jdbcType=BIGINT},
+            </if>
+            <if test="originalNetUrl != null">
+                originalNetUrl = #{originalNetUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="md5Sign != null">
+                md5Sign = #{md5Sign,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.peashoot.blog.batis.entity.FileDO">
+        update bg_file
+        set creatorId      = #{creatorId,jdbcType=BIGINT},
+            sysUserId      = #{sysUserId,jdbcType=INTEGER},
+            originalName   = #{originalName,jdbcType=VARCHAR},
+            type           = #{type,jdbcType=VARCHAR},
+            localPath      = #{localPath,jdbcType=VARCHAR},
+            netPath        = #{netPath,jdbcType=VARCHAR},
+            createTime     = #{createTime,jdbcType=BIGINT},
+            originalNetUrl = #{originalNetUrl,jdbcType=VARCHAR},
+            md5Sign        = #{md5Sign,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from bg_file
+    </select>
 </mapper>

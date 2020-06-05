@@ -1,6 +1,7 @@
 package com.peashoot.blog.batis.entity;
 
 import com.peashoot.blog.batis.entity.base.IntPrimaryEntity;
+import com.peashoot.blog.batis.enums.PermissionEnum;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -24,21 +25,17 @@ public class RoleDO extends IntPrimaryEntity {
      */
     private Date updateTime;
     /**
-     * 权限
-     */
-    private String permission;
-    /**
      * 新增的用户id
      */
     private Integer insertUserId;
     /**
+     * 新增的用户id
+     */
+    private SysUserDO insertUser;
+    /**
      * 修改的用户id
      */
     private Integer updateUserId;
-    /**
-     * 新增的用户
-     */
-    private SysUserDO insertUser;
     /**
      * 修改的用户
      */
@@ -47,4 +44,8 @@ public class RoleDO extends IntPrimaryEntity {
      * 访问者
      */
     public static final int VISITOR = 9999;
+    /**
+     * 权限
+     */
+    private PermissionEnum[] permissions;
 }

@@ -4,14 +4,14 @@
     <resultMap id="BaseResultMap" type="com.peashoot.blog.batis.entity.RoleDO">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="roleName" jdbcType="VARCHAR" property="roleName"/>
-        <result column="permission" jdbcType="VARCHAR" property="permission"/>
+        <result column="permissions" jdbcType="VARCHAR" property="permissions" typeHandler="com.peashoot.blog.batis.converter.JsonTypeHandler"/>
         <result column="insertUserId" jdbcType="INTEGER" property="insertUserId"/>
-        <result column="insertTime" jdbcType="TIMESTAMP" property="insertTime"/>
+        <result column="insertTime" jdbcType="BIGINT" property="insertTime"/>
         <result column="updateUserId" jdbcType="INTEGER" property="updateUserId"/>
-        <result column="updateTime" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="updateTime" jdbcType="BIGINT" property="updateTime"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, roleName, permission, insertUserId, insertTime, updateUserId, updateTime
+        id, roleName, permissions, insertUserId, insertTime, updateUserId, updateTime
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -38,12 +38,12 @@
         )
     </delete>
     <insert id="insert" parameterType="com.peashoot.blog.batis.entity.RoleDO">
-        insert into bg_role (id, roleName, permission,
+        insert into bg_role (id, roleName, permissions,
                              insertUserId, insertTime, updateUserId,
                              updateTime)
-        values (#{id,jdbcType=INTEGER}, #{roleName,jdbcType=VARCHAR}, #{permission,jdbcType=VARCHAR},
-                #{insertUserId,jdbcType=INTEGER}, #{insertTime,jdbcType=TIMESTAMP}, #{updateUserId,jdbcType=INTEGER},
-                #{updateTime,jdbcType=TIMESTAMP})
+        values (#{id,jdbcType=INTEGER}, #{roleName,jdbcType=VARCHAR}, #{permissions,jdbcType=VARCHAR, typeHandler=com.peashoot.blog.batis.converter.JsonTypeHandler},
+                #{insertUserId,jdbcType=INTEGER}, #{insertTime,jdbcType=BIGINT}, #{updateUserId,jdbcType=INTEGER},
+                #{updateTime,jdbcType=BIGINT})
     </insert>
     <insert id="insertSelective" parameterType="com.peashoot.blog.batis.entity.RoleDO">
         insert into bg_role
@@ -54,8 +54,8 @@
             <if test="roleName != null">
                 roleName,
             </if>
-            <if test="permission != null">
-                permission,
+            <if test="permissions != null">
+                permissions,
             </if>
             <if test="insertUserId != null">
                 insertUserId,
@@ -77,20 +77,20 @@
             <if test="roleName != null">
                 #{roleName,jdbcType=VARCHAR},
             </if>
-            <if test="permission != null">
-                #{permission,jdbcType=VARCHAR},
+            <if test="permissions != null">
+                #{permissions,jdbcType=VARCHAR, typeHandler=com.peashoot.blog.batis.converter.JsonTypeHandler},
             </if>
             <if test="insertUserId != null">
                 #{insertUserId,jdbcType=INTEGER},
             </if>
             <if test="insertTime != null">
-                #{insertTime,jdbcType=TIMESTAMP},
+                #{insertTime,jdbcType=BIGINT},
             </if>
             <if test="updateUserId != null">
                 #{updateUserId,jdbcType=INTEGER},
             </if>
             <if test="updateTime != null">
-                #{updateTime,jdbcType=TIMESTAMP},
+                #{updateTime,jdbcType=BIGINT},
             </if>
         </trim>
     </insert>
@@ -100,20 +100,20 @@
             <if test="roleName != null">
                 roleName = #{roleName,jdbcType=VARCHAR},
             </if>
-            <if test="permission != null">
-                permission = #{permission,jdbcType=VARCHAR},
+            <if test="permissions != null">
+                permissions = #{permissions,jdbcType=VARCHAR,typeHandler=com.peashoot.blog.batis.converter.JsonTypeHandler},
             </if>
             <if test="insertUserId != null">
                 insertUserId = #{insertUserId,jdbcType=INTEGER},
             </if>
             <if test="insertTime != null">
-                insertTime = #{insertTime,jdbcType=TIMESTAMP},
+                insertTime = #{insertTime,jdbcType=BIGINT},
             </if>
             <if test="updateUserId != null">
                 updateUserId = #{updateUserId,jdbcType=INTEGER},
             </if>
             <if test="updateTime != null">
-                updateTime = #{updateTime,jdbcType=TIMESTAMP},
+                updateTime = #{updateTime,jdbcType=BIGINT},
             </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
@@ -121,11 +121,11 @@
     <update id="updateByPrimaryKey" parameterType="com.peashoot.blog.batis.entity.RoleDO">
         update bg_role
         set roleName     = #{roleName,jdbcType=VARCHAR},
-            permission   = #{permission,jdbcType=VARCHAR},
+            permissions   = #{permissions,jdbcType=VARCHAR,typeHandler=com.peashoot.blog.batis.converter.JsonTypeHandler},
             insertUserId = #{insertUserId,jdbcType=INTEGER},
-            insertTime   = #{insertTime,jdbcType=TIMESTAMP},
+            insertTime   = #{insertTime,jdbcType=BIGINT},
             updateUserId = #{updateUserId,jdbcType=INTEGER},
-            updateTime   = #{updateTime,jdbcType=TIMESTAMP}
+            updateTime   = #{updateTime,jdbcType=BIGINT}
         where id = #{id,jdbcType=INTEGER}
     </update>
 </mapper>

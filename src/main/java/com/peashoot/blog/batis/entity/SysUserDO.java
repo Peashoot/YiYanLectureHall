@@ -1,8 +1,9 @@
 package com.peashoot.blog.batis.entity;
 
 import com.peashoot.blog.batis.entity.base.IntPrimaryEntity;
+import com.peashoot.blog.batis.enums.GenderEnum;
+import com.peashoot.blog.util.Constant;
 import com.peashoot.blog.util.StringUtils;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -52,13 +53,13 @@ public class SysUserDO extends IntPrimaryEntity implements UserDetails {
      */
     private String contact;
     /**
-     * qq
+     * ems或者qq等社交账号
      */
-    private String qq;
+    private String socialAccount;
     /**
      * 上一次登录时间
      */
-    private Date lastLogin;
+    private Date lastLoginTime;
     /**
      * 上一次登录IP
      */
@@ -78,23 +79,23 @@ public class SysUserDO extends IntPrimaryEntity implements UserDetails {
     /**
      * 帐户未过期
      */
-    private boolean accountNonExpired;
+    private Date accountExpiredTime;
     /**
      * 帐户未锁定
      */
-    private boolean accountNonLocked;
+    private Date accountLockedTime;
     /**
      * 凭证未过期
      */
-    private boolean credentialsNonExpired;
+    private Date credentialsExpiredTime;
     /**
      * 已启用
      */
-    private boolean enabled;
+    private Date enabledTime;
     /**
      * 密码被重置的日期
      */
-    private Date lastPasswordResetDate;
+    private Date lastPasswordResetTime;
     /**
      * 所在地区
      */
@@ -106,7 +107,7 @@ public class SysUserDO extends IntPrimaryEntity implements UserDetails {
     /**
      * 性别： 0 保密 1 男 2 女
      */
-    private Integer gender;
+    private GenderEnum gender;
     /**
      * 个人简介
      */
@@ -137,6 +138,10 @@ public class SysUserDO extends IntPrimaryEntity implements UserDetails {
     }
 
     /**
+     * 用户注册后默认超期时间
+     */
+    private final Long expireTime = 30L * Constant.DAYS_PEY_YEAR * Constant.HOURS_PEY_DAY * Constant.MINUTES_PEY_HOUR * Constant.SECONDS_PEY_MINUTES * Constant.MILLISECONDS_PEY_SECOND;
+    /**
      * 初始化参数
      *
      * @param initDate 初始化日期
@@ -144,9 +149,30 @@ public class SysUserDO extends IntPrimaryEntity implements UserDetails {
      * @param salt     盐
      */
     public void initialize(Date initDate, String roleIds, String salt) {
-        registerTime = lastLogin = lastPasswordResetDate = updateTime = initDate;
-        enabled = credentialsNonExpired = accountNonLocked = accountNonExpired = true;
+        registerTime = lastLoginTime = lastPasswordResetTime = updateTime = new Date();
+        credentialsExpiredTime = accountExpiredTime = accountLockedTime = new Date(System.currentTimeMillis() + expireTime);
+        enabledTime = new Date();
         this.roleIds = roleIds;
         this.salt = salt;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return credentialsExpiredTime.getTime() >= System.currentTimeMillis();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return accountExpiredTime.getTime() >= System.currentTimeMillis();
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return accountLockedTime.getTime() >= System.currentTimeMillis();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabledTime.getTime() <= System.currentTimeMillis();
     }
 }

@@ -28,6 +28,10 @@ public class ApiResp<T> {
      * 异常
      */
     private String exception;
+    /**
+     * 请求路径
+     */
+    private String path;
 
     public ApiResp() {
         this(-1, "Uninitialized");
@@ -42,11 +46,22 @@ public class ApiResp<T> {
     /**
      * 成功后修改状态码
      *
-     * @return
+     * @return 当前实例
      */
     public ApiResp<T> success() {
         this.code = 200;
-        this.message = "success";
+        this.message = "You made it! (〃'▽'〃)";
+        return this;
+    }
+
+    /**
+     * 对象复制
+     *
+     * @param data 对象
+     * @return 当前实例
+     */
+    public ApiResp<T> fill(T data) {
+        this.data = data;
         return this;
     }
 
@@ -58,8 +73,8 @@ public class ApiResp<T> {
      */
     public static ApiResp<Object> createErrorResp(Exception ex) {
         ApiResp<Object> retResp = new ApiResp<>();
-        retResp.setMessage(ex.getMessage());
-        retResp.setException(ex.toString());
+        retResp.setMessage("Nightmare is coming! 。。。┏|*´･Д･|┛");
+        retResp.setException(ex.getMessage());
         retResp.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         return retResp;
     }
@@ -73,7 +88,7 @@ public class ApiResp<T> {
     public static ApiResp<String> createArgumentErrorResp(String errDetail) {
         ApiResp<String> retResp = new ApiResp<>();
         retResp.setCode(HttpStatus.NOT_ACCEPTABLE.value());
-        retResp.setMessage("Argument isn't acceptable.");
+        retResp.setMessage("Oops! (⊙_⊙)?");
         retResp.setData(errDetail);
         return retResp;
     }

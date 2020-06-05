@@ -6,7 +6,6 @@ import com.peashoot.blog.batis.entity.SysUserDO;
 import com.peashoot.blog.batis.mapper.RoleMapper;
 import com.peashoot.blog.batis.service.SysUserService;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,7 @@ public class SysUserServiceImpl implements SysUserService {
     public int insert(SysUserDO insertItem) {
         combineRoleIds(insertItem);
         insertItem.setUpdateTime(insertItem.getRegisterTime());
-        insertItem.setLastPasswordResetDate(insertItem.getRegisterTime());
+        insertItem.setLastPasswordResetTime(insertItem.getRegisterTime());
         return sysuserMapper.insert(insertItem);
     }
 

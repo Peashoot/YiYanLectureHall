@@ -1,6 +1,5 @@
 package com.peashoot.blog.batis.service.impl;
 
-import com.peashoot.blog.crypto.impl.Md5Crypto;
 import com.peashoot.blog.jwt.JwtTokenUtil;
 import com.peashoot.blog.batis.entity.SysUserDO;
 import com.peashoot.blog.exception.UserNameOccupiedException;
@@ -8,7 +7,6 @@ import com.peashoot.blog.batis.service.AuthService;
 import com.peashoot.blog.batis.service.SysUserService;
 import com.peashoot.blog.redis.service.SysUserRedisService;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,9 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.validation.Valid;
 import java.util.Date;
-import java.util.UUID;
 
 @Service("authService")
 public class AuthServiceImpl implements AuthService {
@@ -91,7 +87,7 @@ public class AuthServiceImpl implements AuthService {
             // 对密码进行加密
             final String rawPassword = userToAdd.saltPatchWork();
             userToAdd.setPassword(passwordEncoder.encode(rawPassword));
-            userToAdd.setLastPasswordResetDate(new Date());
+            userToAdd.setLastPasswordResetTime(new Date());
             if (sysUserService.insert(userToAdd) > 0) {
                 return true;
             }
@@ -116,7 +112,7 @@ public class AuthServiceImpl implements AuthService {
         final String token = oldToken.substring(tokenHead.length());
         String username = jwtTokenUtil.getUsernameFromToken(token);
         SysUserDO user = (SysUserDO) sysUserService.loadUserByUsername(username);
-        if (jwtTokenUtil.canTokenBeRefreshed(token, user.getLastPasswordResetDate())) {
+        if (jwtTokenUtil.canTokenBeRefreshed(token, user.getLastPasswordResetTime())) {
             return jwtTokenUtil.refreshToken(token);
         }
         return null;
@@ -176,7 +172,7 @@ public class AuthServiceImpl implements AuthService {
         final String rawPassword = userToUpdate.saltPatchWork();
         userToUpdate.setPassword(encoder.encode(rawPassword));
         Date current = new Date();
-        userToUpdate.setLastPasswordResetDate(current);
+        userToUpdate.setLastPasswordResetTime(current);
         userToUpdate.setUpdateTime(current);
         return sysUserService.update(userToUpdate) > 0;
     }

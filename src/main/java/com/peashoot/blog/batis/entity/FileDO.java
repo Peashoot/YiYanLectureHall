@@ -1,6 +1,7 @@
 package com.peashoot.blog.batis.entity;
 
 import com.peashoot.blog.batis.entity.base.UUIDPrimaryEntity;
+import com.peashoot.blog.batis.enums.FileTypeEnum;
 import lombok.Getter;
 import lombok.Setter;
 

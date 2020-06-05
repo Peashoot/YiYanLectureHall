@@ -5,7 +5,7 @@
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="visitor" jdbcType="VARCHAR" property="visitor"/>
         <result column="sysUserName" jdbcType="VARCHAR" property="sysUserName"/>
-        <result column="firstVisitTime" jdbcType="TIMESTAMP" property="firstVisitTime"/>
+        <result column="firstVisitTime" jdbcType="BIGINT" property="firstVisitTime"/>
         <result column="visitFromIp" jdbcType="VARCHAR" property="visitFromIp"/>
         <result column="location" jdbcType="VARCHAR" property="location"/>
         <result column="browser" jdbcType="VARCHAR" property="browser"/>
@@ -36,7 +36,7 @@
                                 firstVisitTime, visitFromIp, location,
                                 browser, os, roleIds)
         values (#{id,jdbcType=BIGINT}, #{visitor,jdbcType=VARCHAR}, #{sysUserName,jdbcType=VARCHAR},
-                #{firstVisitTime,jdbcType=TIMESTAMP}, #{visitFromIp,jdbcType=VARCHAR}, #{location,jdbcType=VARCHAR},
+                #{firstVisitTime,jdbcType=BIGINT}, #{visitFromIp,jdbcType=VARCHAR}, #{location,jdbcType=VARCHAR},
                 #{browser,jdbcType=VARCHAR}, #{os,jdbcType=VARCHAR}, #{roleIds,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.peashoot.blog.batis.entity.VisitorDO">
@@ -81,7 +81,7 @@
                 #{sysUserName,jdbcType=VARCHAR},
             </if>
             <if test="firstVisitTime != null">
-                #{firstVisitTime,jdbcType=TIMESTAMP},
+                #{firstVisitTime,jdbcType=BIGINT},
             </if>
             <if test="visitFromIp != null">
                 #{visitFromIp,jdbcType=VARCHAR},
@@ -110,7 +110,7 @@
                 sysUserName = #{sysUserName,jdbcType=VARCHAR},
             </if>
             <if test="firstVisitTime != null">
-                firstVisitTime = #{firstVisitTime,jdbcType=TIMESTAMP},
+                firstVisitTime = #{firstVisitTime,jdbcType=BIGINT},
             </if>
             <if test="visitFromIp != null">
                 visitFromIp = #{visitFromIp,jdbcType=VARCHAR},
@@ -134,7 +134,7 @@
         update bg_visitor
         set visitor        = #{visitor,jdbcType=VARCHAR},
             sysUserName    = #{sysUserName,jdbcType=VARCHAR},
-            firstVisitTime = #{firstVisitTime,jdbcType=TIMESTAMP},
+            firstVisitTime = #{firstVisitTime,jdbcType=BIGINT},
             visitFromIp    = #{visitFromIp,jdbcType=VARCHAR},
             location       = #{location,jdbcType=VARCHAR},
             browser        = #{browser,jdbcType=VARCHAR},
@@ -142,7 +142,8 @@
             roleIds        = #{roleIds,jdbcType=VARCHAR}
         where id = #{id,jdbcType=BIGINT}
     </update>
-    <insert id="insertWithReturnRecordID" useGeneratedKeys="true" keyProperty="id" parameterType="com.peashoot.blog.batis.entity.VisitorDO">
+    <insert id="insertWithReturnRecordID" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.peashoot.blog.batis.entity.VisitorDO">
         insert into bg_visitor (id, visitor, sysUserName,
                                 firstVisitTime, visitFromIp, location,
                                 browser, os, roleIds)

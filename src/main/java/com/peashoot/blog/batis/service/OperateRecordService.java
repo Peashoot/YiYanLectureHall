@@ -1,9 +1,8 @@
 package com.peashoot.blog.batis.service;
 
-import com.peashoot.blog.batis.entity.VisitActionEnum;
+import com.peashoot.blog.batis.enums.VisitActionEnum;
 import com.peashoot.blog.batis.entity.OperateRecordDO;
 import com.peashoot.blog.batis.service.base.InsertService;
-import com.peashoot.blog.batis.service.base.RemoveService;
 import com.peashoot.blog.batis.service.base.SelectService;
 
 import java.util.Date;

@@ -7,12 +7,12 @@
         <result column="action" jdbcType="INTEGER" property="action"/>
         <result column="operateObjectId" jdbcType="VARCHAR" property="operateObjectId"/>
         <result column="record" jdbcType="VARCHAR" property="record"/>
-        <result column="actionDate" jdbcType="TIMESTAMP" property="actionDate"/>
+        <result column="actionTime" jdbcType="BIGINT" property="actionTime"/>
         <result column="actionResult" jdbcType="BIT" property="actionResult"/>
         <result column="operatorType" jdbcType="INTEGER" property="operatorType"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, operatorId, action, operateObjectId, record, actionDate, actionResult, operatorType
+        id, operatorId, action, operateObjectId, record, actionTime, actionResult, operatorType
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
@@ -30,7 +30,7 @@
                                       operateObjectId, record, actionDate,
                                       actionResult, operatorType)
         values (#{id,jdbcType=BIGINT}, #{operatorId,jdbcType=BIGINT}, #{action,jdbcType=INTEGER},
-                #{operateObjectId,jdbcType=VARCHAR}, #{record,jdbcType=VARCHAR}, #{actionDate,jdbcType=TIMESTAMP},
+                #{operateObjectId,jdbcType=VARCHAR}, #{record,jdbcType=VARCHAR}, #{actionTime,jdbcType=BIGINT},
                 #{actionResult,jdbcType=BIT}, #{operatorType,jdbcType=INTEGER})
     </insert>
     <select id="selectLastRecordByVisitorIdAndObjectId" resultMap="BaseResultMap">
