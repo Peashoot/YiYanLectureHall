@@ -26,6 +26,30 @@
         <result column="gender" jdbcType="INTEGER" property="gender"/>
         <result column="personalProfile" jdbcType="VARCHAR" property="personalProfile"/>
     </resultMap>
+
+    <resultMap id="rolesMap" type="com.peashoot.blog.batis.entity.RoleDO">
+        <id column="r_id" jdbcType="INTEGER" property="id"/>
+        <result column="r_roleName" jdbcType="VARCHAR" property="roleName"/>
+        <result column="r_permissions" jdbcType="VARCHAR" property="permissions"
+                typeHandler="com.peashoot.blog.batis.converter.JsonTypeHandler"/>
+        <result column="r_insertUserId" jdbcType="INTEGER" property="insertUserId"/>
+        <result column="r_insertTime" jdbcType="BIGINT" property="insertTime"/>
+        <result column="r_updateUserId" jdbcType="INTEGER" property="updateUserId"/>
+        <result column="r_updateTime" jdbcType="BIGINT" property="updateTime"/>
+    </resultMap>
+    <!-- 使用resultMap的<collection>标签进行一对多查询 -->
+    <resultMap id="userRolesMap" extends="BaseResultMap" type="com.peashoot.blog.batis.entity.SysUserDO">
+        <!-- 角色的集合 -->
+        <collection property="roles" ofType="com.peashoot.blog.batis.entity.RoleDO">
+            <id column="r_id" jdbcType="INTEGER" property="id"/>
+            <result column="r_roleName" jdbcType="VARCHAR" property="roleName"/>
+            <result column="r_permissions" jdbcType="VARCHAR" property="permissions"/>
+            <result column="r_insertUserId" jdbcType="INTEGER" property="insertUserId"/>
+            <result column="r_insertTime" jdbcType="BIGINT" property="insertTime"/>
+            <result column="r_updateUserId" jdbcType="INTEGER" property="updateUserId"/>
+            <result column="r_updateTime" jdbcType="BIGINT" property="updateTime"/>
+        </collection>
+    </resultMap>
     <sql id="Base_Column_List">
         id, roleIds, username, password, salt, nickName, email, contact, socialAccount, lastLoginTime,
     registerTime, lastLoginIp, registerIp, updateTime, accountExpiredTime, accountLockedTime, 
@@ -329,7 +353,7 @@
             accountExpiredTime     = #{accountExpiredTime,jdbcType=BIGINT},
             accountLockedTime      = #{accountLockedTime,jdbcType=BIGINT},
             credentialsExpiredTime = #{credentialsExpiredTime,jdbcType=BIGINT},
-            enabledTime       = #{enabledTime,jdbcType=BIGINT},
+            enabledTime            = #{enabledTime,jdbcType=BIGINT},
             lastPasswordResetTime  = #{lastPasswordResetTime,jdbcType=BIGINT},
             location               = #{location,jdbcType=VARCHAR},
             headPortrait           = #{headPortrait,jdbcType=VARCHAR},
@@ -341,5 +365,82 @@
         select id
         from bg_sysuser
         where username = #{username, jdbcType=VARCHAR};
+    </select>
+    <!-- 使用resultMap的<collection>标签进行一对多查询 -->
+    <select id="selectWithRolesById" resultMap="userRolesMap">
+        select
+        u.id,
+        u.username,
+        u.password,
+        u.salt,
+        u.nickName,
+        u.email,
+        u.contact,
+        u.socialAccount,
+        u.lastLoginTime,
+        u.registerTime,
+        u.lastLoginIp,
+        u.registerIp,
+        u.updateTime,
+        u.accountExpiredTime,
+        u.accountLockedTime,
+        u.credentialsExpiredTime,
+        u.enabledTime,
+        u.lastPasswordResetTime,
+        u.location,
+        u.headPortrait,
+        u.gender,
+        u.personalProfile,
+        u.roleIds,
+        r.id r_id,
+        r.roleName r_roleName,
+        r.permissions r_permissions,
+        r.insertUserId r_insertUserId,
+        r.insertTime r_insertTime,
+        r.updateUserId r_updateUserId,
+        r.updateTime r_updateTime
+        from bg_sysuser u
+        right join bg_role r on (FIND_IN_SET(r.id, u.roleIds))
+        <where>
+            <if test="id != null">
+                u.id = #{id}
+            </if>
+        </where>
+    </select>
+    <select id="selectWithRoleByUsernameOrEmail" parameterType="java.lang.String" resultMap="userRolesMap">
+        select u.id,
+               u.username,
+               u.password,
+               u.salt,
+               u.nickName,
+               u.email,
+               u.contact,
+               u.socialAccount,
+               u.lastLoginTime,
+               u.registerTime,
+               u.lastLoginIp,
+               u.registerIp,
+               u.updateTime,
+               u.accountExpiredTime,
+               u.accountLockedTime,
+               u.credentialsExpiredTime,
+               u.enabledTime,
+               u.lastPasswordResetTime,
+               u.location,
+               u.headPortrait,
+               u.gender,
+               u.personalProfile,
+               u.roleIds,
+               r.id           r_id,
+               r.roleName     r_roleName,
+               r.permissions  r_permissions,
+               r.insertUserId r_insertUserId,
+               r.insertTime   r_insertTime,
+               r.updateUserId r_updateUserId,
+               r.updateTime   r_updateTime
+        from bg_sysuser u
+                 right join bg_role r on (FIND_IN_SET(r.id, u.roleIds))
+        where u.username = #{usernameOrEmail,jdbcType=VARCHAR}
+           or u.email = #{usernameOrEmail,jdbcType=VARCHAR}
     </select>
 </mapper>

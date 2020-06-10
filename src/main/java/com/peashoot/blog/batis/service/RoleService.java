@@ -8,4 +8,5 @@ import com.peashoot.blog.batis.service.base.UpdateService;
 
 public interface RoleService extends InsertService<RoleDO>, UpdateService<RoleDO>,
         RemoveService<RoleDO, Integer>, SelectService<RoleDO, Integer> {
+    public RoleDO selectByRoleName(String roleName);
 }

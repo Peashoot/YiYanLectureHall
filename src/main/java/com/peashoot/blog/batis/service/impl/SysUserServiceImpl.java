@@ -16,16 +16,14 @@ import java.util.List;
 @Service("sysUserService")
 public class SysUserServiceImpl implements SysUserService {
     private final SysUserMapper sysuserMapper;
-    private final RoleMapper roleMapper;
 
     public SysUserServiceImpl(SysUserMapper sysuserMapper, RoleMapper roleMapper) {
         this.sysuserMapper = sysuserMapper;
-        this.roleMapper = roleMapper;
     }
 
     @Override
     public int insert(SysUserDO insertItem) {
-        combineRoleIds(insertItem);
+        insertItem.concatRoleIds();
         insertItem.setUpdateTime(insertItem.getRegisterTime());
         insertItem.setLastPasswordResetTime(insertItem.getRegisterTime());
         return sysuserMapper.insert(insertItem);
@@ -43,65 +41,26 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public List<SysUserDO> selectAll() {
-        List<SysUserDO> retList = sysuserMapper.selectAll();
-        for (SysUserDO sysUser : retList) {
-            resolveIdToRoles(sysUser);
-        }
-        return retList;
+        return sysuserMapper.selectAll();
     }
 
     @Override
     public SysUserDO selectById(Integer id) {
-        return sysuserMapper.selectByPrimaryKey(id);
+        return sysuserMapper.selectWithRolesById(id);
     }
 
     @Override
     public int update(SysUserDO updateItem) {
-        combineRoleIds(updateItem);
+        updateItem.concatRoleIds();
         return sysuserMapper.updateByPrimaryKey(updateItem);
-    }
-
-    /**
-     * 将用户的角色类型id转成对应的角色列表
-     *
-     * @param user 用户
-     */
-    private void resolveIdToRoles(SysUserDO user) {
-        if (user == null || user.getRoleIds() == null || user.getRoleIds().isEmpty()) {
-            return;
-        }
-        String[] splitIds = user.getRoleIds().split(",");
-        List<RoleDO> roleList = new ArrayList<>();
-        for (String strId : splitIds) {
-            roleList.add(roleMapper.selectByPrimaryKey(Integer.parseInt(strId)));
-        }
-        user.setRoles(roleList);
-    }
-
-    /**
-     * 将用户的角色列表转成角色类型id
-     *
-     * @param user 用户
-     */
-    private void combineRoleIds(SysUserDO user) {
-        if (user == null || user.getRoles() == null || user.getRoles().size() < 1) {
-            return;
-        }
-        StringBuilder roleIds = new StringBuilder();
-        for (RoleDO role : user.getRoles()) {
-            roleIds.append(role.getId()).append(',');
-        }
-        roleIds.deleteCharAt(roleIds.length() - 1);
-        user.setRoleIds(roleIds.toString());
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        SysUserDO user = sysuserMapper.selectByUsernameOrEmail(username);
+        SysUserDO user = sysuserMapper.selectWithRoleByUsernameOrEmail(username);
         if (user == null) {
             throw new UsernameNotFoundException("Check username and password.");
         }
-        resolveIdToRoles(user);
         return user;
     }
 

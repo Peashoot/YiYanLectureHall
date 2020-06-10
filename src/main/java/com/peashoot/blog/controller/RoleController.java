@@ -10,12 +10,14 @@ import com.peashoot.blog.context.response.ApiResp;
 import com.peashoot.blog.exception.UserNotLoginException;
 import com.peashoot.blog.util.SecurityUtil;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -33,13 +35,13 @@ public class RoleController {
     private RoleService roleService;
 
     @PostMapping("modify")
-    // @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAuthority('role_modify')")
     public ApiResp<Boolean> modifyRole(@RequestBody ChangedRoleDTO apiReq) throws UserNotLoginException {
         SysUserDO sysUser = SecurityUtil.getCurrentUser();
         if (sysUser == null) {
             throw new UserNotLoginException();
         }
-        RoleDO roleDo;
+        RoleDO roleDo, existRoleDo = roleService.selectByRoleName(apiReq.getRoleName());
         boolean updateMode = false;
         if (Optional.ofNullable(apiReq.getRoleId()).orElse(0) > 0) {
             roleDo = roleService.selectById(apiReq.getRoleId());
@@ -52,6 +54,9 @@ public class RoleController {
             roleDo.setInsertTime(new Date());
             roleDo.setUpdateUser(sysUser);
             roleDo.setUpdateTime(new Date());
+        }
+        if (existRoleDo != null && !Objects.equals(existRoleDo.getId(), roleDo.getId())) {
+            return new ApiResp<>(501, "Exist the same role");
         }
         roleDo.setPermissions(apiReq.getPermissions());
         roleDo.setRoleName(apiReq.getRoleName());

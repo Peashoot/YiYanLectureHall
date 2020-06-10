@@ -4,6 +4,7 @@ import com.alibaba.fastjson.parser.DefaultJSONParser;
 import com.alibaba.fastjson.parser.JSONToken;
 import com.alibaba.fastjson.parser.deserializer.ObjectDeserializer;
 import com.alibaba.fastjson.serializer.JSONSerializer;
+import com.alibaba.fastjson.serializer.MiscCodec;
 import com.alibaba.fastjson.serializer.ObjectSerializer;
 import com.alibaba.fastjson.serializer.SerializeWriter;
 import com.peashoot.blog.batis.enums.base.BaseEnum;
@@ -15,6 +16,7 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 public class EnumArrayCodec implements ObjectSerializer, ObjectDeserializer {
+    public final static EnumArrayCodec instance                   = new EnumArrayCodec();
     @Override
     @SuppressWarnings("unchecked")
     public <T> T deserialze(DefaultJSONParser parser, Type type, Object fieldName) {
@@ -34,7 +36,8 @@ public class EnumArrayCodec implements ObjectSerializer, ObjectDeserializer {
         List list = Collections.checkedList(new ArrayList(), temp.getComponentType());
         for (String childValue : valuePairs) {
             for (BaseEnum e : (BaseEnum[]) temp.getComponentType().getEnumConstants()) {
-                if (Objects.toString(e.getValue()).equals(childValue.substring(1, childValue.length() - 1))) {
+                String afterArim = childValue.substring(1, childValue.length() - 1);
+                if (Objects.toString(e.getValue()).equals(afterArim)) {
                     list.add(e);
                 }
             }

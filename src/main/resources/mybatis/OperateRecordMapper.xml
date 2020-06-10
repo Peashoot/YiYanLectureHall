@@ -27,7 +27,7 @@
     </select>
     <insert id="insert" parameterType="com.peashoot.blog.batis.entity.OperateRecordDO">
         insert into bg_operaterecord (id, operatorId, action,
-                                      operateObjectId, record, actionDate,
+                                      operateObjectId, record, actionTime,
                                       actionResult, operatorType)
         values (#{id,jdbcType=BIGINT}, #{operatorId,jdbcType=BIGINT}, #{action,jdbcType=INTEGER},
                 #{operateObjectId,jdbcType=VARCHAR}, #{record,jdbcType=VARCHAR}, #{actionTime,jdbcType=BIGINT},

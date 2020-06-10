@@ -18,9 +18,11 @@ public interface SysUserMapper {
 
     SysUserDO selectByPrimaryKey(Integer id);
 
+    SysUserDO selectWithRolesById(Integer id);
+
     SysUserDO selectByUsername(String username);
 
-    SysUserDO selectByUsernameOrEmail(String usernameOrEmail);
+    SysUserDO selectWithRoleByUsernameOrEmail(String usernameOrEmail);
 
     SysUserDO selectByEmail(String email);
 

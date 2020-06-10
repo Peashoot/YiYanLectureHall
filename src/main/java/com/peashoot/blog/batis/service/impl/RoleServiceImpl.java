@@ -12,11 +12,9 @@ import java.util.List;
 @Service("roleService")
 public class RoleServiceImpl implements RoleService {
     private final RoleMapper roleMapper;
-    private final SysUserMapper sysuserMapper;
 
-    public RoleServiceImpl(RoleMapper roleMapper, SysUserMapper sysuserMapper) {
+    public RoleServiceImpl(RoleMapper roleMapper) {
         this.roleMapper = roleMapper;
-        this.sysuserMapper = sysuserMapper;
     }
 
     @Override
@@ -42,9 +40,8 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public List<RoleDO> selectAll() {
         List<RoleDO> retList = roleMapper.selectAll();
-        for (RoleDO role : retList) {
-            role.setInsertUser(sysuserMapper.selectByPrimaryKey(role.getInsertUserId()));
-            role.setUpdateUser(sysuserMapper.selectByPrimaryKey(role.getUpdateUserId()));
+        if (retList == null) {
+            return null;
         }
         return retList;
     }
@@ -52,8 +49,9 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public RoleDO selectById(Integer id) {
         RoleDO role = roleMapper.selectByPrimaryKey(id);
-        role.setInsertUser(sysuserMapper.selectByPrimaryKey(role.getInsertUserId()));
-        role.setUpdateUser(sysuserMapper.selectByPrimaryKey(role.getUpdateUserId()));
+        if (role == null) {
+            return null;
+        }
         return role;
     }
 
@@ -66,5 +64,14 @@ public class RoleServiceImpl implements RoleService {
             updateItem.setUpdateUserId(updateItem.getUpdateUser().getId());
         }
         return roleMapper.updateByPrimaryKey(updateItem);
+    }
+
+    @Override
+    public RoleDO selectByRoleName(String roleName) {
+        RoleDO role = roleMapper.selectByRoleName(roleName);
+        if (role == null) {
+            return null;
+        }
+        return role;
     }
 }

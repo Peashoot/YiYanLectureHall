@@ -1,7 +1,9 @@
 package com.peashoot.blog.batis.entity;
 
+import com.peashoot.blog.batis.entity.base.BaseEntity;
 import com.peashoot.blog.batis.entity.base.IntPrimaryEntity;
 import com.peashoot.blog.batis.enums.GenderEnum;
+import com.peashoot.blog.batis.enums.PermissionEnum;
 import com.peashoot.blog.util.Constant;
 import com.peashoot.blog.util.StringUtils;
 import lombok.Getter;
@@ -11,19 +13,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
 @ToString(callSuper = true, includeFieldNames = false)
 public class SysUserDO extends IntPrimaryEntity implements UserDetails {
-    /**
-     * 角色类型id
-     */
-    private String roleIds;
     /**
      * 角色类型
      */
@@ -112,6 +108,10 @@ public class SysUserDO extends IntPrimaryEntity implements UserDetails {
      * 个人简介
      */
     private String personalProfile;
+    /**
+     * 角色id集合
+     */
+    private String roleIds;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -122,7 +122,11 @@ public class SysUserDO extends IntPrimaryEntity implements UserDetails {
                 if (role == null) {
                     continue;
                 }
-                auths.add(new SimpleGrantedAuthority(role.getRoleName()));
+                if (role.getPermissions() != null) {
+                    for (PermissionEnum permission : role.getPermissions()) {
+                        auths.add(new SimpleGrantedAuthority(permission.getValue()));
+                    }
+                }
             }
         }
         return auths;
@@ -141,18 +145,19 @@ public class SysUserDO extends IntPrimaryEntity implements UserDetails {
      * 用户注册后默认超期时间
      */
     private final Long expireTime = 30L * Constant.DAYS_PEY_YEAR * Constant.HOURS_PEY_DAY * Constant.MINUTES_PEY_HOUR * Constant.SECONDS_PEY_MINUTES * Constant.MILLISECONDS_PEY_SECOND;
+
     /**
      * 初始化参数
      *
      * @param initDate 初始化日期
-     * @param roleIds  角色id
+     * @param roleArray  角色数组
      * @param salt     盐
      */
-    public void initialize(Date initDate, String roleIds, String salt) {
+    public void initialize(Date initDate, List<RoleDO> roleArray, String salt) {
         registerTime = lastLoginTime = lastPasswordResetTime = updateTime = new Date();
         credentialsExpiredTime = accountExpiredTime = accountLockedTime = new Date(System.currentTimeMillis() + expireTime);
         enabledTime = new Date();
-        this.roleIds = roleIds;
+        this.roles = roleArray;
         this.salt = salt;
     }
 
@@ -174,5 +179,12 @@ public class SysUserDO extends IntPrimaryEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return enabledTime.getTime() <= System.currentTimeMillis();
+    }
+
+    /**
+     * 拼接角色id列表
+     */
+    public void concatRoleIds() {
+        roleIds = roles.stream().map(i -> i.getId().toString()).collect(Collectors.joining(","));
     }
 }

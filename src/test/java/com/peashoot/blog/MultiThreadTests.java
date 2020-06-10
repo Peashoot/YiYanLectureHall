@@ -1,5 +1,6 @@
 package com.peashoot.blog;
 
+import com.peashoot.blog.batis.enums.PermissionEnum;
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;
@@ -11,24 +12,25 @@ import java.util.concurrent.locks.ReentrantLock;
 public class MultiThreadTests {
     @Test
     public void testReentrantLock() throws InterruptedException {
-        ReentrantLock lock = new ReentrantLock();
-        lock.lock();
-        // lock.unlock();
-        Thread.sleep(1000);
-        Thread t1 = new Thread(() -> {
-            // lock.lock();
-            try {
-                lock.lockInterruptibly();
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            System.out.println(Thread.currentThread().getName() + " interrupted.");
-        });
-        t1.start();
-        Thread.sleep(1000);
-        t1.interrupt();
-        Thread.sleep(1000000);
+//        ReentrantLock lock = new ReentrantLock();
+//        lock.lock();
+//        // lock.unlock();
+//        Thread.sleep(1000);
+//        Thread t1 = new Thread(() -> {
+//            // lock.lock();
+//            try {
+//                lock.lockInterruptibly();
+//            } catch (InterruptedException e) {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            }
+//            System.out.println(Thread.currentThread().getName() + " interrupted.");
+//        });
+//        t1.start();
+//        Thread.sleep(1000);
+//        t1.interrupt();
+//        Thread.sleep(1000000);
+        System.out.println( PermissionEnum[].class.getName());
     }
 
     @Test

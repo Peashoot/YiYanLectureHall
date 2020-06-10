@@ -4,7 +4,7 @@
     <resultMap id="BaseResultMap" type="com.peashoot.blog.batis.entity.RoleDO">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="roleName" jdbcType="VARCHAR" property="roleName"/>
-        <result column="permissions" jdbcType="VARCHAR" property="permissions" typeHandler="com.peashoot.blog.batis.converter.JsonTypeHandler"/>
+        <result column="permissions" jdbcType="VARCHAR" property="permissions"/>
         <result column="insertUserId" jdbcType="INTEGER" property="insertUserId"/>
         <result column="insertTime" jdbcType="BIGINT" property="insertTime"/>
         <result column="updateUserId" jdbcType="INTEGER" property="updateUserId"/>
@@ -13,16 +13,25 @@
     <sql id="Base_Column_List">
         id, roleName, permissions, insertUserId, insertTime, updateUserId, updateTime
     </sql>
+    <sql id="Left_Join_List">
+        r.id, r.roleName, r.permissions, r.insertUserId, r.insertTime, r.updateUserId, r.updateTime, i.id       "insertUser.id",
+        i.username "insertUser.username", i.nickName "insertUser.nickName", i.email    "insertUser.email", u.id       "updateUser.id",
+        u.nickName "updateUser.username", i.username "updateUser.nickName", i.email    "updateUser.email"
+    </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
-        from bg_role
+        <include refid="Left_Join_List"/>
+        from bg_role r
+                 left join bg_sysuser i on (r.insertUserId = i.id)
+                 left join bg_sysuser u on (r.insertUserId = u.id)
         where id = #{id,jdbcType=INTEGER}
     </select>
-    <select id="selectAll" resultMap="BaseResultMap">
+    <select id="selectAll" resultType="com.peashoot.blog.batis.entity.RoleDO">
         select
-        <include refid="Base_Column_List"/>
-        from bg_role
+        <include refid="Left_Join_List"/>
+        from bg_role r
+                 left join bg_sysuser i on (r.insertUserId = i.id)
+                 left join bg_sysuser u on (r.insertUserId = u.id)
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
         delete
@@ -41,7 +50,8 @@
         insert into bg_role (id, roleName, permissions,
                              insertUserId, insertTime, updateUserId,
                              updateTime)
-        values (#{id,jdbcType=INTEGER}, #{roleName,jdbcType=VARCHAR}, #{permissions,jdbcType=VARCHAR, typeHandler=com.peashoot.blog.batis.converter.JsonTypeHandler},
+        values (#{id,jdbcType=INTEGER}, #{roleName,jdbcType=VARCHAR},
+                #{permissions,jdbcType=VARCHAR, typeHandler=com.peashoot.blog.batis.converter.JsonTypeHandler},
                 #{insertUserId,jdbcType=INTEGER}, #{insertTime,jdbcType=BIGINT}, #{updateUserId,jdbcType=INTEGER},
                 #{updateTime,jdbcType=BIGINT})
     </insert>
@@ -101,7 +111,8 @@
                 roleName = #{roleName,jdbcType=VARCHAR},
             </if>
             <if test="permissions != null">
-                permissions = #{permissions,jdbcType=VARCHAR,typeHandler=com.peashoot.blog.batis.converter.JsonTypeHandler},
+                permissions =
+                #{permissions,jdbcType=VARCHAR,typeHandler=com.peashoot.blog.batis.converter.JsonTypeHandler},
             </if>
             <if test="insertUserId != null">
                 insertUserId = #{insertUserId,jdbcType=INTEGER},
@@ -121,11 +132,19 @@
     <update id="updateByPrimaryKey" parameterType="com.peashoot.blog.batis.entity.RoleDO">
         update bg_role
         set roleName     = #{roleName,jdbcType=VARCHAR},
-            permissions   = #{permissions,jdbcType=VARCHAR,typeHandler=com.peashoot.blog.batis.converter.JsonTypeHandler},
+            permissions  = #{permissions,jdbcType=VARCHAR,typeHandler=com.peashoot.blog.batis.converter.JsonTypeHandler},
             insertUserId = #{insertUserId,jdbcType=INTEGER},
             insertTime   = #{insertTime,jdbcType=BIGINT},
             updateUserId = #{updateUserId,jdbcType=INTEGER},
             updateTime   = #{updateTime,jdbcType=BIGINT}
         where id = #{id,jdbcType=INTEGER}
     </update>
+    <select id="selectByRoleName" parameterType="java.lang.String" resultType="com.peashoot.blog.batis.entity.RoleDO">
+        select
+        <include refid="Left_Join_List"/>
+        from bg_role r
+                 left join bg_sysuser i on (r.insertUserId = i.id)
+                 left join bg_sysuser u on (r.insertUserId = u.id)
+        where roleName = #{roleName,jdbcType=VARCHAR}
+    </select>
 </mapper>

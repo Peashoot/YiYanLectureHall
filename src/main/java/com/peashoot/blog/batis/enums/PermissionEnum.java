@@ -41,7 +41,11 @@ public enum PermissionEnum implements BaseEnum<PermissionEnum, String> {
     /**
      * 账号
      */
-    USER_RETRIEVE_ACCOUNT("retrieve")
+    USER_RETRIEVE_ACCOUNT("retrieve"),
+    /**
+     * 新增或修改角色
+     */
+    ROLE_MODIFY("role_modify")
     ;
 
     private PermissionEnum(String value) {

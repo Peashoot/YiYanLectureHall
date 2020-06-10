@@ -41,11 +41,11 @@ public class RoleDO extends IntPrimaryEntity {
      */
     private SysUserDO updateUser;
     /**
-     * 访问者
-     */
-    public static final int VISITOR = 9999;
-    /**
      * 权限
      */
     private PermissionEnum[] permissions;
+    /**
+     * 普通用户
+     */
+    public static final String ROLE_NORMAL_USER = "ROLE_NORMAL_USER";
 }

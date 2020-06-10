@@ -3,6 +3,7 @@ package com.peashoot.blog.context.request.sysuser;
 import com.peashoot.blog.batis.entity.SysUserDO;
 import com.peashoot.blog.batis.enums.GenderEnum;
 import com.peashoot.blog.context.request.BaseApiReq;
+import com.peashoot.blog.util.StringUtils;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -54,8 +55,10 @@ public class SysUserDetailDTO extends BaseApiReq {
      */
     @ApiModelProperty(value = "个人简介")
     private String personalProfile;
+
     /**
      * 将信息复制到系统用户中
+     *
      * @param sysUser 系统用户实体
      */
     public void copyTo(@NotNull SysUserDO sysUser) {

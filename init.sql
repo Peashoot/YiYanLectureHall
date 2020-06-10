@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS `bg_operaterecord`
 -- ----------------------------
 CREATE TABLE IF NOT EXISTS `bg_article`
 (
-    `id`           varchar(32)   NOT NULL COMMENT '记录id',
+    `id`           varchar(32)   NOT NULL  COMMENT '记录id',
     `author`       varchar(50)   NOT NULL COMMENT '作者',
     `title`        varchar(255)  NOT NULL COMMENT '标题',
     `keywords`     varchar(255)  NOT NULL COMMENT '关键词(多个关键词用“;”隔开)',
@@ -128,17 +128,17 @@ CREATE TABLE IF NOT EXISTS `bg_comment`
 DROP TABLE IF EXISTS `bg_exceptionrecord`;
 CREATE TABLE `bg_exceptionrecord`
 (
-    `id`           bigint(20)   NOT NULL COMMENT '记录id',
+    `id`           bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '记录id',
     `className`    varchar(255) NOT NULL COMMENT '异常类名称',
     `methodName`   varchar(255) NOT NULL COMMENT '异常方法名称',
     `paramValues`  varchar(255) NOT NULL COMMENT '产生异常时，方法的传入参数值',
-    `exceptionMsg` varchar(255) NOT NULL COMMENT '错误说明',
-    `invokeStack`  varchar(255) NOT NULL COMMENT '调用堆栈',
+    `exceptionMsg` varchar(2048) NOT NULL COMMENT '错误说明',
     `appearTime`   bigint(20)   NOT NULL COMMENT '发生异常的时间',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX `index_bg_exceptionrecord_classname` (`className`) USING BTREE COMMENT '类名索引',
     INDEX `index_bg_exceptionrecord_methodname` (`methodName`) USING BTREE COMMENT '方法名索引'
 ) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
   ROW_FORMAT = Compact;
 
 -- ----------------------------

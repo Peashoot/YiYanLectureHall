@@ -68,7 +68,6 @@ public class ErrorRecordAspect {
             exceptionRecord.setMethodName(methodName);
             exceptionRecord.setParamValues(paramWithValues.toString());
             exceptionRecord.setExceptionMsg(e.getMessage());
-            exceptionRecord.setInvokeStack(StringUtils.getStackTraceString(e));
             exceptionRecord.setAppearTime(new Date());
             exceptionRecordService.insertNewRecordAsync(exceptionRecord);
         } catch (Exception ex) {

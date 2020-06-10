@@ -1,9 +1,11 @@
 package com.peashoot.blog.controller;
 
+import com.google.common.collect.ImmutableList;
 import com.peashoot.blog.aspect.annotation.ErrorRecord;
 import com.peashoot.blog.aspect.annotation.VisitLimit;
 import com.peashoot.blog.batis.enums.VisitActionEnum;
 import com.peashoot.blog.batis.service.OperateRecordService;
+import com.peashoot.blog.batis.service.RoleService;
 import com.peashoot.blog.context.request.sysuser.*;
 import com.peashoot.blog.crypto.annotation.DecryptRequest;
 import com.peashoot.blog.batis.entity.RoleDO;
@@ -14,6 +16,8 @@ import com.peashoot.blog.batis.service.SysUserService;
 import com.peashoot.blog.exception.UserNameOccupiedException;
 import com.peashoot.blog.exception.UserUnmatchedException;
 import com.peashoot.blog.util.SecurityUtil;
+import com.peashoot.blog.util.modules.ILazyInitialize;
+import com.peashoot.blog.util.modules.Lazy;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
@@ -23,6 +27,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
@@ -33,8 +38,7 @@ import java.util.UUID;
  */
 @RestController
 @Api(tags = "用户管理相关接口")
-@RequestMapping(path = "system")
-@EnableAsync
+@RequestMapping(path = "user")
 @ErrorRecord
 public class SysUserController {
     /**
@@ -49,11 +53,16 @@ public class SysUserController {
      * 用户操作记录
      */
     private final OperateRecordService operateRecordService;
+    /**
+     * 普通用户角色信息
+     */
+    private Lazy<RoleDO> roleNormalUserLazy;
 
-    public SysUserController(SysUserService sysUserService, AuthService authService, OperateRecordService operateRecordService) {
+    public SysUserController(SysUserService sysUserService, AuthService authService, OperateRecordService operateRecordService, RoleService roleService) {
         this.sysUserService = sysUserService;
         this.authService = authService;
         this.operateRecordService = operateRecordService;
+        roleNormalUserLazy = new Lazy<>(() -> roleService.selectByRoleName(RoleDO.ROLE_NORMAL_USER));
     }
 
     /**
@@ -93,7 +102,7 @@ public class SysUserController {
         sysUser.setEmail(apiReq.getEmail());
         sysUser.setPassword(apiReq.getPassword());
         String salt = UUID.randomUUID().toString().replace("-", "");
-        sysUser.initialize(new Date(), String.valueOf(RoleDO.VISITOR), salt);
+        sysUser.initialize(new Date(), ImmutableList.of(roleNormalUserLazy.getInstance()), salt);
         ApiResp<Boolean> resp = new ApiResp<>();
         try {
             operateRecordService.insertNewRecordAsync(apiReq.getVisitorId(), apiReq.getUsername(), VisitActionEnum.USER_REGISTER, new Date(),
@@ -116,7 +125,7 @@ public class SysUserController {
      */
     @PostMapping(path = "change/pwd")
     @ApiOperation("修改用户密码")
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAuthority('change_pwd')")
     public ApiResp<Boolean> changePassword(@RequestBody @Validated ChangePwdDTO apiReq) {
         SysUserDO curUser = SecurityUtil.getCurrentUser();
         if (curUser == null || !curUser.getUsername().equals(apiReq.getUsername())) {
@@ -139,7 +148,7 @@ public class SysUserController {
      */
     @PostMapping(path = "change/other")
     @ApiOperation("修改用户信息")
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAuthority('change_detail')")
     public ApiResp<Boolean> changeUserInfo(@RequestBody ChangeDetailDTO apiReq) {
         SysUserDO curUser = SecurityUtil.getCurrentUser();
         if (curUser == null || !curUser.getId().equals(apiReq.getId())) {
@@ -169,7 +178,7 @@ public class SysUserController {
 
     @RequestMapping(path = "logout")
     @ApiOperation("用户登出")
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAuthority('logout')")
     public ApiResp<Boolean> logOut(@RequestParam String username) {
         ApiResp<Boolean> resp = new ApiResp<Boolean>().success();
         int userId = sysUserService.getIdByUsername(username);
@@ -181,6 +190,7 @@ public class SysUserController {
 
     @RequestMapping(path = "apply/resetPwd")
     @ApiOperation("申请重置密码")
+    @PreAuthorize("hasAuthority('apply_reset_pwd')")
     public ApiResp<Boolean> applyResetPassword(@RequestParam @NotNull @Validated String username) {
         ApiResp<Boolean> resp = new ApiResp<>();
         SysUserDO user = (SysUserDO) sysUserService.loadUserByUsername(username);
@@ -198,7 +208,7 @@ public class SysUserController {
 
     @RequestMapping(path = "resetPwd")
     @ApiOperation("重置密码")
-    @PreAuthorize("hasRole('pwd_resetter')")
+    @PreAuthorize("hasAuthority('reset_pwd')")
     public ApiResp<Boolean> resetPassword(@RequestParam("applyId") String applySerial, @RequestBody ChangePwdDTO changePwd) {
         int userId = sysUserService.getIdByUsername(changePwd.getUsername());
         operateRecordService.insertNewRecordAsync(userId, String.valueOf(userId), VisitActionEnum.USER_RETRIEVE_PASSWORD, new Date(),
@@ -208,7 +218,9 @@ public class SysUserController {
         resp.success().setData(success);
         return resp;
     }
+
     @RequestMapping(path = "retrieve")
+    @PreAuthorize("hasAuthority('apply_retrieve')")
     public ApiResp<Boolean> applyRetrieveAccount(@RequestParam("applyEmail") String applyEmail) {
         ApiResp<Boolean> resp = new ApiResp<>();
         resp.setCode(406);

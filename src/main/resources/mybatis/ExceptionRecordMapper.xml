@@ -7,11 +7,10 @@
         <result column="methodName" jdbcType="VARCHAR" property="methodName"/>
         <result column="paramValues" jdbcType="VARCHAR" property="paramValues"/>
         <result column="exceptionMsg" jdbcType="VARCHAR" property="exceptionMsg"/>
-        <result column="invokeStack" jdbcType="VARCHAR" property="invokeStack"/>
         <result column="appearTime" jdbcType="BIGINT" property="appearTime"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, className, methodName, paramValues, exceptionMsg, invokeStack, appearTime
+        id, className, methodName, paramValues, exceptionMsg, appearTime
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
@@ -21,10 +20,10 @@
     </select>
     <insert id="insert" parameterType="com.peashoot.blog.batis.entity.ExceptionRecordDO">
         insert into bg_exceptionrecord (id, className, methodName,
-                                        paramValues, exceptionMsg, invokeStack,
+                                        paramValues, exceptionMsg,
                                         appearTime)
         values (#{id,jdbcType=BIGINT}, #{className,jdbcType=VARCHAR}, #{methodName,jdbcType=VARCHAR},
-                #{paramValues,jdbcType=VARCHAR}, #{exceptionMsg,jdbcType=VARCHAR}, #{invokeStack,jdbcType=VARCHAR},
+                #{paramValues,jdbcType=VARCHAR}, #{exceptionMsg,jdbcType=VARCHAR},
                 #{appearTime,jdbcType=BIGINT})
     </insert>
     <select id="listPagedRecords" parameterType="java.lang.Long" resultMap="BaseResultMap">

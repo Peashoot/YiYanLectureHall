@@ -28,10 +28,6 @@ public class ExceptionRecordDO extends LongPrimaryEntity {
      */
     private String exceptionMsg;
     /**
-     * 调用堆栈
-     */
-    private String invokeStack;
-    /**
      * 发生的时间
      */
     private Date appearTime;

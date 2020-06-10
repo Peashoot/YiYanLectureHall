@@ -15,6 +15,7 @@ import java.util.Objects;
 
 public class EnumCodec implements ObjectSerializer, ObjectDeserializer {
 
+    public final static EnumCodec instance                   = new EnumCodec();
     @Override
     @SuppressWarnings("unchecked")
     public <T> T deserialze(DefaultJSONParser parser, Type type, Object fieldName) {
