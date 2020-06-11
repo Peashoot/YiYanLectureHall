@@ -60,9 +60,25 @@ public enum VisitActionEnum implements BaseEnum<VisitActionEnum, Integer> {
      */
     CHANGE_NAME(301),
     /**
+     * 创建角色
+     */
+    ROLE_CREATE(401),
+    /**
+     * 更新角色
+     */
+    ROLE_UPDATE(402),
+    /**
+     * 删除角色
+     */
+    ROLE_REMOVE(403),
+    /**
      * 上传文件
      */
     UPLOAD_FILE(501),
+    /**
+     * 生成访客信息
+     */
+    VISITOR_GENERATE(601),
     /**
      * 用户登录
      */
@@ -84,17 +100,13 @@ public enum VisitActionEnum implements BaseEnum<VisitActionEnum, Integer> {
      */
     USER_APPLY_RETRIEVE_PASSWORD(705),
     /**
-     *  用户申请找回账户
-     */
-    USER_APPLY_RETRIEVE_ACCOUNT(706),
-    /**
      * 用户找回密码
      */
-    USER_RETRIEVE_PASSWORD(707),
+    USER_RETRIEVE_PASSWORD(706),
     /**
      * 用户修改信息
      */
-    USER_CHANGE_INFORMATION(708){
+    USER_CHANGE_INFORMATION(707){
     };
 
     private int value;

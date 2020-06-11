@@ -18,6 +18,10 @@ public class OperateRecordDO extends LongPrimaryEntity {
      */
     private Long operatorId;
     /**
+     * 请求ip
+     */
+    private String ip;
+    /**
      * 访客行为
      */
     private VisitActionEnum action;

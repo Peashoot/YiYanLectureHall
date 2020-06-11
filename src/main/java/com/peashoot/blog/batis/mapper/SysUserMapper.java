@@ -4,6 +4,7 @@ import com.peashoot.blog.batis.entity.SysUserDO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -33,4 +34,6 @@ public interface SysUserMapper {
     int updateByPrimaryKey(SysUserDO record);
 
     int getIdByUsername(String username);
+
+    int lockUser(@Param("username") String username, @Param("accountLockedTime") Date lockDate);
 }

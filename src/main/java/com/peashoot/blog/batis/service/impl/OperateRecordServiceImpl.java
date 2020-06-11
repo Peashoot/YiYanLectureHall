@@ -35,9 +35,10 @@ public class OperateRecordServiceImpl implements OperateRecordService {
 
     @Async
     @Override
-    public Future<Boolean> insertNewRecordAsync(long visitorId, String objectId, VisitActionEnum action, Date operateDate, String record) {
+    public Future<Boolean> insertNewRecordAsync(long visitorId, String objectId, String visitIp, VisitActionEnum action, Date operateDate, String record) {
         OperateRecordDO visitRecordDO = new OperateRecordDO();
         visitRecordDO.setOperatorId(visitorId);
+        visitRecordDO.setIp(visitIp);
         visitRecordDO.setAction(action);
         visitRecordDO.setActionTime(operateDate);
         visitRecordDO.setOperateObjectId(objectId);

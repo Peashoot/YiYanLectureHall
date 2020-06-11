@@ -68,7 +68,7 @@ public class CommentController {
     public ApiResp<Boolean> insertCommentOfVisitor(@RequestBody VisitorWithCommentDTO apiReq) {
         ApiResp<Boolean> resp = new ApiResp<>();
         CommentDO comment = apiReq.createCommentEntity();
-        visitRecordService.insertNewRecordAsync(apiReq.getVisitorId(), apiReq.getArticleId(), VisitActionEnum.COMMENT, new Date(), "Comment to article：" + apiReq.getArticleId());
+        visitRecordService.insertNewRecordAsync(apiReq.getVisitorId(), apiReq.getArticleId(), apiReq.getVisitorIP(), VisitActionEnum.COMMENT, new Date(), "Comment to article：" + apiReq.getArticleId());
         resp.success().setData(commentService.insert(comment) > 0);
         return resp;
     }
@@ -178,7 +178,7 @@ public class CommentController {
             return resp;
         }
         // 新增访客操作记录并修改评论点赞反对数
-        visitRecordService.insertNewRecordAsync(apiReq.getVisitorId(), apiReq.getCommentId().toString(), apiReq.getAction(), new Date(), "");
+        visitRecordService.insertNewRecordAsync(apiReq.getVisitorId(), apiReq.getCommentId().toString(), apiReq.getVisitorIP(), apiReq.getAction(), new Date(), "");
         boolean result = commentService.updateSupportAndDisagreeState(apiReq.getCommentId(), agree, disagree);
         resp.success().setData(result);
         return resp;

@@ -90,7 +90,7 @@ public class StringUtils {
      * @param needCheck 待检查字符串
      * @return 是否不为空
      */
-    public static boolean isNotNullAndEmpty(String needCheck) {
+    public static boolean isNotNullOrEmpty(String needCheck) {
         return !isNullOrEmpty(needCheck);
     }
 

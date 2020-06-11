@@ -37,7 +37,7 @@ public class XssAndSqlFilter implements Filter {
         }
         if ("POST".equalsIgnoreCase(method)) {
             param = getBodyString(xssRequest.getReader());
-            if (StringUtils.isNotNullAndEmpty(param)) {
+            if (StringUtils.isNotNullOrEmpty(param)) {
                 if (XssAndSqlHttpServletRequestWrapper.checkXSSAndSql(param)) {
                     writeRejectedResponse(response);
                     return;

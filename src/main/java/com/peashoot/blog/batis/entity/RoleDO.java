@@ -12,6 +12,9 @@ import java.util.Date;
 @Setter
 @ToString(callSuper = true, includeFieldNames = false)
 public class RoleDO extends IntPrimaryEntity {
+    public RoleDO() {
+        id = 0;
+    }
     /**
      * 角色名称
      */
@@ -48,4 +51,8 @@ public class RoleDO extends IntPrimaryEntity {
      * 普通用户
      */
     public static final String ROLE_NORMAL_USER = "ROLE_NORMAL_USER";
+    /**
+     * 文章管理员
+     */
+    public static final String ROLE_OF_ARTICLE_MANAGER = "ROLE_ARTICLES_MANAGER";
 }

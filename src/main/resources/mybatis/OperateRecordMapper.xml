@@ -4,6 +4,7 @@
     <resultMap id="BaseResultMap" type="com.peashoot.blog.batis.entity.OperateRecordDO">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="operatorId" jdbcType="BIGINT" property="operatorId"/>
+        <result column="ip" jdbcType="VARCHAR" property="ip"/>
         <result column="action" jdbcType="INTEGER" property="action"/>
         <result column="operateObjectId" jdbcType="VARCHAR" property="operateObjectId"/>
         <result column="record" jdbcType="VARCHAR" property="record"/>
@@ -12,7 +13,7 @@
         <result column="operatorType" jdbcType="INTEGER" property="operatorType"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, operatorId, action, operateObjectId, record, actionTime, actionResult, operatorType
+        id, operatorId, ip, action, operateObjectId, record, actionTime, actionResult, operatorType
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
@@ -26,10 +27,10 @@
         from bg_operaterecord
     </select>
     <insert id="insert" parameterType="com.peashoot.blog.batis.entity.OperateRecordDO">
-        insert into bg_operaterecord (id, operatorId, action,
+        insert into bg_operaterecord (id, operatorId, ip, action,
                                       operateObjectId, record, actionTime,
                                       actionResult, operatorType)
-        values (#{id,jdbcType=BIGINT}, #{operatorId,jdbcType=BIGINT}, #{action,jdbcType=INTEGER},
+        values (#{id,jdbcType=BIGINT}, #{operatorId,jdbcType=BIGINT}, #{ip,jdbcType=VARCHAR}, #{action,jdbcType=INTEGER},
                 #{operateObjectId,jdbcType=VARCHAR}, #{record,jdbcType=VARCHAR}, #{actionTime,jdbcType=BIGINT},
                 #{actionResult,jdbcType=BIT}, #{operatorType,jdbcType=INTEGER})
     </insert>

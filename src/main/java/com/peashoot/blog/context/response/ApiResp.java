@@ -9,6 +9,19 @@ import org.springframework.http.HttpStatus;
 @Setter
 public class ApiResp<T> {
     /**
+     * 处理错误
+     */
+    public static final int PROCESS_ERROR = 504;
+    /**
+     * 找不到记录
+     */
+    public static final int NO_RECORD_MATCH = 301;
+    /**
+     * 错误的请求
+     */
+    public static final int BAD_REQUEST = 400;
+
+    /**
      * 时间戳
      */
     private Long timestamp;

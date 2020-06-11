@@ -9,6 +9,7 @@ import com.peashoot.blog.batis.service.OperateRecordService;
 import com.peashoot.blog.context.response.ApiResp;
 import com.peashoot.blog.exception.FilePathCreateFailureException;
 import com.peashoot.blog.util.IoUtils;
+import com.peashoot.blog.util.IpUtils;
 import com.peashoot.blog.util.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
@@ -59,7 +61,8 @@ public class FileController {
      * @return 服务器本地文件名
      */
     @PostMapping("local/upload")
-    public ApiResp<String> uploadFileInfo(@RequestParam Long visitorId, @RequestParam(required = false) Integer sysUserId,
+    public ApiResp<String> uploadFileInfo(HttpServletRequest request,
+                                          @RequestParam Long visitorId, @RequestParam(required = false) Integer sysUserId,
                                           @RequestParam FileTypeEnum type, @RequestParam MultipartFile file)
             throws IOException, FilePathCreateFailureException {
         ApiResp<String> resp = new ApiResp<>();
@@ -77,7 +80,7 @@ public class FileController {
         FileDO fileEntity = new FileDO(visitorId, sysUserId, type, localFilePath, netFileUrl, md5);
         fileEntity.setOriginalName(file.getName());
         fileEntity.setId(uuid);
-        operateRecordService.insertNewRecordAsync(visitorId, uuid, VisitActionEnum.UPLOAD_FILE, new Date(), "Upload local file to " + localFilePath);
+        operateRecordService.insertNewRecordAsync(visitorId, uuid, IpUtils.getIpAddr(request), VisitActionEnum.UPLOAD_FILE, new Date(), "Upload local file to " + localFilePath);
         if (fileService.insert(fileEntity) > 0) {
             resp.success().setData(netFileUrl);
         }
@@ -94,7 +97,8 @@ public class FileController {
      * @return 服务器本地文件名
      */
     @PostMapping(path = "net/sync")
-    public ApiResp<String> downloadFileFrom(@RequestParam Long visitorId, @RequestParam(required = false) Integer sysUserId,
+    public ApiResp<String> downloadFileFrom(HttpServletRequest request,
+                                            @RequestParam Long visitorId, @RequestParam(required = false) Integer sysUserId,
                                             @RequestParam String originalNetUrl, @RequestParam FileTypeEnum type)
             throws IOException, FilePathCreateFailureException {
         ApiResp<String> resp = new ApiResp<>();
@@ -112,7 +116,7 @@ public class FileController {
         FileDO fileEntity = new FileDO(visitorId, sysUserId, type, localFilePath, netFileUrl, md5);
         fileEntity.setOriginalNetUrl(originalNetUrl);
         fileEntity.setId(uuid);
-        operateRecordService.insertNewRecordAsync(visitorId, uuid, VisitActionEnum.UPLOAD_FILE, new Date(), "Download net file to " + localFilePath);
+        operateRecordService.insertNewRecordAsync(visitorId, uuid, IpUtils.getIpAddr(request), VisitActionEnum.UPLOAD_FILE, new Date(), "Download net file to " + localFilePath);
         if (fileService.insert(fileEntity) > 0) {
             resp.success().setData(netFileUrl);
         }

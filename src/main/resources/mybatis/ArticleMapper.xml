@@ -226,26 +226,26 @@
         <include refid="Base_Column_List"/>
         from bg_article where 1=1
         <if test="@com.peashoot.blog.util.StringUtils@isNotNullOrEmpty(authorLike)">
-            and author like %#{authorLike, jdbcType=VARCHAR}%
+            and author like concat('%', #{authorLike, jdbcType=VARCHAR}, '%')
         </if>
         <if test="@com.peashoot.blog.util.StringUtils@isNotNullOrEmpty(keywordLike)">
-            and keywords like %#{keywordLike, jdbcType=VARCHAR}%
+            and keywords like concat('%', #{keywordLike, jdbcType=VARCHAR}, '%')
         </if>
         <if test="@com.peashoot.blog.util.StringUtils@isNotNullOrEmpty(titleLike)">
-            and title like %#{titleLike, jdbcType=VARCHAR}%
+            and title like concat('%', #{titleLike, jdbcType=VARCHAR}, '%')
         </if>
         order by id limit #{indexStart, jdbcType=INTEGER},#{selectCount, jdbcType=INTEGER}
     </select>
-    <select id="countTotalRecords">
+    <select id="countTotalRecords" resultType="java.lang.Integer">
         select count(1) from bg_article where 1=1
         <if test="@com.peashoot.blog.util.StringUtils@isNotNullOrEmpty(authorLike)">
-            and author like %#{authorLike, jdbcType=VARCHAR}%
+            and author like concat('%', #{authorLike, jdbcType=VARCHAR}, '%')
         </if>
         <if test="@com.peashoot.blog.util.StringUtils@isNotNullOrEmpty(keywordLike)">
-            and keywords like %#{keywordLike, jdbcType=VARCHAR}%
+            and keywords like concat('%', #{keywordLike, jdbcType=VARCHAR}, '%')
         </if>
         <if test="@com.peashoot.blog.util.StringUtils@isNotNullOrEmpty(titleLike)">
-            and title like %#{titleLike, jdbcType=VARCHAR}%
+            and title like concat('%', #{titleLike, jdbcType=VARCHAR}, '%')
         </if>
     </select>
     <select id="selectByPrimaryKeyForUpdate" parameterType="java.lang.Integer" resultMap="BaseResultMap">

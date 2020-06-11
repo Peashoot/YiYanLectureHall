@@ -10,10 +10,9 @@
         <result column="location" jdbcType="VARCHAR" property="location"/>
         <result column="browser" jdbcType="VARCHAR" property="browser"/>
         <result column="os" jdbcType="VARCHAR" property="os"/>
-        <result column="roleIds" jdbcType="VARCHAR" property="roleIds"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, visitor, sysUserName, firstVisitTime, visitFromIp, location, browser, os, roleIds
+        id, visitor, sysUserName, firstVisitTime, visitFromIp, location, browser, os
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
@@ -34,10 +33,10 @@
     <insert id="insert" parameterType="com.peashoot.blog.batis.entity.VisitorDO">
         insert into bg_visitor (id, visitor, sysUserName,
                                 firstVisitTime, visitFromIp, location,
-                                browser, os, roleIds)
+                                browser, os)
         values (#{id,jdbcType=BIGINT}, #{visitor,jdbcType=VARCHAR}, #{sysUserName,jdbcType=VARCHAR},
                 #{firstVisitTime,jdbcType=BIGINT}, #{visitFromIp,jdbcType=VARCHAR}, #{location,jdbcType=VARCHAR},
-                #{browser,jdbcType=VARCHAR}, #{os,jdbcType=VARCHAR}, #{roleIds,jdbcType=VARCHAR})
+                #{browser,jdbcType=VARCHAR}, #{os,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.peashoot.blog.batis.entity.VisitorDO">
         insert into bg_visitor
@@ -66,9 +65,6 @@
             <if test="os != null">
                 os,
             </if>
-            <if test="roleIds != null">
-                roleIds,
-            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -95,9 +91,6 @@
             <if test="os != null">
                 #{os,jdbcType=VARCHAR},
             </if>
-            <if test="roleIds != null">
-                #{roleIds,jdbcType=VARCHAR},
-            </if>
         </trim>
     </insert>
     <update id="updateByPrimaryKeySelective" parameterType="com.peashoot.blog.batis.entity.VisitorDO">
@@ -122,10 +115,7 @@
                 browser = #{browser,jdbcType=VARCHAR},
             </if>
             <if test="os != null">
-                os = #{os,jdbcType=VARCHAR},
-            </if>
-            <if test="roleIds != null">
-                roleIds = #{roleIds,jdbcType=VARCHAR},
+                os = #{os,jdbcType=VARCHAR}
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
@@ -138,24 +128,23 @@
             visitFromIp    = #{visitFromIp,jdbcType=VARCHAR},
             location       = #{location,jdbcType=VARCHAR},
             browser        = #{browser,jdbcType=VARCHAR},
-            os             = #{os,jdbcType=VARCHAR},
-            roleIds        = #{roleIds,jdbcType=VARCHAR}
+            os             = #{os,jdbcType=VARCHAR}
         where id = #{id,jdbcType=BIGINT}
     </update>
     <insert id="insertWithReturnRecordID" useGeneratedKeys="true" keyProperty="id"
             parameterType="com.peashoot.blog.batis.entity.VisitorDO">
         insert into bg_visitor (id, visitor, sysUserName,
                                 firstVisitTime, visitFromIp, location,
-                                browser, os, roleIds)
+                                browser, os)
         values (#{id,jdbcType=BIGINT}, #{visitor,jdbcType=VARCHAR}, #{sysUserName,jdbcType=VARCHAR},
-                #{firstVisitTime,jdbcType=TIMESTAMP}, #{visitFromIp,jdbcType=VARCHAR}, #{location,jdbcType=VARCHAR},
-                #{browser,jdbcType=VARCHAR}, #{os,jdbcType=VARCHAR}, #{roleIds,jdbcType=VARCHAR})
+                #{firstVisitTime,jdbcType=BIGINT}, #{visitFromIp,jdbcType=VARCHAR}, #{location,jdbcType=VARCHAR},
+                #{browser,jdbcType=VARCHAR}, #{os,jdbcType=VARCHAR})
     </insert>
     <select id="selectByIPAndBrowser" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from bg_visitor
-        where visitFromIp=#{visitIP,jdbcType=VARCHAR} and browser=#{broswer, jdbcType=VARCHAR}
+        where visitFromIp=#{visitIP,jdbcType=VARCHAR} and browser=#{browser, jdbcType=VARCHAR}
     </select>
     <select id="selectByVisitorName" resultMap="BaseResultMap">
         select

@@ -15,19 +15,17 @@ import com.peashoot.blog.batis.service.AuthService;
 import com.peashoot.blog.batis.service.SysUserService;
 import com.peashoot.blog.exception.UserNameOccupiedException;
 import com.peashoot.blog.exception.UserUnmatchedException;
+import com.peashoot.blog.util.IpUtils;
 import com.peashoot.blog.util.SecurityUtil;
-import com.peashoot.blog.util.modules.ILazyInitialize;
 import com.peashoot.blog.util.modules.Lazy;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
@@ -78,7 +76,7 @@ public class SysUserController {
     public ApiResp<String> loginByUserNameAndPassword(@RequestBody @Validated LoginUserDTO apiReq) {
         ApiResp<String> resp = new ApiResp<>();
         int userId = sysUserService.getIdByUsername(apiReq.getUsername());
-        operateRecordService.insertNewRecordAsync(userId, String.valueOf(userId), VisitActionEnum.USER_LOGIN, new Date(),
+        operateRecordService.insertNewRecordAsync(userId, String.valueOf(userId), apiReq.getVisitorIP(), VisitActionEnum.USER_LOGIN, new Date(),
                 "User " + apiReq.getUsername() + " try to login in.");
         String token = authService.login(apiReq.getUsername(), apiReq.getPassword(), apiReq.getVisitorIP(), apiReq.getBrowserFingerprint());
         resp.success().setData(token);
@@ -105,12 +103,12 @@ public class SysUserController {
         sysUser.initialize(new Date(), ImmutableList.of(roleNormalUserLazy.getInstance()), salt);
         ApiResp<Boolean> resp = new ApiResp<>();
         try {
-            operateRecordService.insertNewRecordAsync(apiReq.getVisitorId(), apiReq.getUsername(), VisitActionEnum.USER_REGISTER, new Date(),
+            operateRecordService.insertNewRecordAsync(apiReq.getVisitorId(), apiReq.getUsername(), apiReq.getVisitorIP(), VisitActionEnum.USER_REGISTER, new Date(),
                     "Visitor try to register " + apiReq.getUsername() + ".");
             boolean success = authService.insertSysUser(sysUser);
             resp.success().setData(success);
         } catch (UserNameOccupiedException ex) {
-            resp.setCode(HttpStatus.BAD_REQUEST.value());
+            resp.setCode(ApiResp.BAD_REQUEST);
             resp.setMessage("Failure to register.");
             resp.setData(false);
         }
@@ -132,7 +130,7 @@ public class SysUserController {
             throw new UserUnmatchedException();
         }
         int userId = sysUserService.getIdByUsername(apiReq.getUsername());
-        operateRecordService.insertNewRecordAsync(userId, String.valueOf(userId), VisitActionEnum.USER_CHANGE_PASSWORD, new Date(),
+        operateRecordService.insertNewRecordAsync(userId, String.valueOf(userId), apiReq.getVisitorIP(), VisitActionEnum.USER_CHANGE_PASSWORD, new Date(),
                 "User " + apiReq.getUsername() + " try to change password.");
         boolean success = authService.changePassword(apiReq.getUsername(), apiReq.getOldPassword(), apiReq.getNewPassword());
         ApiResp<Boolean> resp = new ApiResp<>();
@@ -157,19 +155,19 @@ public class SysUserController {
         SysUserDO sysUser = sysUserService.selectById(apiReq.getId());
         ApiResp<Boolean> resp = new ApiResp<>();
         if (sysUser == null) {
-            resp.setCode(301);
+            resp.setCode(ApiResp.NO_RECORD_MATCH);
             resp.setMessage("Please check your account carefully.");
             resp.setData(false);
             return resp;
         }
         apiReq.copyTo(sysUser);
-        operateRecordService.insertNewRecordAsync(sysUser.getId(), sysUser.getId().toString(), VisitActionEnum.USER_CHANGE_INFORMATION, new Date(),
+        operateRecordService.insertNewRecordAsync(sysUser.getId(), sysUser.getId().toString(), apiReq.getVisitorIP(), VisitActionEnum.USER_CHANGE_INFORMATION, new Date(),
                 "User " + sysUser.getUsername() + " try to change information.");
         boolean result = sysUserService.update(sysUser) > 0;
         if (result) {
             resp.success().setData(true);
         } else {
-            resp.setCode(501);
+            resp.setCode(ApiResp.PROCESS_ERROR);
             resp.setMessage("Failure to change information.");
             resp.setData(false);
         }
@@ -179,10 +177,10 @@ public class SysUserController {
     @RequestMapping(path = "logout")
     @ApiOperation("用户登出")
     @PreAuthorize("hasAuthority('logout')")
-    public ApiResp<Boolean> logOut(@RequestParam String username) {
+    public ApiResp<Boolean> logOut(HttpServletRequest request, @RequestParam String username) {
         ApiResp<Boolean> resp = new ApiResp<Boolean>().success();
         int userId = sysUserService.getIdByUsername(username);
-        operateRecordService.insertNewRecordAsync(userId, String.valueOf(userId), VisitActionEnum.USER_LOGOUT, new Date(),
+        operateRecordService.insertNewRecordAsync(userId, String.valueOf(userId), IpUtils.getIpAddr(request), VisitActionEnum.USER_LOGOUT, new Date(),
                 "User " + username + " try to log out.");
         resp.setData(authService.logOut(username));
         return resp;
@@ -190,19 +188,28 @@ public class SysUserController {
 
     @RequestMapping(path = "apply/resetPwd")
     @ApiOperation("申请重置密码")
-    @PreAuthorize("hasAuthority('apply_reset_pwd')")
-    public ApiResp<Boolean> applyResetPassword(@RequestParam @NotNull @Validated String username) {
+    public ApiResp<Boolean> applyResetPassword(HttpServletRequest request, @RequestParam @NotNull @Validated String username) {
         ApiResp<Boolean> resp = new ApiResp<>();
         SysUserDO user = (SysUserDO) sysUserService.loadUserByUsername(username);
         if (user == null) {
-            resp.setCode(301);
+            resp.setCode(ApiResp.NO_RECORD_MATCH);
             resp.setMessage("Please check you account carefully.");
             return resp;
         }
-        operateRecordService.insertNewRecordAsync(user.getId(), user.getId().toString(), VisitActionEnum.USER_APPLY_RETRIEVE_PASSWORD, new Date(),
+        if (!sysUserService.lockUser(username, new Date())) {
+            resp.setCode(ApiResp.PROCESS_ERROR);
+            resp.setMessage("Failure to lock account.");
+            return resp;
+        }
+        operateRecordService.insertNewRecordAsync(user.getId(), user.getId().toString(), IpUtils.getIpAddr(request), VisitActionEnum.USER_APPLY_RETRIEVE_PASSWORD, new Date(),
                 "User " + username + " apply to change password.");
+        if (!authService.sendResetPasswordEmail(user)) {
+            resp.setCode(ApiResp.PROCESS_ERROR);
+            resp.setMessage("Failure to send reset email");
+            return resp;
+        }
         // 发送邮件到用户注册邮箱
-        resp.success().setData(authService.sendResetPasswordEmail(user));
+        resp.success().setData(true);
         return resp;
     }
 
@@ -211,28 +218,15 @@ public class SysUserController {
     @PreAuthorize("hasAuthority('reset_pwd')")
     public ApiResp<Boolean> resetPassword(@RequestParam("applyId") String applySerial, @RequestBody ChangePwdDTO changePwd) {
         int userId = sysUserService.getIdByUsername(changePwd.getUsername());
-        operateRecordService.insertNewRecordAsync(userId, String.valueOf(userId), VisitActionEnum.USER_RETRIEVE_PASSWORD, new Date(),
+        operateRecordService.insertNewRecordAsync(userId, String.valueOf(userId), changePwd.getVisitorIP(), VisitActionEnum.USER_RETRIEVE_PASSWORD, new Date(),
                 "User " + changePwd.getUsername() + " try to retrieve password.");
-        boolean success = authService.resetPassword(changePwd.getUsername(), applySerial, changePwd.getNewPassword());
         ApiResp<Boolean> resp = new ApiResp<>();
-        resp.success().setData(success);
-        return resp;
-    }
-
-    @RequestMapping(path = "retrieve")
-    @PreAuthorize("hasAuthority('apply_retrieve')")
-    public ApiResp<Boolean> applyRetrieveAccount(@RequestParam("applyEmail") String applyEmail) {
-        ApiResp<Boolean> resp = new ApiResp<>();
-        resp.setCode(406);
-        resp.setMessage("Failure to apply retrieve account.");
-        SysUserDO user = (SysUserDO) sysUserService.loadUserByUsername(applyEmail);
-        if (user == null) {
+        if (!authService.resetPassword(changePwd.getUsername(), applySerial, changePwd.getNewPassword())) {
+            resp.setCode(ApiResp.PROCESS_ERROR);
+            resp.setMessage("Failure to reset password");
             return resp;
         }
-        operateRecordService.insertNewRecordAsync(user.getId(), user.getId().toString(), VisitActionEnum.USER_APPLY_RETRIEVE_ACCOUNT, new Date(),
-                "User " + user.getUsername() + " apply to change password.");
-        // 发送邮件到用户注册邮箱
-        resp.success().setData(authService.sendRetrieveAccount(user));
+        resp.success().setData(true);
         return resp;
     }
 }

@@ -58,9 +58,10 @@ CREATE TABLE IF NOT EXISTS `bg_operaterecord`
 (
     `id`              bigint(20)    NOT NULL AUTO_INCREMENT COMMENT '访客或系统操作员操作记录id',
     `operatorId`      bigint(20)    NOT NULL COMMENT '访客或系统操作员id',
+    `ip`              varchar(50)   NOT NULL DEFAULT 'unknown' COMMENT '操作ip',
     `action`          int(11)       NOT NULL COMMENT '行为',
     `operateObjectId` varchar(50)   NOT NULL COMMENT '操作对象',
-    `record`          varchar(1023) NULL DEFAULT NULL COMMENT '操作记录文字描述',
+    `record`          varchar(1023) NULL     DEFAULT NULL COMMENT '操作记录文字描述',
     `actionTime`      bigint(20)    NOT NULL COMMENT '操作时间',
     `actionResult`    bit(1)        NOT NULL COMMENT '操作状态 0 失败 1 成功',
     `operatorType`    int(11)       NOT NULL COMMENT '0 访客 1 系统操作员',
@@ -78,7 +79,7 @@ CREATE TABLE IF NOT EXISTS `bg_operaterecord`
 -- ----------------------------
 CREATE TABLE IF NOT EXISTS `bg_article`
 (
-    `id`           varchar(32)   NOT NULL  COMMENT '记录id',
+    `id`           varchar(32)   NOT NULL COMMENT '记录id',
     `author`       varchar(50)   NOT NULL COMMENT '作者',
     `title`        varchar(255)  NOT NULL COMMENT '标题',
     `keywords`     varchar(255)  NOT NULL COMMENT '关键词(多个关键词用“;”隔开)',
@@ -88,11 +89,11 @@ CREATE TABLE IF NOT EXISTS `bg_article`
     `modifyTime`   bigint(20)    NOT NULL COMMENT '修改时间',
     `modifyUserId` int(11)       NOT NULL COMMENT '修改用户',
     `status`       int(11)       NOT NULL COMMENT '文章状态 0：编辑中；200：已发布；400：已删除',
-    `overview`     varchar(1023) NULL DEFAULT NULL COMMENT '文章概述',
-    `pageView`     bigint(20)    NOT NULL COMMENT '浏览量',
+    `overview`     varchar(1023) NULL     DEFAULT NULL COMMENT '文章概述',
+    `pageView`     bigint(20)    NOT NULL DEFAULT 0 COMMENT '浏览量',
     `articleUrl`   varchar(255)  NOT NULL COMMENT '文章URL连接',
-    `supportCount` int(11)       NOT NULL COMMENT '赞成数',
-    `againstCount` int(11)       NOT NULL COMMENT '反对数',
+    `supportCount` int(11)       NOT NULL DEFAULT 0 COMMENT '赞成数',
+    `againstCount` int(11)       NOT NULL DEFAULT 0 COMMENT '反对数',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX `index_bg_article_author` (`author`) USING BTREE COMMENT '作者索引',
     INDEX `index_bg_article_createtime` (`createTime`) USING BTREE COMMENT '创建时间索引',
@@ -128,12 +129,12 @@ CREATE TABLE IF NOT EXISTS `bg_comment`
 DROP TABLE IF EXISTS `bg_exceptionrecord`;
 CREATE TABLE `bg_exceptionrecord`
 (
-    `id`           bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '记录id',
-    `className`    varchar(255) NOT NULL COMMENT '异常类名称',
-    `methodName`   varchar(255) NOT NULL COMMENT '异常方法名称',
-    `paramValues`  varchar(255) NOT NULL COMMENT '产生异常时，方法的传入参数值',
+    `id`           bigint(20)    NOT NULL AUTO_INCREMENT COMMENT '记录id',
+    `className`    varchar(255)  NOT NULL COMMENT '异常类名称',
+    `methodName`   varchar(255)  NOT NULL COMMENT '异常方法名称',
+    `paramValues`  varchar(255)  NOT NULL COMMENT '产生异常时，方法的传入参数值',
     `exceptionMsg` varchar(2048) NOT NULL COMMENT '错误说明',
-    `appearTime`   bigint(20)   NOT NULL COMMENT '发生异常的时间',
+    `appearTime`   bigint(20)    NOT NULL COMMENT '发生异常的时间',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX `index_bg_exceptionrecord_classname` (`className`) USING BTREE COMMENT '类名索引',
     INDEX `index_bg_exceptionrecord_methodname` (`methodName`) USING BTREE COMMENT '方法名索引'
@@ -176,7 +177,6 @@ CREATE TABLE `bg_visitor`
     `location`       varchar(255) NULL DEFAULT NULL COMMENT '根据IP地址查询到的访问地址',
     `browser`        varchar(255) NOT NULL COMMENT '浏览器指纹',
     `os`             varchar(30)  NOT NULL COMMENT '操作系统',
-    `roleIds`        varchar(255) NOT NULL COMMENT '角色id列表（多个id用\',\'隔开）',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
@@ -190,7 +190,7 @@ CREATE TABLE `bg_role`
 (
     `id`           int(11)      NOT NULL AUTO_INCREMENT COMMENT '记录id',
     `roleName`     varchar(50)  NOT NULL COMMENT '角色名称，ROLE_开头',
-    `permissions`   varchar(511) NOT NULL COMMENT '权限',
+    `permissions`  varchar(511) NOT NULL COMMENT '权限',
     `insertUserId` int(11)      NOT NULL COMMENT '新增用户id',
     `insertTime`   bigint(20)   NOT NULL COMMENT '新增时间',
     `updateUserId` int(11)      NOT NULL COMMENT '修改用户id',

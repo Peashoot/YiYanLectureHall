@@ -24,12 +24,12 @@ public class VisitorVisitInfoDTO extends BaseApiReq {
     /**
      * 创建访问者信息
      * @param visitorName 访问者名称
-     * @param firstVisitTimestamp 第一次访问时间戳
+     * @param firstVisitTime 第一次访问时间戳
      * @return 访问者数据库对象
      */
-    public VisitorDO createNewInstance(String visitorName, long firstVisitTimestamp) {
+    public VisitorDO createNewInstance(String visitorName, Date firstVisitTime) {
         VisitorDO visitor =  new VisitorDO();
-        visitor.setFirstVisitTimestamp(firstVisitTimestamp);
+        visitor.setFirstVisitTime(firstVisitTime);
         visitor.setVisitFromIp(getVisitorIP());
         visitor.setVisitor(visitorName);
         visitor.setBrowser(getBrowserFingerprint());

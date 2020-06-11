@@ -76,7 +76,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.js"
                 ).permitAll()
                 // 对于获取token的rest api要允许匿名访问
-                .antMatchers("/user/**").permitAll()
+                .antMatchers("/user/login").permitAll()
+                .antMatchers("/user/register").permitAll()
+                .antMatchers("/user/apply/resetPwd").permitAll()
+                .antMatchers("/visitor/**").permitAll()
                 .antMatchers("/admin/**").hasIpAddress("127.0.0.1")
                 .antMatchers("/admin/**").access("hasAuthority('ROLE_ADMIN')")
                 //.anyRequest().authenticated().and().formLogin().loginPage("/login")

@@ -24,7 +24,7 @@
         from bg_role r
                  left join bg_sysuser i on (r.insertUserId = i.id)
                  left join bg_sysuser u on (r.insertUserId = u.id)
-        where id = #{id,jdbcType=INTEGER}
+        where r.id = #{id,jdbcType=INTEGER}
     </select>
     <select id="selectAll" resultType="com.peashoot.blog.batis.entity.RoleDO">
         select
@@ -145,6 +145,6 @@
         from bg_role r
                  left join bg_sysuser i on (r.insertUserId = i.id)
                  left join bg_sysuser u on (r.insertUserId = u.id)
-        where roleName = #{roleName,jdbcType=VARCHAR}
+        where r.roleName = #{roleName,jdbcType=VARCHAR}
     </select>
 </mapper>

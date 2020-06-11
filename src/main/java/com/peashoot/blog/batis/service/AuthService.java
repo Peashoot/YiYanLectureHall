@@ -60,17 +60,10 @@ public interface AuthService {
     /**
      * 重置密码
      *
-     * @param username
-     * @param applySerial
-     * @param newPassword
-     * @return
+     * @param username 用户名
+     * @param applySerial 申请单号
+     * @param newPassword 新密码
+     * @return 是否重置成功
      */
     boolean resetPassword(String username, String applySerial, String newPassword);
-
-    /**
-     * 发送找回账号邮件
-     * @param sysUser 用户信息
-     * @return 是否成功
-     */
-    boolean sendRetrieveAccount(SysUserDO sysUser);
 }

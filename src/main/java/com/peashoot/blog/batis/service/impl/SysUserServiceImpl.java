@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service("sysUserService")
@@ -67,5 +68,10 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public int getIdByUsername(String username) {
         return sysuserMapper.getIdByUsername(username);
+    }
+
+    @Override
+    public boolean lockUser(String username, Date lockDate) {
+        return sysuserMapper.lockUser(username, lockDate) > 0;
     }
 }

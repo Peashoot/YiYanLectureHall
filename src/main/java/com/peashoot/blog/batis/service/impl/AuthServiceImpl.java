@@ -150,11 +150,6 @@ public class AuthServiceImpl implements AuthService {
         return updateUserPassword(username, newPwd);
     }
 
-    @Override
-    public boolean sendRetrieveAccount(SysUserDO sysUser) {
-        return false;
-    }
-
     /**
      * 更新用户密码
      *

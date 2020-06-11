@@ -37,7 +37,6 @@
         <result column="r_updateUserId" jdbcType="INTEGER" property="updateUserId"/>
         <result column="r_updateTime" jdbcType="BIGINT" property="updateTime"/>
     </resultMap>
-    <!-- 使用resultMap的<collection>标签进行一对多查询 -->
     <resultMap id="userRolesMap" extends="BaseResultMap" type="com.peashoot.blog.batis.entity.SysUserDO">
         <!-- 角色的集合 -->
         <collection property="roles" ofType="com.peashoot.blog.batis.entity.RoleDO">
@@ -366,7 +365,6 @@
         from bg_sysuser
         where username = #{username, jdbcType=VARCHAR};
     </select>
-    <!-- 使用resultMap的<collection>标签进行一对多查询 -->
     <select id="selectWithRolesById" resultMap="userRolesMap">
         select
         u.id,
@@ -443,4 +441,9 @@
         where u.username = #{usernameOrEmail,jdbcType=VARCHAR}
            or u.email = #{usernameOrEmail,jdbcType=VARCHAR}
     </select>
+    <update id="lockUser">
+        update bg_sysuser
+        set accountLockedTime = #{accountLockedTime,jdbcType=BIGINT}
+        where username = #{username, jdbcType=VARCHAR} or email = #{username, jdbcType=VARCHAR}
+    </update>
 </mapper>

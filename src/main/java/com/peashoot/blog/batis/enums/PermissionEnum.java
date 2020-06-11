@@ -39,13 +39,21 @@ public enum PermissionEnum implements BaseEnum<PermissionEnum, String> {
      */
     USER_RESET_PWD("reset_pwd"),
     /**
-     * 账号
-     */
-    USER_RETRIEVE_ACCOUNT("retrieve"),
-    /**
      * 新增或修改角色
      */
-    ROLE_MODIFY("role_modify")
+    ROLE_MODIFY("role_modify"),
+    /**
+     * 删除角色
+     */
+    ROLE_REMOVE("role_remove"),
+    /**
+     * 添加或修改文章
+     */
+    ARTICLE_MODIFY("article_modify"),
+    /**
+     * 删除文章
+     */
+    ARTICLE_REMOVE("article_remove"),
     ;
 
     private PermissionEnum(String value) {

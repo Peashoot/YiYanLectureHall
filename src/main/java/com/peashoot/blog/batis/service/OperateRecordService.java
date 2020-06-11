@@ -30,10 +30,11 @@ public interface OperateRecordService extends InsertService<OperateRecordDO>,
      * 异步新增一条记录
      * @param visitorId 访客id
      * @param objectId 操作对象id
+     * @param visitIp 操作ip
      * @param action 操作类型
      * @param operateDate 操作时间
      * @param record 操作具体内容
      * @return 是否新增成功
      */
-    Future<Boolean> insertNewRecordAsync(long visitorId, String objectId, VisitActionEnum action, Date operateDate, String record);
+    Future<Boolean> insertNewRecordAsync(long visitorId, String objectId, String visitIp, VisitActionEnum action, Date operateDate, String record);
 }

@@ -1,6 +1,7 @@
 package com.peashoot.blog.context.request.article;
 
 import com.peashoot.blog.batis.entity.ArticleDO;
+import com.peashoot.blog.context.request.BaseApiReq;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,7 +11,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString(callSuper = true, includeFieldNames = false)
-public class ChangedArticleDTO {
+public class ChangedArticleDTO extends BaseApiReq {
     /**
      * 记录id
      */

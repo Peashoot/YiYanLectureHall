@@ -72,11 +72,11 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public List<ArticleDO> listPagedArticles(int pageSize, int pageIndex, String authorLike, String keywordLike, String titleLike) {
-        return articleMapper.listPagedArticles(pageSize * pageIndex, pageIndex, authorLike, keywordLike, titleLike);
+        return articleMapper.listPagedArticles(pageSize * pageIndex, pageSize, authorLike, keywordLike, titleLike);
     }
 
     @Override
-    public int countTotalRecords(String keywordLike, String authorLike, String titleLike) {
+    public int countTotalRecords(String authorLike, String keywordLike, String titleLike) {
         return articleMapper.countTotalRecords(authorLike, keywordLike, titleLike);
     }
 
