@@ -9,6 +9,7 @@ import lombok.ToString;
 @Setter
 @ToString(callSuper = true, includeFieldNames = false)
 public class ArticleIntroductionDTO {
+    private String articleId;
     /**
      * 标题
      */
@@ -34,6 +35,7 @@ public class ArticleIntroductionDTO {
      */
     public static ArticleIntroductionDTO createArticlesInfo(ArticleDO articleEntity) {
         ArticleIntroductionDTO articleInfo = new ArticleIntroductionDTO();
+        articleInfo.articleId = articleEntity.getId();
         articleInfo.title = articleEntity.getTitle();
         articleInfo.keywords = articleEntity.getKeywords();
         articleInfo.overview = articleEntity.getOverview();

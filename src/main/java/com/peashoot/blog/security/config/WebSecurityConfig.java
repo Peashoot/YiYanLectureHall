@@ -79,6 +79,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user/login").permitAll()
                 .antMatchers("/user/register").permitAll()
                 .antMatchers("/user/apply/resetPwd").permitAll()
+                .antMatchers("/article/reviews").permitAll()
                 .antMatchers("/visitor/**").permitAll()
                 .antMatchers("/admin/**").hasIpAddress("127.0.0.1")
                 .antMatchers("/admin/**").access("hasAuthority('ROLE_ADMIN')")

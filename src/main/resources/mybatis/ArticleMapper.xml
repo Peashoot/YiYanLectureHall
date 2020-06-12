@@ -18,22 +18,42 @@
         <result column="supportCount" jdbcType="INTEGER" property="supportCount"/>
         <result column="againstCount" jdbcType="INTEGER" property="againstCount"/>
     </resultMap>
+    <resultMap id="JoinUserMap" type="com.peashoot.blog.batis.entity.ArticleDO" extends="BaseResultMap">
+        <result column="create_id" jdbcType="INTEGER" property="createUser.id"/>
+        <result column="create_username" jdbcType="VARCHAR" property="createUser.username"/>
+        <result column="create_nickName" jdbcType="VARCHAR" property="createUser.nickName"/>
+        <result column="create_email" jdbcType="VARCHAR" property="createUser.email"/>
+        <result column="modify_id" jdbcType="INTEGER" property="modifyUser.id"/>
+        <result column="modify_username" jdbcType="VARCHAR" property="modifyUser.username"/>
+        <result column="modify_nickName" jdbcType="VARCHAR" property="modifyUser.nickName"/>
+        <result column="modify_email" jdbcType="VARCHAR" property="modifyUser.email"/>
+    </resultMap>
     <sql id="Base_Column_List">
         id, author, title, keywords, filePath, createTime, createUserId, modifyTime, modifyUserId,
         status, overview, pageView, articleUrl, supportCount, againstCount
     </sql>
-    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <sql id="Join_User_List">
+        a.id, a.author, a.title, a.keywords, a.filePath, a.createTime, a.createUserId, a.modifyTime, a.modifyUserId,
+        a.status, a.overview, a.pageView, a.articleUrl, a.supportCount, a.againstCount, c.id "create_id",
+        c.username "create_username", c.nickName "create_nickName", c.email "create_email", m.id "modify_id",
+        m.username "modify_username", m.nickName "modify_nickName", m.email "modify_email"
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="JoinUserMap">
         select
-        <include refid="Base_Column_List"/>
-        from bg_article
-        where id = #{id,jdbcType=VARCHAR}
+        <include refid="Join_User_List"/>
+        from bg_article a
+        LEFT JOIN bg_sysuser c ON a.createUserId = c.id
+        LEFT JOIN bg_sysuser m ON a.modifyUserId = m.id
+        where a.id = #{id,jdbcType=VARCHAR}
     </select>
-    <select id="selectAll" resultMap="BaseResultMap">
+    <select id="selectAll" resultMap="JoinUserMap">
         select
-        <include refid="Base_Column_List"/>
-        from bg_article
+        <include refid="Join_User_List"/>
+        from bg_article a
+        LEFT JOIN bg_sysuser c ON a.createUserId = c.id
+        LEFT JOIN bg_sysuser m ON a.modifyUserId = m.id
     </select>
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
         delete
         from bg_article
         where id = #{id,jdbcType=VARCHAR}
@@ -42,7 +62,7 @@
         delete from bg_article
         where id in (
         <foreach collection="articleIds" item="id" index="index" separator=",">
-            #{id,jdbcType=INTEGER}
+            #{id,jdbcType=VARCHAR}
         </foreach>
         )
     </delete>
@@ -221,20 +241,23 @@
             againstCount = #{againstCount,jdbcType=INTEGER}
         where id = #{id,jdbcType=VARCHAR}
     </update>
-    <select id="listPagedArticles" resultMap="BaseResultMap">
+    <select id="listPagedArticles" resultMap="JoinUserMap">
         select
-        <include refid="Base_Column_List"/>
-        from bg_article where 1=1
+        <include refid="Join_User_List"/>
+        from bg_article a
+        LEFT JOIN bg_sysuser c ON a.createUserId = c.id
+        LEFT JOIN bg_sysuser m ON a.modifyUserId = m.id
+        where 1=1
         <if test="@com.peashoot.blog.util.StringUtils@isNotNullOrEmpty(authorLike)">
-            and author like concat('%', #{authorLike, jdbcType=VARCHAR}, '%')
+            and a.author like concat('%', #{authorLike, jdbcType=VARCHAR}, '%')
         </if>
         <if test="@com.peashoot.blog.util.StringUtils@isNotNullOrEmpty(keywordLike)">
-            and keywords like concat('%', #{keywordLike, jdbcType=VARCHAR}, '%')
+            and a.keywords like concat('%', #{keywordLike, jdbcType=VARCHAR}, '%')
         </if>
         <if test="@com.peashoot.blog.util.StringUtils@isNotNullOrEmpty(titleLike)">
-            and title like concat('%', #{titleLike, jdbcType=VARCHAR}, '%')
+            and a.title like concat('%', #{titleLike, jdbcType=VARCHAR}, '%')
         </if>
-        order by id limit #{indexStart, jdbcType=INTEGER},#{selectCount, jdbcType=INTEGER}
+        order by a.id limit #{indexStart, jdbcType=INTEGER},#{selectCount, jdbcType=INTEGER}
     </select>
     <select id="countTotalRecords" resultType="java.lang.Integer">
         select count(1) from bg_article where 1=1
@@ -248,10 +271,12 @@
             and title like concat('%', #{titleLike, jdbcType=VARCHAR}, '%')
         </if>
     </select>
-    <select id="selectByPrimaryKeyForUpdate" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectByPrimaryKeyForUpdate" parameterType="java.lang.String" resultMap="JoinUserMap">
         select
-        <include refid="Base_Column_List"/>
-        from bg_article
-        where id = #{id,jdbcType=VARCHAR} for update
+        <include refid="Join_User_List"/>
+        from bg_article a
+        LEFT JOIN bg_sysuser c ON a.createUserId = c.id
+        LEFT JOIN bg_sysuser m ON a.modifyUserId = m.id
+        where a.id = #{id,jdbcType=VARCHAR} for update
     </select>
 </mapper>

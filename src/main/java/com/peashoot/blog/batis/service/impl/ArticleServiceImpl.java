@@ -14,11 +14,9 @@ import java.util.List;
 @Service("articleService")
 public class ArticleServiceImpl implements ArticleService {
     private final ArticleMapper articleMapper;
-    private final SysUserMapper sysuserMapper;
 
     public ArticleServiceImpl(ArticleMapper articleMapper, SysUserMapper sysuserMapper) {
         this.articleMapper = articleMapper;
-        this.sysuserMapper = sysuserMapper;
     }
 
     @Override
@@ -43,27 +41,16 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public List<ArticleDO> selectAll() {
-        List<ArticleDO> retList = articleMapper.selectAll();
-        for (ArticleDO article : retList) {
-            article.setCreateUser(sysuserMapper.selectByPrimaryKey(article.getCreateUserId()));
-            article.setModifyUser(sysuserMapper.selectByPrimaryKey(article.getModifyUserId()));
-        }
-        return retList;
+        return articleMapper.selectAll();
     }
 
     @Override
     public ArticleDO selectById(String id) {
-        ArticleDO article = articleMapper.selectByPrimaryKey(id);
-        article.setCreateUser(sysuserMapper.selectByPrimaryKey(article.getCreateUserId()));
-        article.setModifyUser(sysuserMapper.selectByPrimaryKey(article.getModifyUserId()));
-        return article;
+        return articleMapper.selectByPrimaryKey(id);
     }
 
     @Override
     public int update(ArticleDO updateItem) {
-        if (updateItem.getCreateUser() != null) {
-            updateItem.setCreateUserId(updateItem.getCreateUser().getId());
-        }
         if (updateItem.getModifyUser() != null) {
             updateItem.setModifyUserId(updateItem.getModifyUser().getId());
         }

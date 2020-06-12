@@ -1,12 +1,15 @@
 package com.peashoot.blog.redis.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.peashoot.blog.aspect.annotation.VisitLimit;
 import com.peashoot.blog.redis.service.VisitLimitRedisService;
 import com.peashoot.blog.util.EncryptUtils;
 import com.peashoot.blog.util.StringUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -60,16 +63,18 @@ public class VisitLimitRedisServiceImpl implements VisitLimitRedisService {
         } else {
             try {
                 Matcher matcher = spanStartAndSpanCountPattern.matcher(limitCountString);
-                lastVisitTime = new Date(Long.valueOf(matcher.group(1)));
-                visitCount = Integer.valueOf(matcher.group(2));
-                // 如果上次统计时间超过了统计区间，刷新统计时间及访问次数
-                if (lastVisitTime.getTime() + visitLimit.interval() > visitTime.getTime()) {
-                    lastVisitTime = visitTime;
-                    visitCount = 1;
-                    result = true;
-                } else if (visitCount < visitLimit.value()) {
-                    visitCount++;
-                    result = true;
+                if (matcher.find()) {
+                    lastVisitTime = new Date(Long.valueOf(matcher.group(1)));
+                    visitCount = Integer.valueOf(matcher.group(2));
+                    // 如果上次统计时间超过了统计区间，刷新统计时间及访问次数
+                    if (lastVisitTime.getTime() + visitLimit.interval() > visitTime.getTime()) {
+                        lastVisitTime = visitTime;
+                        visitCount = 1;
+                        result = true;
+                    } else if (visitCount < visitLimit.value()) {
+                        visitCount++;
+                        result = true;
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -92,23 +97,25 @@ public class VisitLimitRedisServiceImpl implements VisitLimitRedisService {
     private boolean isLimitedVisitNotMaturityClear(String visitIp, String browserFingerprint, Date visitTime, VisitLimit visitLimit) {
         String notMaturityClearKey = "visit_limit_count_not_clear";
         String generateHashKey = EncryptUtils.md5Encrypt(visitIp + browserFingerprint);
-        List<Date> visitHistory = redisTemplate.<String, List<Date>>opsForHash().get(notMaturityClearKey, generateHashKey);
+        List<Long> visitHistory = redisTemplate.<String, List<Long>>opsForHash().get(notMaturityClearKey, generateHashKey);
         boolean result = false;
         if (visitHistory == null) {
-            visitHistory = new ArrayList<Date>() {{
-                add(visitTime);
+            visitHistory = new ArrayList<Long>() {{
+                add(visitTime.getTime());
             }};
             result = true;
         } else {
             // 移除不在统计时间区间内的访问时间
-            visitHistory.removeAll(visitHistory.stream().filter(i -> i.getTime() + visitLimit.interval() > visitTime.getTime()).collect(Collectors.toList()));
+            visitHistory.removeAll(visitHistory.stream()
+                    .filter(i -> i + visitLimit.interval() < visitTime.getTime())
+                    .collect(Collectors.toList()));
             // 如果统计时间段内访问次数达到限制
             if (visitHistory.size() < visitLimit.value()) {
-                visitHistory.add(visitTime);
+                visitHistory.add(visitTime.getTime());
                 result = true;
             }
         }
-        redisTemplate.<String, List<Date>>opsForHash().put(notMaturityClearKey, generateHashKey, visitHistory);
+        redisTemplate.<String, List<Long>>opsForHash().put(notMaturityClearKey, generateHashKey, visitHistory);
         return result;
     }
 }

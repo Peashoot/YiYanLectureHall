@@ -8,12 +8,15 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.util.Date;
 
 @Aspect
+@Component
 public class VisitLimitAspect {
     /**
      * 访问限制Redis操作服务
@@ -49,7 +52,8 @@ public class VisitLimitAspect {
             return joinPoint.proceed();
         }
         VisitLimit annotation = currentMethod.getDeclaredAnnotation(VisitLimit.class);
-        BaseApiReq apiReq = (BaseApiReq) joinPoint.getArgs()[1];
+        BaseApiReq apiReq = (BaseApiReq) joinPoint.getArgs()[0];
+
         if (visitLimitRedisService.isAllowVisit(apiReq.getVisitorIP(), apiReq.getBrowserFingerprint(), new Date(), annotation)) {
             return joinPoint.proceed();
         }

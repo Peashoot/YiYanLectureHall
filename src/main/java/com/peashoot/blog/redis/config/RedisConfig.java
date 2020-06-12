@@ -20,8 +20,8 @@ public class RedisConfig extends CachingConfigurerSupport {
      * @return
      */
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
-        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+    public StringRedisTemplate redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        StringRedisTemplate redisTemplate = new StringRedisTemplate();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
 
         FastJsonRedisSerializer<Object> fastJsonRedisSerializer = new FastJsonRedisSerializer<>(Object.class);

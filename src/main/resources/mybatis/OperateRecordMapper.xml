@@ -39,12 +39,13 @@
         <include refid="Base_Column_List"/>
         from bg_operaterecord
         where operatorId = #{visitorId,jdbcType=BIGINT} and operateObjectId=#{objectId, jdbcType=VARCHAR}
-        <if test="action != null">
+        <if test="actions != null">
             and action in (
             <foreach collection="actions" item="action" index="index" separator=",">
                 #{action,jdbcType=INTEGER}
             </foreach>
             )
         </if>
+        ORDER BY actionTime DESC LIMIT 1
     </select>
 </mapper>

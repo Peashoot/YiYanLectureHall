@@ -57,9 +57,6 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public int update(RoleDO updateItem) {
-        if (updateItem.getInsertUser() != null) {
-            updateItem.setInsertUserId(updateItem.getInsertUser().getId());
-        }
         if (updateItem.getUpdateUser() != null) {
             updateItem.setUpdateUserId(updateItem.getUpdateUser().getId());
         }

@@ -21,16 +21,13 @@ import com.peashoot.blog.util.SecurityUtil;
 import com.peashoot.blog.util.StringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -102,7 +99,7 @@ public class ArticleController {
         retResp.setMessage("Failure to save article.");
         boolean isInsert = StringUtils.isNullOrEmpty(apiReq.getId());
         ArticleDO articleEntity = isInsert ? new ArticleDO() : articleService.selectById(apiReq.getId());
-        if(articleEntity == null) {
+        if (articleEntity == null) {
             retResp.setCode(ApiResp.NO_RECORD_MATCH);
             retResp.setMessage("No match record");
             return retResp;
@@ -141,15 +138,15 @@ public class ArticleController {
      * @param id ArticleId
      * @return 是否删除成功
      */
-    @PostMapping(path = "delete")
+    @PostMapping(path = "remove")
     @ApiOperation("删除文章")
     @PreAuthorize("hasAuthority('article_remove')")
-    public ApiResp<Boolean> deleteArticle(HttpServletRequest request, @RequestParam("articleId") String id) {
+    public ApiResp<Boolean> deleteArticle(HttpServletRequest request, @RequestParam(value = "articleId") String id) {
         ApiResp<Boolean> retResp = new ApiResp<>();
         retResp.setCode(ApiResp.PROCESS_ERROR);
         retResp.setMessage("Failure to remove article.");
         ArticleDO articleEntity = articleService.selectById(id);
-        if(articleEntity == null) {
+        if (articleEntity == null) {
             retResp.setCode(ApiResp.NO_RECORD_MATCH);
             retResp.setMessage("No match record");
             return retResp;
@@ -181,7 +178,7 @@ public class ArticleController {
      */
     @PostMapping(path = "reviews")
     @ApiOperation("文章点赞或反对")
-    @VisitLimit(value = 5)
+    @VisitLimit(value = 5, maturityClear = false)
     public ApiResp<Boolean> agreeOrDisagreeArticle(@RequestBody ArticleAgreeDTO apiReq) {
         ApiResp<Boolean> resp = new ApiResp<>();
         resp.setCode(ApiResp.PROCESS_ERROR);
@@ -219,6 +216,8 @@ public class ArticleController {
                 break;
         }
         if (agree + disagree == 0) {
+            resp.setCode(ApiResp.BAD_REQUEST);
+            resp.setMessage("Repeat operation");
             return resp;
         }
         // 新增访客操作记录并修改评论点赞反对数
