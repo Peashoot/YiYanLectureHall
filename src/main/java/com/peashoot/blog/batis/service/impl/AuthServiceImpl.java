@@ -37,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
     /**
      * token头
      */
-    @Value("${peashoot.blog.http.jwt.tokenHead}")
+    @Value("${peashoot.blog.http.jwt.token-head}")
     private String tokenHead;
     /**
      * 登录过期时间

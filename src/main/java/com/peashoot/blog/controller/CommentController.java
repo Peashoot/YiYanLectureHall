@@ -1,7 +1,7 @@
 package com.peashoot.blog.controller;
 
 import com.peashoot.blog.aspect.annotation.ErrorRecord;
-import com.peashoot.blog.aspect.annotation.VisitLimit;
+import com.peashoot.blog.aspect.annotation.VisitTimesLimit;
 import com.peashoot.blog.batis.entity.CommentDO;
 import com.peashoot.blog.batis.enums.VisitActionEnum;
 import com.peashoot.blog.batis.entity.OperateRecordDO;
@@ -17,7 +17,6 @@ import com.peashoot.blog.context.response.comment.ArticleCommentDTO;
 import com.peashoot.blog.context.response.comment.PagedCommentsDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,18 +42,21 @@ public class CommentController {
     /**
      * 评论操作类
      */
-    @Autowired
-    private CommentService commentService;
+    private final CommentService commentService;
     /**
      * 访客操作类
      */
-    @Autowired
-    private VisitorService visitorService;
+    private final VisitorService visitorService;
     /**
      * 访客操作记录操作类
      */
-    @Autowired
-    private OperateRecordService visitRecordService;
+    private final OperateRecordService visitRecordService;
+
+    public CommentController(CommentService commentService, VisitorService visitorService, OperateRecordService visitRecordService) {
+        this.commentService = commentService;
+        this.visitorService = visitorService;
+        this.visitRecordService = visitRecordService;
+    }
 
     /**
      * 新增访客评论
@@ -64,11 +66,11 @@ public class CommentController {
      */
     @PostMapping(path = "insert")
     @ApiOperation("新增访客评论")
-    @VisitLimit(value = 5)
+    @VisitTimesLimit(value = 5)
     public ApiResp<Boolean> insertCommentOfVisitor(@RequestBody VisitorWithCommentDTO apiReq) {
         ApiResp<Boolean> resp = new ApiResp<>();
         CommentDO comment = apiReq.createCommentEntity();
-        visitRecordService.insertNewRecordAsync(apiReq.getVisitorId(), apiReq.getArticleId(), apiReq.getVisitorIP(), VisitActionEnum.COMMENT, new Date(), "Comment to article：" + apiReq.getArticleId());
+        visitRecordService.insertNewRecordAsync(apiReq.getVisitorId(), apiReq.getArticleId(), apiReq.getVisitorIp(), VisitActionEnum.COMMENT, new Date(), "Comment to article：" + apiReq.getArticleId());
         resp.success().setData(commentService.insert(comment) > 0);
         return resp;
     }
@@ -137,10 +139,10 @@ public class CommentController {
      */
     @PostMapping(path = "reviews")
     @ApiOperation("点赞或反对评论")
-    @VisitLimit(value = 5)
+    @VisitTimesLimit(value = 5)
     private ApiResp<Boolean> agreeOrDisagreeComment(@RequestBody CommentAgreeDTO apiReq) {
         ApiResp<Boolean> resp = new ApiResp<>();
-        resp.setCode(406);
+        resp.setCode(ApiResp.PROCESS_ERROR);
         resp.setMessage("Failure to action or disagree comment");
         OperateRecordDO visitRecordDO = visitRecordService.selectLastRecordByVisitorIdAndCommentId(apiReq.getVisitorId(), apiReq.getCommentId());
         int agree = 0, disagree = 0;
@@ -175,10 +177,12 @@ public class CommentController {
                 break;
         }
         if (agree + disagree == 0) {
+            resp.setCode(ApiResp.BAD_REQUEST);
+            resp.setMessage("Repeated operation.");
             return resp;
         }
         // 新增访客操作记录并修改评论点赞反对数
-        visitRecordService.insertNewRecordAsync(apiReq.getVisitorId(), apiReq.getCommentId().toString(), apiReq.getVisitorIP(), apiReq.getAction(), new Date(), "");
+        visitRecordService.insertNewRecordAsync(apiReq.getVisitorId(), apiReq.getCommentId().toString(), apiReq.getVisitorIp(), apiReq.getAction(), new Date(), "");
         boolean result = commentService.updateSupportAndDisagreeState(apiReq.getCommentId(), agree, disagree);
         resp.success().setData(result);
         return resp;

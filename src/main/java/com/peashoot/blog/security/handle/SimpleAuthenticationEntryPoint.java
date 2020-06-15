@@ -25,7 +25,7 @@ public class SimpleAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
         httpServletResponse.setStatus(HttpStatus.FORBIDDEN.value());
-        httpServletResponse.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
         ServletOutputStream outputStream = httpServletResponse.getOutputStream();
         // BasicErrorController 是spring boot的默认异常处理控制器，当有异常抛出时，会由该控制器返回内容
         // outputStream.println("阿西吧");

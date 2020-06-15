@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)//运行时注解
 @Documented//表明这个注解应该被 javadoc工具记录
-public @interface VisitLimit {
+public @interface VisitTimesLimit {
     /**
      * 最大访问次数
      */

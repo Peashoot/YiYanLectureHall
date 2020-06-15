@@ -35,7 +35,7 @@ public class RoleControllerTest {
                 "}";
         String result = mockMvc.perform(MockMvcRequestBuilders.post("/system/register")
                 //请求编码和数据格式为json和UTF8
-                .contentType(MediaType.APPLICATION_JSON_UTF8).content(requestJson).header("token", "BearereyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImFkZHJlc3MiOm51bGwsImV4cCI6MTU5NDI2MDEyMSwiYmZwIjpudWxsLCJjcmVhdGVkIjoxNTkxNjY4MTIxMDkyfQ.95ckizXiln8J-G9sjXapjOz9u2fWRk1zbTgXczaA5sdz1WA9ZUUDe1oUkretI3Mj2U6ABu8fGypgCBSf0qiaUw"))
+                .contentType(MediaType.APPLICATION_JSON).content(requestJson).header("token", "BearereyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImFkZHJlc3MiOm51bGwsImV4cCI6MTU5NDI2MDEyMSwiYmZwIjpudWxsLCJjcmVhdGVkIjoxNTkxNjY4MTIxMDkyfQ.95ckizXiln8J-G9sjXapjOz9u2fWRk1zbTgXczaA5sdz1WA9ZUUDe1oUkretI3Mj2U6ABu8fGypgCBSf0qiaUw"))
                 //期望的返回值 或者返回状态码
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 //返回请求的字符串信息

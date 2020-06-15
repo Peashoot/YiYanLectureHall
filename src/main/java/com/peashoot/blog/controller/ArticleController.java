@@ -1,7 +1,7 @@
 package com.peashoot.blog.controller;
 
 import com.peashoot.blog.aspect.annotation.ErrorRecord;
-import com.peashoot.blog.aspect.annotation.VisitLimit;
+import com.peashoot.blog.aspect.annotation.VisitTimesLimit;
 import com.peashoot.blog.batis.entity.ArticleDO;
 import com.peashoot.blog.batis.entity.RoleDO;
 import com.peashoot.blog.batis.entity.SysUserDO;
@@ -21,7 +21,6 @@ import com.peashoot.blog.util.SecurityUtil;
 import com.peashoot.blog.util.StringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -115,7 +114,7 @@ public class ArticleController {
         if (isInsert) {
             articleEntity.setCreateTime(articleEntity.getModifyTime());
             articleEntity.setCreateUserId(articleEntity.getModifyUserId());
-            visitRecordService.insertNewRecordAsync(articleEntity.getCreateUserId(), apiReq.getId(), apiReq.getVisitorIP(), VisitActionEnum.CREATE_ARTICLE, new Date(), "Add an article：" + apiReq.getTitle());
+            visitRecordService.insertNewRecordAsync(articleEntity.getCreateUserId(), apiReq.getId(), apiReq.getVisitorIp(), VisitActionEnum.CREATE_ARTICLE, new Date(), "Add an article：" + apiReq.getTitle());
             result = articleService.insert(articleEntity) > 0;
         } else if (!curUser.getUsername().equals(articleEntity.getCreateUser().getUsername())
                 && curUser.getAuthorities().stream().noneMatch(p -> RoleDO.ROLE_OF_ARTICLE_MANAGER.equalsIgnoreCase(p.getAuthority()))) {
@@ -123,7 +122,7 @@ public class ArticleController {
             retResp.setMessage("No permission to change");
             return retResp;
         } else {
-            visitRecordService.insertNewRecordAsync(articleEntity.getModifyUserId(), apiReq.getId(), apiReq.getVisitorIP(), VisitActionEnum.UPDATE_ARTICLE, new Date(), "Modify an article：" + apiReq.getTitle());
+            visitRecordService.insertNewRecordAsync(articleEntity.getModifyUserId(), apiReq.getId(), apiReq.getVisitorIp(), VisitActionEnum.UPDATE_ARTICLE, new Date(), "Modify an article：" + apiReq.getTitle());
             result = articleService.update(articleEntity) > 0;
         }
         if (result) {
@@ -178,7 +177,7 @@ public class ArticleController {
      */
     @PostMapping(path = "reviews")
     @ApiOperation("文章点赞或反对")
-    @VisitLimit(value = 5, maturityClear = false)
+    @VisitTimesLimit(value = 5, maturityClear = false)
     public ApiResp<Boolean> agreeOrDisagreeArticle(@RequestBody ArticleAgreeDTO apiReq) {
         ApiResp<Boolean> resp = new ApiResp<>();
         resp.setCode(ApiResp.PROCESS_ERROR);
@@ -221,7 +220,7 @@ public class ArticleController {
             return resp;
         }
         // 新增访客操作记录并修改评论点赞反对数
-        visitRecordService.insertNewRecordAsync(apiReq.getVisitorId(), apiReq.getArticleId(), apiReq.getVisitorIP(), apiReq.getAction(), new Date(), "");
+        visitRecordService.insertNewRecordAsync(apiReq.getVisitorId(), apiReq.getArticleId(), apiReq.getVisitorIp(), apiReq.getAction(), new Date(), "");
         if (articleService.updateSupportAndDisagreeState(apiReq.getArticleId(), agree, disagree)) {
             resp.success().setData(true);
         }

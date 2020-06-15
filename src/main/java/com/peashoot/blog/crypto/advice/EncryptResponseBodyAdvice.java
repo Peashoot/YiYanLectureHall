@@ -22,7 +22,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 @Slf4j
 public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 
-    @Value("${peashoot.blog.crypto.response.encrypt.charset:UTF-8}")
+    @Value("${peashoot.blog.http.context.charset:UTF-8}")
     private String charset = "UTF-8";
 
     @Value("${peashoot.blog.http.context.encrypt.enabled:true}")

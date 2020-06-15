@@ -45,7 +45,7 @@ public class SysUserControllerTests {
                 "}";
         String result = mockMvc.perform(MockMvcRequestBuilders.post("/system/register")
                 //请求编码和数据格式为json和UTF8
-                .contentType(MediaType.APPLICATION_JSON_UTF8).content(requestJson))
+                .contentType(MediaType.APPLICATION_JSON).content(requestJson))
                 //期望的返回值 或者返回状态码
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 //返回请求的字符串信息
@@ -61,7 +61,7 @@ public class SysUserControllerTests {
                 "}";
         String result = mockMvc.perform(MockMvcRequestBuilders.post("/system/login")
                 //请求编码和数据格式为json和UTF8
-                .contentType(MediaType.APPLICATION_JSON_UTF8).content(requestJson))
+                .contentType(MediaType.APPLICATION_JSON).content(requestJson))
                 //期望的返回值 或者返回状态码
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 //返回请求的字符串信息

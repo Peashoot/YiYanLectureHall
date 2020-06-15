@@ -1,6 +1,6 @@
 package com.peashoot.blog.aspect;
 
-import com.peashoot.blog.aspect.annotation.VisitLimit;
+import com.peashoot.blog.aspect.annotation.VisitTimesLimit;
 import com.peashoot.blog.context.request.BaseApiReq;
 import com.peashoot.blog.context.response.ApiResp;
 import com.peashoot.blog.redis.service.VisitLimitRedisService;
@@ -8,7 +8,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +29,7 @@ public class VisitLimitAspect {
     /**
      * 访问限制方法切面
      */
-    @Pointcut("@annotation(com.peashoot.blog.aspect.annotation.VisitLimit)")
+    @Pointcut("@annotation(com.peashoot.blog.aspect.annotation.VisitTimesLimit)")
     public void visitLimitMethodHandlerAspect() {
     }
 
@@ -51,10 +50,10 @@ public class VisitLimitAspect {
                 !BaseApiReq.class.isAssignableFrom(currentMethod.getParameterTypes()[0])) {
             return joinPoint.proceed();
         }
-        VisitLimit annotation = currentMethod.getDeclaredAnnotation(VisitLimit.class);
+        VisitTimesLimit annotation = currentMethod.getDeclaredAnnotation(VisitTimesLimit.class);
         BaseApiReq apiReq = (BaseApiReq) joinPoint.getArgs()[0];
 
-        if (visitLimitRedisService.isAllowVisit(apiReq.getVisitorIP(), apiReq.getBrowserFingerprint(), new Date(), annotation)) {
+        if (visitLimitRedisService.isAllowVisit(apiReq.getVisitorIp(), apiReq.getBrowserFingerprint(), new Date(), annotation)) {
             return joinPoint.proceed();
         }
         ApiResp<String> resp = new ApiResp<>();

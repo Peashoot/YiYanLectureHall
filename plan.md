@@ -42,3 +42,6 @@
 - Vue 所有的前端页面
 - Go websocket（聊天室）、树洞
 - net core 本地内网穿透实现
+- 使用cloudreve搭建网盘系统
+- 使用Gitea搭建本地托管仓库（并实现commit后自动运行测试生成部署等操作）
+- 使用iredmail自建邮局

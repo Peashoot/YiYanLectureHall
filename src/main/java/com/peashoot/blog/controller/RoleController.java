@@ -3,7 +3,6 @@ package com.peashoot.blog.controller;
 import com.peashoot.blog.aspect.annotation.ErrorRecord;
 import com.peashoot.blog.batis.entity.RoleDO;
 import com.peashoot.blog.batis.entity.SysUserDO;
-import com.peashoot.blog.batis.enums.PermissionEnum;
 import com.peashoot.blog.batis.enums.VisitActionEnum;
 import com.peashoot.blog.batis.service.OperateRecordService;
 import com.peashoot.blog.batis.service.RoleService;
@@ -72,7 +71,7 @@ public class RoleController {
         }
         roleDo.setPermissions(apiReq.getPermissions());
         roleDo.setRoleName(apiReq.getRoleName());
-        operateRecordService.insertNewRecordAsync(sysUser.getId(), roleDo.getId().toString(), apiReq.getVisitorIP(),
+        operateRecordService.insertNewRecordAsync(sysUser.getId(), roleDo.getId().toString(), apiReq.getVisitorIp(),
                 roleDo.getId() > 0 ? VisitActionEnum.ROLE_UPDATE : VisitActionEnum.ROLE_CREATE, new Date(),
                 (roleDo.getId() > 0 ? "Update" : "Create") + " an role " + roleDo.getRoleName());
         boolean success = (updateMode ? roleService.update(roleDo) : roleService.insert(roleDo)) > 0;

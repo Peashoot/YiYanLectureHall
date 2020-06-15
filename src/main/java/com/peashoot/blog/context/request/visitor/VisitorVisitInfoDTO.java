@@ -30,7 +30,7 @@ public class VisitorVisitInfoDTO extends BaseApiReq {
     public VisitorDO createNewInstance(String visitorName, Date firstVisitTime) {
         VisitorDO visitor =  new VisitorDO();
         visitor.setFirstVisitTime(firstVisitTime);
-        visitor.setVisitFromIp(getVisitorIP());
+        visitor.setVisitFromIp(getVisitorIp());
         visitor.setVisitor(visitorName);
         visitor.setBrowser(getBrowserFingerprint());
         visitor.setLocation(location);

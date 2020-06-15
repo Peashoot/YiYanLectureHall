@@ -11,12 +11,12 @@ public class CryptoConfig {
     /**
      * 私钥
      */
-    @Value("${peashoot.blog.http.context.decrypt.key}")
+    @Value("${peashoot.blog.http.content.decrypt.key}")
     private String privateKey;
     /**
      * 公钥
      */
-    @Value("${peashoot.blog.http.context.encrypt.key}")
+    @Value("${peashoot.blog.http.content.encrypt.key}")
     private String publicKey;
     /**
      * 加密解密方式使用一样的

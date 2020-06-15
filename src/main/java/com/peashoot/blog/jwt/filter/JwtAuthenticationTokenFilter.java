@@ -24,7 +24,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Value("${peashoot.blog.http.jwt.header}")
     private String tokenHeader;
 
-    @Value("${peashoot.blog.http.jwt.tokenHead}")
+    @Value("${peashoot.blog.http.jwt.token-head}")
     private String tokenHead;
 
     @Autowired

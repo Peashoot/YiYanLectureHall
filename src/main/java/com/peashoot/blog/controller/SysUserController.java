@@ -2,7 +2,7 @@ package com.peashoot.blog.controller;
 
 import com.google.common.collect.ImmutableList;
 import com.peashoot.blog.aspect.annotation.ErrorRecord;
-import com.peashoot.blog.aspect.annotation.VisitLimit;
+import com.peashoot.blog.aspect.annotation.VisitTimesLimit;
 import com.peashoot.blog.batis.enums.VisitActionEnum;
 import com.peashoot.blog.batis.service.OperateRecordService;
 import com.peashoot.blog.batis.service.RoleService;
@@ -72,13 +72,13 @@ public class SysUserController {
     @PostMapping(path = "login")
     @ApiOperation("根据用户名或者邮箱进行登录")
     @DecryptRequest
-    @VisitLimit
+    @VisitTimesLimit
     public ApiResp<String> loginByUserNameAndPassword(@RequestBody @Validated LoginUserDTO apiReq) {
         ApiResp<String> resp = new ApiResp<>();
         int userId = sysUserService.getIdByUsername(apiReq.getUsername());
-        operateRecordService.insertNewRecordAsync(userId, String.valueOf(userId), apiReq.getVisitorIP(), VisitActionEnum.USER_LOGIN, new Date(),
+        operateRecordService.insertNewRecordAsync(userId, String.valueOf(userId), apiReq.getVisitorIp(), VisitActionEnum.USER_LOGIN, new Date(),
                 "User " + apiReq.getUsername() + " try to login in.");
-        String token = authService.login(apiReq.getUsername(), apiReq.getPassword(), apiReq.getVisitorIP(), apiReq.getBrowserFingerprint());
+        String token = authService.login(apiReq.getUsername(), apiReq.getPassword(), apiReq.getVisitorIp(), apiReq.getBrowserFingerprint());
         resp.success().setData(token);
         resp.setTimestamp(System.currentTimeMillis());
         return resp;
@@ -103,7 +103,7 @@ public class SysUserController {
         sysUser.initialize(new Date(), ImmutableList.of(roleNormalUserLazy.getInstance()), salt);
         ApiResp<Boolean> resp = new ApiResp<>();
         try {
-            operateRecordService.insertNewRecordAsync(apiReq.getVisitorId(), apiReq.getUsername(), apiReq.getVisitorIP(), VisitActionEnum.USER_REGISTER, new Date(),
+            operateRecordService.insertNewRecordAsync(apiReq.getVisitorId(), apiReq.getUsername(), apiReq.getVisitorIp(), VisitActionEnum.USER_REGISTER, new Date(),
                     "Visitor try to register " + apiReq.getUsername() + ".");
             boolean success = authService.insertSysUser(sysUser);
             resp.success().setData(success);
@@ -130,7 +130,7 @@ public class SysUserController {
             throw new UserUnmatchedException();
         }
         int userId = sysUserService.getIdByUsername(apiReq.getUsername());
-        operateRecordService.insertNewRecordAsync(userId, String.valueOf(userId), apiReq.getVisitorIP(), VisitActionEnum.USER_CHANGE_PASSWORD, new Date(),
+        operateRecordService.insertNewRecordAsync(userId, String.valueOf(userId), apiReq.getVisitorIp(), VisitActionEnum.USER_CHANGE_PASSWORD, new Date(),
                 "User " + apiReq.getUsername() + " try to change password.");
         boolean success = authService.changePassword(apiReq.getUsername(), apiReq.getOldPassword(), apiReq.getNewPassword());
         ApiResp<Boolean> resp = new ApiResp<>();
@@ -161,7 +161,7 @@ public class SysUserController {
             return resp;
         }
         apiReq.copyTo(sysUser);
-        operateRecordService.insertNewRecordAsync(sysUser.getId(), sysUser.getId().toString(), apiReq.getVisitorIP(), VisitActionEnum.USER_CHANGE_INFORMATION, new Date(),
+        operateRecordService.insertNewRecordAsync(sysUser.getId(), sysUser.getId().toString(), apiReq.getVisitorIp(), VisitActionEnum.USER_CHANGE_INFORMATION, new Date(),
                 "User " + sysUser.getUsername() + " try to change information.");
         boolean result = sysUserService.update(sysUser) > 0;
         if (result) {
@@ -218,7 +218,7 @@ public class SysUserController {
     @PreAuthorize("hasAuthority('reset_pwd')")
     public ApiResp<Boolean> resetPassword(@RequestParam("applyId") String applySerial, @RequestBody ChangePwdDTO changePwd) {
         int userId = sysUserService.getIdByUsername(changePwd.getUsername());
-        operateRecordService.insertNewRecordAsync(userId, String.valueOf(userId), changePwd.getVisitorIP(), VisitActionEnum.USER_RETRIEVE_PASSWORD, new Date(),
+        operateRecordService.insertNewRecordAsync(userId, String.valueOf(userId), changePwd.getVisitorIp(), VisitActionEnum.USER_RETRIEVE_PASSWORD, new Date(),
                 "User " + changePwd.getUsername() + " try to retrieve password.");
         ApiResp<Boolean> resp = new ApiResp<>();
         if (!authService.resetPassword(changePwd.getUsername(), applySerial, changePwd.getNewPassword())) {

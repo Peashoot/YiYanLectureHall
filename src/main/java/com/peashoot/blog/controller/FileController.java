@@ -11,6 +11,7 @@ import com.peashoot.blog.exception.FilePathCreateFailureException;
 import com.peashoot.blog.util.IoUtils;
 import com.peashoot.blog.util.IpUtils;
 import com.peashoot.blog.util.StringUtils;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,7 +67,7 @@ public class FileController {
                                           @RequestParam FileTypeEnum type, @RequestParam MultipartFile file)
             throws IOException, FilePathCreateFailureException {
         ApiResp<String> resp = new ApiResp<>();
-        resp.setCode(406);
+        resp.setCode(ApiResp.PROCESS_ERROR);
         resp.setMessage("Failure to upload file.");
         String suffix = IoUtils.getFileSuffix(file.getName());
         if (StringUtils.isNullOrEmpty(suffix) || !IoUtils.isCorrectSuffix(suffix, type)) {
@@ -102,7 +103,7 @@ public class FileController {
                                             @RequestParam String originalNetUrl, @RequestParam FileTypeEnum type)
             throws IOException, FilePathCreateFailureException {
         ApiResp<String> resp = new ApiResp<>();
-        resp.setCode(406);
+        resp.setCode(ApiResp.PROCESS_ERROR);
         resp.setMessage("Failure to download file.");
         String suffix = IoUtils.getFileSuffix(originalNetUrl);
         if (StringUtils.isNullOrEmpty(suffix) || !IoUtils.isCorrectSuffix(suffix, type)) {

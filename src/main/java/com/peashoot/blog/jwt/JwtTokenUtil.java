@@ -48,12 +48,12 @@ public class JwtTokenUtil implements Serializable {
     /**
      * token中是否包含访问IP信息
      */
-    @Value("${peashoot.blog.http.jwt.contains.visit_ip}")
+    @Value("${peashoot.blog.http.jwt.contains.visit-ip}")
     private Boolean tokenWithVisitIp = true;
     /**
      * token中是否包含浏览器指纹信息
      */
-    @Value("${peashoot.blog.http.jwt.contains.browser_fingerprint}")
+    @Value("${peashoot.blog.http.jwt.contains.browser-fingerprint}")
     private Boolean tokenWithBrowserFingerprint = true;
     /**
      * RedisToken操作类
