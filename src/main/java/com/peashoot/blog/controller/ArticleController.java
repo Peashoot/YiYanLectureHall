@@ -177,7 +177,7 @@ public class ArticleController {
      */
     @PostMapping(path = "reviews")
     @ApiOperation("文章点赞或反对")
-    @VisitTimesLimit(value = 5, maturityClear = false)
+    @VisitTimesLimit(value = 5)
     public ApiResp<Boolean> agreeOrDisagreeArticle(@RequestBody ArticleAgreeDTO apiReq) {
         ApiResp<Boolean> resp = new ApiResp<>();
         resp.setCode(ApiResp.PROCESS_ERROR);

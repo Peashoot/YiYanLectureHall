@@ -4,26 +4,35 @@
     <resultMap id="BaseResultMap" type="com.peashoot.blog.batis.entity.VisitorDO">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="visitor" jdbcType="VARCHAR" property="visitor"/>
-        <result column="sysUserName" jdbcType="VARCHAR" property="sysUserName"/>
+        <result column="userId" jdbcType="INTEGER" property="userId"/>
         <result column="firstVisitTime" jdbcType="BIGINT" property="firstVisitTime"/>
         <result column="visitFromIp" jdbcType="VARCHAR" property="visitFromIp"/>
         <result column="location" jdbcType="VARCHAR" property="location"/>
         <result column="browser" jdbcType="VARCHAR" property="browser"/>
         <result column="os" jdbcType="VARCHAR" property="os"/>
     </resultMap>
+    <resultMap id="LeftJoinMap" type="com.peashoot.blog.batis.entity.VisitorDO" extends="BaseResultMap">
+        <result column="username" jdbcType="VARCHAR" property="sysUserName"/>
+        <result column="nickName" jdbcType="VARCHAR" property="sysUserNickName"/>
+    </resultMap>
     <sql id="Base_Column_List">
-        id, visitor, sysUserName, firstVisitTime, visitFromIp, location, browser, os
+        id, visitor, userId, firstVisitTime, visitFromIp, location, browser, os
+    </sql>
+    <sql id="Left_Join_List">
+        v.id, v.visitor, v.userId, v.firstVisitTime, v.visitFromIp, v.location, v.browser, v.os, u.username, u.nickName
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
-        from bg_visitor
-        where id = #{id,jdbcType=BIGINT}
+        <include refid="Left_Join_List"/>
+        from bg_visitor v
+        left join bg_sysuser u on v.userId=u.id
+        where v.id = #{id,jdbcType=BIGINT}
     </select>
     <select id="selectAll" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
-        from bg_visitor
+        <include refid="Left_Join_List"/>
+        from bg_visitor v
+        left join bg_sysuser u on v.userId=u.id
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete
@@ -31,10 +40,10 @@
         where id = #{id,jdbcType=BIGINT}
     </delete>
     <insert id="insert" parameterType="com.peashoot.blog.batis.entity.VisitorDO">
-        insert into bg_visitor (id, visitor, sysUserName,
+        insert into bg_visitor (id, visitor, userId,
                                 firstVisitTime, visitFromIp, location,
                                 browser, os)
-        values (#{id,jdbcType=BIGINT}, #{visitor,jdbcType=VARCHAR}, #{sysUserName,jdbcType=VARCHAR},
+        values (#{id,jdbcType=BIGINT}, #{visitor,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER},
                 #{firstVisitTime,jdbcType=BIGINT}, #{visitFromIp,jdbcType=VARCHAR}, #{location,jdbcType=VARCHAR},
                 #{browser,jdbcType=VARCHAR}, #{os,jdbcType=VARCHAR})
     </insert>
@@ -47,8 +56,8 @@
             <if test="visitor != null">
                 visitor,
             </if>
-            <if test="sysUserName != null">
-                sysUserName,
+            <if test="userId != null">
+                userId,
             </if>
             <if test="firstVisitTime != null">
                 firstVisitTime,
@@ -73,8 +82,8 @@
             <if test="visitor != null">
                 #{visitor,jdbcType=VARCHAR},
             </if>
-            <if test="sysUserName != null">
-                #{sysUserName,jdbcType=VARCHAR},
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
             </if>
             <if test="firstVisitTime != null">
                 #{firstVisitTime,jdbcType=BIGINT},
@@ -100,7 +109,7 @@
                 visitor = #{visitor,jdbcType=VARCHAR},
             </if>
             <if test="sysUserName != null">
-                sysUserName = #{sysUserName,jdbcType=VARCHAR},
+                userId = #{userId,jdbcType=INTEGER},
             </if>
             <if test="firstVisitTime != null">
                 firstVisitTime = #{firstVisitTime,jdbcType=BIGINT},
@@ -123,7 +132,7 @@
     <update id="updateByPrimaryKey" parameterType="com.peashoot.blog.batis.entity.VisitorDO">
         update bg_visitor
         set visitor        = #{visitor,jdbcType=VARCHAR},
-            sysUserName    = #{sysUserName,jdbcType=VARCHAR},
+            userId         = #{userId,jdbcType=INTEGER},
             firstVisitTime = #{firstVisitTime,jdbcType=BIGINT},
             visitFromIp    = #{visitFromIp,jdbcType=VARCHAR},
             location       = #{location,jdbcType=VARCHAR},
@@ -133,23 +142,25 @@
     </update>
     <insert id="insertWithReturnRecordID" useGeneratedKeys="true" keyProperty="id"
             parameterType="com.peashoot.blog.batis.entity.VisitorDO">
-        insert into bg_visitor (id, visitor, sysUserName,
+        insert into bg_visitor (id, visitor, userId,
                                 firstVisitTime, visitFromIp, location,
                                 browser, os)
-        values (#{id,jdbcType=BIGINT}, #{visitor,jdbcType=VARCHAR}, #{sysUserName,jdbcType=VARCHAR},
+        values (#{id,jdbcType=BIGINT}, #{visitor,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER},
                 #{firstVisitTime,jdbcType=BIGINT}, #{visitFromIp,jdbcType=VARCHAR}, #{location,jdbcType=VARCHAR},
                 #{browser,jdbcType=VARCHAR}, #{os,jdbcType=VARCHAR})
     </insert>
     <select id="selectByIPAndBrowser" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
-        from bg_visitor
-        where visitFromIp=#{visitIP,jdbcType=VARCHAR} and browser=#{browser, jdbcType=VARCHAR}
+        <include refid="Left_Join_List"/>
+        from bg_visitor v
+        left join bg_sysuser u on v.userId=u.id
+        where v.visitFromIp=#{visitIP,jdbcType=VARCHAR} and v.browser=#{browser, jdbcType=VARCHAR}
     </select>
     <select id="selectByVisitorName" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
-        from bg_visitor
-        where visitor=#{visitorName,jdbcType=VARCHAR}
+        <include refid="Left_Join_List"/>
+        from bg_visitor v
+        left join bg_sysuser u on v.userId=u.id
+        where v.visitor=#{visitorName,jdbcType=VARCHAR}
     </select>
 </mapper>

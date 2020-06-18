@@ -180,5 +180,18 @@ public class PeaBlogProperties {
             }
         }
     }
+
+    /**
+     * 定时任务配置项
+     */
+    private ScheduleProperties schedule;
+
+    @Data
+    private static class ScheduleProperties {
+        /**
+         * 定时清理访问次数间隔
+         */
+        private String clearVisitTimesLimitCron;
+    }
 }
 

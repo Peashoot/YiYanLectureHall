@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.Optional;
 
 @Getter
 @Setter
@@ -17,7 +18,7 @@ public class FileDO extends UUIDPrimaryEntity {
     /**
      * 系统管理员id
      */
-    private int sysUserId;
+    private Integer sysUserId;
     /**
      * 原始文件名
      */
@@ -48,13 +49,14 @@ public class FileDO extends UUIDPrimaryEntity {
     private String md5Sign;
 
     private FileDO() {
+        super();
         createTime = new Date();
     }
 
-    public FileDO(long visitorId, int sysUserId, FileTypeEnum type, String localPath, String netPath, String md5Sign) {
+    public FileDO(Long visitorId, Integer sysUserId, FileTypeEnum type, String localPath, String netPath, String md5Sign) {
         this();
         this.creatorId = visitorId;
-        this.sysUserId = sysUserId;
+        this.sysUserId = Optional.ofNullable(sysUserId).orElse(0);
         this.localPath = localPath;
         this.md5Sign = md5Sign;
         this.type = type;

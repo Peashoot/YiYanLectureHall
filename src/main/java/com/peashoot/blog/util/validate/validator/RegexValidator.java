@@ -1,6 +1,6 @@
-package com.peashoot.blog.validate.validator;
+package com.peashoot.blog.util.validate.validator;
 
-import com.peashoot.blog.validate.annotation.MatchRegex;
+import com.peashoot.blog.util.validate.annotation.MatchRegex;
 import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
 import org.hibernate.validator.internal.engine.messageinterpolation.util.InterpolationHelper;
 import org.hibernate.validator.internal.util.logging.Log;
@@ -8,7 +8,6 @@ import org.hibernate.validator.internal.util.logging.LoggerFactory;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import javax.validation.constraints.Pattern;
 import java.lang.invoke.MethodHandles;
 import java.util.regex.Matcher;
 import java.util.regex.PatternSyntaxException;

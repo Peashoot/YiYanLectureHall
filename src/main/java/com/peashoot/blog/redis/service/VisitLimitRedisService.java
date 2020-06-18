@@ -12,12 +12,14 @@ import java.util.Date;
 public interface VisitLimitRedisService {
     /**
      * 判断是否允许访问
+     * @param className 类型名称
+     * @param methodName 方法名称
      * @param visitIp 访问IP
      * @param browserFingerprint 浏览器指纹
      * @param visitTime 访问时间
      * @param visitTimesLimit 访问注解信息
      * @return 是否允许访问
      */
-    boolean isAllowVisit(String visitIp, String browserFingerprint, Date visitTime, VisitTimesLimit visitTimesLimit);
+    boolean isAllowVisit(String className, String methodName, String visitIp, String browserFingerprint, Date visitTime, VisitTimesLimit visitTimesLimit);
 
 }

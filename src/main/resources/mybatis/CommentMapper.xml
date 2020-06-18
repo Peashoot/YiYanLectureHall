@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.peashoot.blog.batis.mapper.CommentMapper">
     <resultMap id="BaseResultMap" type="com.peashoot.blog.batis.entity.CommentDO">
-        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="visitorId" jdbcType="BIGINT" property="visitorId"/>
         <result column="articleId" jdbcType="VARCHAR" property="articleId"/>
         <result column="commentTime" jdbcType="BIGINT" property="commentTime"/>
@@ -10,33 +10,45 @@
         <result column="anonymous" jdbcType="BIT" property="anonymous"/>
         <result column="supportCount" jdbcType="INTEGER" property="supportCount"/>
         <result column="againstCount" jdbcType="INTEGER" property="againstCount"/>
-        <result column="commentTo" jdbcType="INTEGER" property="commentTo"/>
+        <result column="commentTo" jdbcType="BIGINT" property="commentTo"/>
+    </resultMap>
+    <resultMap id="JoinVisitorMap" type="com.peashoot.blog.batis.entity.CommentDO" extends="BaseResultMap">
+        <result column="visitor" jdbcType="VARCHAR" property="visitorName"/>
+        <result column="nickName" jdbcType="VARCHAR" property="sysUserNickname"/>
     </resultMap>
     <sql id="Base_Column_List">
         id, visitorId, articleId, commentTime, status, anonymous, supportCount, againstCount,
         commentTo, comment
     </sql>
-    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <sql id="Left_Join_List">
+        c.id, c.visitorId, c.articleId, c.commentTime, c.status, c.anonymous, c.supportCount, c.againstCount,
+        c.commentTo, c.comment, v.visitor, u.nickName
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
-        from bg_comment
-        where id = #{id,jdbcType=INTEGER}
+        <include refid="Left_Join_List"/>
+        from bg_comment c
+        left join bg_visitor v on c.visitorId=v.id
+        left join bg_sysuser u on v.userId=u.id
+        where c.id = #{id,jdbcType=BIGINT}
     </select>
     <select id="selectAll" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
-        from bg_comment
+        <include refid="Left_Join_List"/>
+        from bg_comment c
+        left join bg_visitor v on c.visitorId=v.id
+        left join bg_sysuser u on v.userId=u.id
     </select>
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete
         from bg_comment
-        where id = #{id,jdbcType=INTEGER}
+        where id = #{id,jdbcType=BIGINT}
     </delete>
     <delete id="deleteRangeByPrimaryKeys">
         delete from bg_comment
         where id in (
         <foreach collection="commentIds" item="id" index="index" separator=",">
-            #{id,jdbcType=INTEGER}
+            #{id,jdbcType=BIGINT}
         </foreach>
         )
     </delete>
@@ -45,7 +57,7 @@
                                 commentTime, status, anonymous,
                                 supportCount, againstCount, commentTo,
                                 comment)
-        values (#{id,jdbcType=INTEGER}, #{visitorId,jdbcType=BIGINT}, #{articleId,jdbcType=VARCHAR},
+        values (#{id,jdbcType=BIGINT}, #{visitorId,jdbcType=BIGINT}, #{articleId,jdbcType=VARCHAR},
                 #{commentTime,jdbcType=BIGINT}, #{status,jdbcType=INTEGER}, #{anonymous,jdbcType=BIT},
                 #{supportCount,jdbcType=INTEGER}, #{againstCount,jdbcType=INTEGER}, #{commentTo,jdbcType=INTEGER},
                 #{comment,jdbcType=LONGVARCHAR})
@@ -86,7 +98,7 @@
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
-                #{id,jdbcType=INTEGER},
+                #{id,jdbcType=BIGINT},
             </if>
             <if test="visitorId != null">
                 #{visitorId,jdbcType=BIGINT},
@@ -148,7 +160,7 @@
                 comment = #{comment,jdbcType=LONGVARCHAR},
             </if>
         </set>
-        where id = #{id,jdbcType=INTEGER}
+        where id = #{id,jdbcType=BIGINT}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.peashoot.blog.batis.entity.CommentDO">
         update bg_comment
@@ -161,30 +173,34 @@
             againstCount = #{againstCount,jdbcType=INTEGER},
             commentTo    = #{commentTo,jdbcType=INTEGER},
             comment      = #{comment,jdbcType=LONGVARCHAR}
-        where id = #{id,jdbcType=INTEGER}
+        where id = #{id,jdbcType=BIGINT}
     </update>
     <select id="listPagedComments" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
-        from bg_comment
+        <include refid="Left_Join_List"/>
+        from bg_comment c
+        left join bg_visitor v on c.visitorId=v.id
+        left join bg_sysuser u on v.userId=u.id
         where 1=1
-        <if test="com.peashoot.blog.util.StringUtils@isNotNullAndEmpty(articleId)">
-            and articleId=#{articleId, jdbcType=VARCHAR}
+        <if test="@com.peashoot.blog.util.StringUtils@isNotNullOrEmpty(articleId)">
+            and c.articleId=#{articleId, jdbcType=VARCHAR}
         </if>
-        order by id limit #{indexStart, jdbcType=INTEGER},#{selectCount, jdbcType=INTEGER}
+        order by c.id limit #{indexStart, jdbcType=INTEGER},#{selectCount, jdbcType=INTEGER}
     </select>
     <select id="countTotalRecords" resultType="java.lang.Integer">
         select count(1)
         from bg_comment
         where 1=1
-        <if test="com.peashoot.blog.util.StringUtils@isNotNullAndEmpty(articleId)">
+        <if test="@com.peashoot.blog.util.StringUtils@isNotNullOrEmpty(articleId)">
             and articleId=#{articleId, jdbcType=VARCHAR}
         </if>
     </select>
-    <select id="selectByPrimaryKeyForUpdate" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectByPrimaryKeyForUpdate" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
-        from bg_comment
-        where id = #{id,jdbcType=INTEGER} for update
+        <include refid="Left_Join_List"/>
+        from bg_comment c
+        left join bg_visitor v on c.visitorId=v.id
+        left join bg_sysuser u on v.userId=u.id
+        where c.id = #{id,jdbcType=BIGINT} for update
     </select>
 </mapper>

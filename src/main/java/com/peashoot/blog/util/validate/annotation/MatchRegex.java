@@ -1,10 +1,9 @@
-package com.peashoot.blog.validate.annotation;
+package com.peashoot.blog.util.validate.annotation;
 
-import com.peashoot.blog.validate.validator.RegexValidator;
+import com.peashoot.blog.util.validate.validator.RegexValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
-import javax.validation.constraints.Pattern;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

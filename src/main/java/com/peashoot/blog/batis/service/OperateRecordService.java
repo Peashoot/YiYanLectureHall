@@ -16,7 +16,7 @@ public interface OperateRecordService extends InsertService<OperateRecordDO>,
      * @param commentId 评论id
      * @return 符合条件的记录
      */
-    OperateRecordDO selectLastRecordByVisitorIdAndCommentId(long visitorId, int commentId);
+    OperateRecordDO selectLastRecordByVisitorIdAndCommentId(long visitorId, long commentId);
 
     /**
      * 根据访客id和文章id获取最后一条记录

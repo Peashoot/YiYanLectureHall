@@ -2,9 +2,11 @@ package com.peashoot.blog.controller;
 
 import com.peashoot.blog.aspect.annotation.ErrorRecord;
 import com.peashoot.blog.aspect.annotation.VisitTimesLimit;
+import com.peashoot.blog.batis.entity.SysUserDO;
 import com.peashoot.blog.batis.enums.VisitActionEnum;
 import com.peashoot.blog.batis.entity.VisitorDO;
 import com.peashoot.blog.batis.service.OperateRecordService;
+import com.peashoot.blog.batis.service.SysUserService;
 import com.peashoot.blog.batis.service.VisitorService;
 import com.peashoot.blog.context.request.visitor.ChangeVisitorNameDTO;
 import com.peashoot.blog.context.request.visitor.UserNameAndVisitorDTO;
@@ -45,10 +47,15 @@ public class VisitorController {
      * 访客操作记录操作类
      */
     private final OperateRecordService visitRecordService;
+    /**
+     * 系统用户操作类
+     */
+    private final SysUserService sysUserService;
 
-    public VisitorController(VisitorService visitorService, OperateRecordService visitRecordService) {
+    public VisitorController(VisitorService visitorService, OperateRecordService visitRecordService, SysUserService sysUserService) {
         this.visitorService = visitorService;
         this.visitRecordService = visitRecordService;
+        this.sysUserService = sysUserService;
     }
 
     /**
@@ -117,13 +124,19 @@ public class VisitorController {
         if (visitor == null) {
             return resp;
         }
-        if (apiReq.getSysUsername().equals(visitor.getSysUserName())) {
+        int userId = sysUserService.getIdByUsername(apiReq.getSysUsername());
+        if (userId == 0) {
+            resp.setCode(ApiResp.NO_RECORD_MATCH);
+            resp.setMessage("No matched user");
+            return resp;
+        }
+        if (Integer.valueOf(userId).equals(visitor.getUserId())) {
             resp.success().setData(true);
             return resp;
         }
         String record = "Visitor " + apiReq.getVisitorName() + " connect with system user " + apiReq.getSysUsername() + ".";
         visitRecordService.insertNewRecordAsync(visitor.getId(), visitor.getId().toString(), apiReq.getVisitorIp(), VisitActionEnum.BIND_SYS_USER, new Date(), record);
-        visitor.setSysUserName(apiReq.getSysUsername());
+        visitor.setUserId(userId);
         resp.success().setData(visitorService.update(visitor) > 0);
         return resp;
     }

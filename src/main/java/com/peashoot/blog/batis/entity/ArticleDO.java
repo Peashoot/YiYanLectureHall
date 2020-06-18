@@ -12,6 +12,7 @@ import java.util.Date;
 @ToString(callSuper = true, includeFieldNames = false)
 public class ArticleDO extends UUIDPrimaryEntity {
     public ArticleDO() {
+        super();
         pageView = 0L;
         supportCount = 0;
         againstCount = 0;

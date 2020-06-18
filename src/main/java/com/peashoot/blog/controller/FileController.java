@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -69,7 +70,7 @@ public class FileController {
         ApiResp<String> resp = new ApiResp<>();
         resp.setCode(ApiResp.PROCESS_ERROR);
         resp.setMessage("Failure to upload file.");
-        String suffix = IoUtils.getFileSuffix(file.getName());
+        String suffix = IoUtils.getFileSuffix(Objects.requireNonNull(file.getOriginalFilename()));
         if (StringUtils.isNullOrEmpty(suffix) || !IoUtils.isCorrectSuffix(suffix, type)) {
             return resp;
         }
@@ -79,8 +80,7 @@ public class FileController {
         String netFileUrl = IoUtils.combineNetFilePath(resourceNetDirectory, type, localFileName);
         String md5 = IoUtils.saveFileAndGetMd5(file, localFilePath);
         FileDO fileEntity = new FileDO(visitorId, sysUserId, type, localFilePath, netFileUrl, md5);
-        fileEntity.setOriginalName(file.getName());
-        fileEntity.setId(uuid);
+        fileEntity.setOriginalName(file.getOriginalFilename());
         operateRecordService.insertNewRecordAsync(visitorId, uuid, IpUtils.getIpAddr(request), VisitActionEnum.UPLOAD_FILE, new Date(), "Upload local file to " + localFilePath);
         if (fileService.insert(fileEntity) > 0) {
             resp.success().setData(netFileUrl);
@@ -107,6 +107,7 @@ public class FileController {
         resp.setMessage("Failure to download file.");
         String suffix = IoUtils.getFileSuffix(originalNetUrl);
         if (StringUtils.isNullOrEmpty(suffix) || !IoUtils.isCorrectSuffix(suffix, type)) {
+            resp.setMessage("Unacceptable suffix");
             return resp;
         }
         String uuid = UUID.randomUUID().toString().replace("-", "");

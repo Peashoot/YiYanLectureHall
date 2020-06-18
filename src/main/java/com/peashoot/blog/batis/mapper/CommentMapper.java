@@ -8,17 +8,17 @@ import java.util.List;
 
 @Repository
 public interface CommentMapper {
-    int deleteByPrimaryKey(Integer id);
+    int deleteByPrimaryKey(Long id);
 
-    int deleteRangeByPrimaryKeys(@Param("commentIds") Integer[] commentIds);
+    int deleteRangeByPrimaryKeys(@Param("commentIds") Long[] commentIds);
 
     int insert(CommentDO record);
 
     int insertSelective(CommentDO record);
 
-    CommentDO selectByPrimaryKey(Integer id);
+    CommentDO selectByPrimaryKey(Long id);
 
-    CommentDO selectByPrimaryKeyForUpdate(Integer id);
+    CommentDO selectByPrimaryKeyForUpdate(Long id);
 
     List<CommentDO> selectAll();
 
@@ -26,7 +26,7 @@ public interface CommentMapper {
 
     int updateByPrimaryKey(CommentDO record);
 
-    List<CommentDO> listPagedComments(@Param("pageSize") int pageSize, @Param("pageIndex") int pageIndex, @Param("articleId") String articleId);
+    List<CommentDO> listPagedComments(@Param("selectCount") int pageSize, @Param("indexStart") int pageIndex, @Param("articleId") String articleId);
 
     int countTotalRecords(String articleId);
 }

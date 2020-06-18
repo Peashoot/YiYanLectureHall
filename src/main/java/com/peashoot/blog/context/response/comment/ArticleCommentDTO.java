@@ -1,6 +1,7 @@
 package com.peashoot.blog.context.response.comment;
 
 import com.peashoot.blog.batis.entity.CommentDO;
+import com.peashoot.blog.batis.entity.base.LongPrimaryEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,11 +11,11 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString(callSuper = true, includeFieldNames = false)
-public class ArticleCommentDTO {
+public class ArticleCommentDTO{
     /**
      * 评论id
      */
-    private int id;
+    private Long id;
     /**
      * 评论日期
      */
@@ -34,11 +35,11 @@ public class ArticleCommentDTO {
     /**
      * 赞成统计
      */
-    private int supportCount;
+    private Integer supportCount;
     /**
      * 反对统计
      */
-    private int againstCount;
+    private Integer againstCount;
 
     /**
      * 生成文章评论响应对象

@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS `bg_article`
 -- ----------------------------
 CREATE TABLE IF NOT EXISTS `bg_comment`
 (
-    `id`           int(11)     NOT NULL AUTO_INCREMENT COMMENT '记录id',
+    `id`           bigint(20)  NOT NULL AUTO_INCREMENT COMMENT '记录id',
     `visitorId`    bigint(20)  NOT NULL COMMENT '访客id',
     `comment`      text        NOT NULL COMMENT '评论内容',
     `articleId`    varchar(32) NOT NULL COMMENT '文件id',
@@ -153,7 +153,7 @@ CREATE TABLE `bg_file`
     `sysUserId`      int(11)      NOT NULL COMMENT '系统管理员id',
     `originalName`   varchar(255) NULL DEFAULT NULL COMMENT '原始文件名',
     `type`           varchar(10)  NOT NULL COMMENT '文件类型',
-    `localPath`      varchar(255) NOT NULL COMMENT '本地路径',
+    `localPath`      varchar(255) COMMENT '本地路径',
     `netPath`        varchar(255) NOT NULL COMMENT '网络路径',
     `createTime`     bigint(20)   NOT NULL COMMENT '创建日期',
     `originalNetUrl` varchar(255) NULL DEFAULT NULL COMMENT '原始网络路径',
@@ -171,7 +171,7 @@ CREATE TABLE `bg_visitor`
 (
     `id`             bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '记录id',
     `visitor`        varchar(255) NOT NULL COMMENT '访客名称',
-    `sysUserName`    varchar(255) NULL DEFAULT NULL COMMENT '系统用户名称',
+    `userId`         int(11)      NULL DEFAULT NULL COMMENT '系统用户id',
     `firstVisitTime` bigint(20)   NOT NULL COMMENT '第一次访问时间',
     `visitFromIp`    varchar(36)  NOT NULL COMMENT '访客访问的ip地址（ipv4或ipv6）',
     `location`       varchar(255) NULL DEFAULT NULL COMMENT '根据IP地址查询到的访问地址',

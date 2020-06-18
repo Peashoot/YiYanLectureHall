@@ -22,7 +22,7 @@ public class OperateRecordServiceImpl implements OperateRecordService {
     }
 
     @Override
-    public OperateRecordDO selectLastRecordByVisitorIdAndCommentId(long visitorId, int commentId) {
+    public OperateRecordDO selectLastRecordByVisitorIdAndCommentId(long visitorId, long commentId) {
         return operateRecordMapper.selectLastRecordByVisitorIdAndObjectId(visitorId, String.valueOf(commentId), new VisitActionEnum[]{
                 VisitActionEnum.AGREE_COMMENT, VisitActionEnum.DISAGREE_COMMENT, VisitActionEnum.CANCEL_AGREE_COMMENT, VisitActionEnum.CANCEL_DISAGREE_COMMENT});
     }

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.peashoot.blog.crypto.definition.Crypto;
 import com.peashoot.blog.crypto.util.CryptoInvoker;
 import com.peashoot.blog.context.response.ApiResp;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,20 +18,23 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
+@Setter
 @ControllerAdvice
 @ConditionalOnProperty(prefix = "spring.crypto.response.encrypt", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Slf4j
 public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 
-    @Value("${peashoot.blog.http.context.charset:UTF-8}")
-    private String charset = "UTF-8";
+    @Value("${peashoot.blog.http.content.charset}")
+    private String charset;
 
-    @Value("${peashoot.blog.http.context.encrypt.enabled:true}")
-    private boolean enabled = true;
+    @Value("${peashoot.blog.http.content.encrypt.enabled}")
+    private boolean enabled;
 
-    @Autowired
-    @Qualifier("cryptEntity")
-    private Crypto crypto;
+    private final Crypto crypto;
+
+    public EncryptResponseBodyAdvice(@Qualifier("cryptEntity") Crypto crypto) {
+        this.crypto = crypto;
+    }
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {

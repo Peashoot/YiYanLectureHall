@@ -2,6 +2,7 @@ package com.peashoot.blog.crypto.advice;
 
 import com.peashoot.blog.crypto.definition.Crypto;
 import com.peashoot.blog.crypto.util.CryptoInvoker;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,19 +16,22 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdvice;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
+@Setter
 @ControllerAdvice
 @ConditionalOnProperty(prefix = "spring.crypto.request.decrypt", name = "enabled" , havingValue = "true", matchIfMissing = true)
 public class DecryptRequestBodyAdvice implements RequestBodyAdvice {
 
-    @Value("${peashoot.blog.http.context.charset:UTF-8}")
-    private String charset = "UTF-8";
+    @Value("${peashoot.blog.http.content.charset}")
+    private String charset;
 
-    @Value("${peashoot.blog.http.context.decrypt.enabled:true}")
-    private boolean enabled = true;
+    @Value("${peashoot.blog.http.content.decrypt.enabled}")
+    private boolean enabled;
 
-    @Autowired
-    @Qualifier("cryptEntity")
-    private Crypto crypto;
+    private final Crypto crypto;
+
+    public DecryptRequestBodyAdvice(@Qualifier("cryptEntity") Crypto crypto) {
+        this.crypto = crypto;
+    }
 
     @Override
     public boolean supports(MethodParameter methodParameter, Type targetType,

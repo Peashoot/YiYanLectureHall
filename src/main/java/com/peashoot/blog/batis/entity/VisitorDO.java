@@ -16,6 +16,10 @@ public class VisitorDO extends LongPrimaryEntity {
      */
     private String visitor;
     /**
+     * 系统用户id
+     */
+    private Integer userId;
+    /**
      * 系统用户账号信息
      */
     private String sysUserName;

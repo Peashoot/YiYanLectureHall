@@ -62,7 +62,7 @@ public class IoUtils {
         suffix = suffix.toLowerCase();
         switch (fileType) {
             case PICTURE:
-                return "jpg".equals(suffix) || "tif".equals(suffix) || "png".equals(suffix) || "bmp".equals(suffix) || "svg".equals(suffix);
+                return "jpg".equals(suffix) || "tif".equals(suffix) || "png".equals(suffix) || "bmp".equals(suffix) || "svg".equals(suffix) || "ico".equals(suffix);
             case TEXT_FILE:
                 return "txt".equals(suffix) || "xml".equals(suffix);
             case MARKDOWN:
@@ -76,30 +76,30 @@ public class IoUtils {
      * 将文件保存到本地并计算md5
      *
      * @param file     文件
-     * @param savePath 保存路径
+     * @param saveDir 保存路径
      * @return MD5
      * @throws IOException                    读写异常
      * @throws FilePathCreateFailureException 创建文件路径失败
      */
-    public static String saveFileAndGetMd5(MultipartFile file, String savePath) throws IOException, FilePathCreateFailureException {
+    public static String saveFileAndGetMd5(MultipartFile file, String saveDir) throws IOException, FilePathCreateFailureException {
         InputStream inputStream = file.getInputStream();
-        return readFromStreamAndGetMd5(inputStream, savePath);
+        return readFromStreamAndGetMd5(inputStream, saveDir);
     }
 
     /**
      * 根据文件网络路径获取文件保存到本地并计算md5签名
      *
      * @param urlString url
-     * @param savePath  本地保存路径
+     * @param saveDir   本地保存文件夹路径
      * @return MD5
      * @throws IOException                    读写异常
      * @throws FilePathCreateFailureException 创建文件路径失败
      */
-    public static String downloadNetFileAndGetMd5(String urlString, String savePath) throws IOException, FilePathCreateFailureException {
+    public static String downloadNetFileAndGetMd5(String urlString, String saveDir) throws IOException, FilePathCreateFailureException {
         URL url = new URL(urlString);
         URLConnection conn = url.openConnection();
         try (InputStream inputStream = conn.getInputStream()) {
-            return readFromStreamAndGetMd5(inputStream, savePath);
+            return readFromStreamAndGetMd5(inputStream, saveDir);
         }
     }
 
@@ -107,7 +107,7 @@ public class IoUtils {
      * 从数据流中读取文件保存到本地并计算md5签名
      *
      * @param inputStream 数据流
-     * @param savePath    本地保存路径
+     * @param savePath     本地保存路径
      * @return MD5
      * @throws IOException                    读写异常
      * @throws FilePathCreateFailureException 创建文件路径失败
@@ -120,13 +120,14 @@ public class IoUtils {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-        if (!localFile.exists()) {
-            if (!localFile.exists() && !localFile.mkdirs()) {
-                throw new FilePathCreateFailureException(savePath);
-            }
+        if (!localFile.getParentFile().exists() && !localFile.getParentFile().mkdirs()) {
+            throw new FilePathCreateFailureException(savePath);
+        }
+        if (!localFile.exists() && !localFile.createNewFile()) {
+            throw new FilePathCreateFailureException(savePath);
         }
         try (FileOutputStream outputStream = new FileOutputStream(localFile)) {
-            byte[] buffer = new byte[8192];
+            byte[] buffer = new byte[1 << 12];
             int length;
             while ((length = inputStream.read(buffer)) != -1) {
                 md5.update(buffer, 0, length);
@@ -154,12 +155,12 @@ public class IoUtils {
     }
 
 
-
     /**
      * 拼接URL路径
+     *
      * @param urlPrefix 网络路径前缀
-     * @param fileType 文件类型
-     * @param fileName 文件名称
+     * @param fileType  文件类型
+     * @param fileName  文件名称
      * @return 拼接后的URL
      */
     public static String combineNetFilePath(String urlPrefix, FileTypeEnum fileType, String fileName) {

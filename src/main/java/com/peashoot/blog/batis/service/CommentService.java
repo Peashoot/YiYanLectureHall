@@ -8,7 +8,7 @@ import com.peashoot.blog.batis.service.base.SelectService;
 import java.util.List;
 
 public interface CommentService extends InsertService<CommentDO>,
-        SelectService<CommentDO, Integer>, RemoveService<CommentDO, Integer> {
+        SelectService<CommentDO, Long>, RemoveService<CommentDO, Long> {
     /**
      * 获取分页记录
      *
@@ -34,5 +34,5 @@ public interface CommentService extends InsertService<CommentDO>,
      * @param disagree 反对数增量
      * @return 是否更新成功
      */
-    boolean updateSupportAndDisagreeState(int commentId, int agree, int disagree);
+    boolean updateSupportAndDisagreeState(long commentId, int agree, int disagree);
 }

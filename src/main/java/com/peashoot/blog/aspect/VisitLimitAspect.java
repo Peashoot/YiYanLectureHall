@@ -53,7 +53,7 @@ public class VisitLimitAspect {
         VisitTimesLimit annotation = currentMethod.getDeclaredAnnotation(VisitTimesLimit.class);
         BaseApiReq apiReq = (BaseApiReq) joinPoint.getArgs()[0];
 
-        if (visitLimitRedisService.isAllowVisit(apiReq.getVisitorIp(), apiReq.getBrowserFingerprint(), new Date(), annotation)) {
+        if (visitLimitRedisService.isAllowVisit(typeOfClass.getName(), currentMethod.getName(), apiReq.getVisitorIp(), apiReq.getBrowserFingerprint(), new Date(), annotation)) {
             return joinPoint.proceed();
         }
         ApiResp<String> resp = new ApiResp<>();

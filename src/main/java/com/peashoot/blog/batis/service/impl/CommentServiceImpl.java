@@ -23,13 +23,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public int remove(Integer removeId) {
+    public int remove(Long removeId) {
         return commentMapper.deleteByPrimaryKey(removeId);
     }
 
     @Override
-    public int removeRange(List<Integer> removeIdList) {
-        return commentMapper.deleteRangeByPrimaryKeys(removeIdList.toArray(new Integer[0]));
+    public int removeRange(List<Long> removeIdList) {
+        return commentMapper.deleteRangeByPrimaryKeys(removeIdList.toArray(new Long[0]));
     }
 
     @Override
@@ -38,13 +38,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentDO selectById(Integer id) {
+    public CommentDO selectById(Long id) {
         return commentMapper.selectByPrimaryKey(id);
     }
 
     @Override
     public List<CommentDO> listPagedComments(int pageSize, int pageIndex, String articleId) {
-        return commentMapper.listPagedComments(pageSize, pageIndex, articleId);
+        return commentMapper.listPagedComments(pageSize, pageIndex * pageSize, articleId);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional(rollbackFor = {RuntimeException.class, Error.class})
-    public boolean updateSupportAndDisagreeState(int commentId, int agree, int disagree) {
+    public boolean updateSupportAndDisagreeState(long commentId, int agree, int disagree) {
         CommentDO visitRecordDO = commentMapper.selectByPrimaryKeyForUpdate(commentId);
         visitRecordDO.setSupportCount(visitRecordDO.getSupportCount() + agree);
         visitRecordDO.setAgainstCount(visitRecordDO.getAgainstCount() + disagree);

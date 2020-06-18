@@ -1,6 +1,6 @@
 package com.peashoot.blog.batis.entity;
 
-import com.peashoot.blog.batis.entity.base.IntPrimaryEntity;
+import com.peashoot.blog.batis.entity.base.LongPrimaryEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,7 +10,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString(callSuper = true, includeFieldNames = false)
-public class CommentDO extends IntPrimaryEntity {
+public class CommentDO extends LongPrimaryEntity {
     /**
      * 评论人昵称
      */
@@ -46,5 +46,23 @@ public class CommentDO extends IntPrimaryEntity {
     /**
      * 指向其他评论
      */
-    private Integer commentTo;
+    private Long commentTo;
+    /**
+     * 访客名称
+     */
+    private String visitorName;
+    /**
+     * 系统用户昵称
+     */
+    private String sysUserNickname;
+    /**
+     * 评论主体
+     */
+    private CommentDO commentToObject;
+
+    public CommentDO() {
+        supportCount = 0;
+        status = 1;
+        againstCount = 0;
+    }
 }
