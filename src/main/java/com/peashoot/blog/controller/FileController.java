@@ -2,16 +2,18 @@ package com.peashoot.blog.controller;
 
 import com.peashoot.blog.aspect.annotation.ErrorRecord;
 import com.peashoot.blog.batis.entity.FileDO;
+import com.peashoot.blog.batis.entity.VisitorDO;
 import com.peashoot.blog.batis.enums.FileTypeEnum;
 import com.peashoot.blog.batis.enums.VisitActionEnum;
 import com.peashoot.blog.batis.service.FileService;
 import com.peashoot.blog.batis.service.OperateRecordService;
+import com.peashoot.blog.batis.service.VisitorService;
 import com.peashoot.blog.context.response.ApiResp;
 import com.peashoot.blog.exception.FilePathCreateFailureException;
 import com.peashoot.blog.util.IoUtils;
 import com.peashoot.blog.util.IpUtils;
 import com.peashoot.blog.util.StringUtils;
-import io.swagger.annotations.Api;
+import com.peashoot.blog.util.obs.ObjectBucketService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,18 +47,30 @@ public class FileController {
     @Value("${peashoot.blog.file.max-file-size}")
     private Integer maxFileSize;
 
+    /**
+     * 文件记录操作类
+     */
     private final FileService fileService;
+    /**
+     * 操作记录操作类
+     */
     private final OperateRecordService operateRecordService;
+    /**
+     * 访客信息操作类
+     */
+    private final VisitorService visitorService;
 
-    public FileController(FileService fileService, OperateRecordService operateRecordService) {
+    public FileController(FileService fileService, OperateRecordService operateRecordService,
+                          VisitorService visitorService) {
         this.fileService = fileService;
         this.operateRecordService = operateRecordService;
+        this.visitorService = visitorService;
     }
 
     /**
      * 上传本地文件到服务器
      *
-     * @param visitorId 访客id
+     * @param visitor   访客名称
      * @param sysUserId 系统管理员id
      * @param type      文件类型
      * @param file      文件信息
@@ -64,10 +78,16 @@ public class FileController {
      */
     @PostMapping("local/upload")
     public ApiResp<String> uploadFileInfo(HttpServletRequest request,
-                                          @RequestParam Long visitorId, @RequestParam(required = false) Integer sysUserId,
+                                          @RequestParam String visitor, @RequestParam(required = false) Integer sysUserId,
                                           @RequestParam FileTypeEnum type, @RequestParam MultipartFile file)
             throws IOException, FilePathCreateFailureException {
         ApiResp<String> resp = new ApiResp<>();
+        VisitorDO visitorDO = visitorService.selectByVisitorName(visitor);
+        if (visitorDO == null) {
+            resp.setCode(ApiResp.NO_VISITOR_MATCH);
+            resp.setMessage("No matched visitor");
+            return resp;
+        }
         resp.setCode(ApiResp.PROCESS_ERROR);
         resp.setMessage("Failure to upload file.");
         String suffix = IoUtils.getFileSuffix(Objects.requireNonNull(file.getOriginalFilename()));
@@ -79,9 +99,9 @@ public class FileController {
         String localFilePath = IoUtils.combineLocalFilePath(resourceLocalDirectory, type, localFileName);
         String netFileUrl = IoUtils.combineNetFilePath(resourceNetDirectory, type, localFileName);
         String md5 = IoUtils.saveFileAndGetMd5(file, localFilePath);
-        FileDO fileEntity = new FileDO(visitorId, sysUserId, type, localFilePath, netFileUrl, md5);
+        FileDO fileEntity = new FileDO(visitorDO.getId(), sysUserId, type, localFilePath, netFileUrl, md5);
         fileEntity.setOriginalName(file.getOriginalFilename());
-        operateRecordService.insertNewRecordAsync(visitorId, uuid, IpUtils.getIpAddr(request), VisitActionEnum.UPLOAD_FILE, new Date(), "Upload local file to " + localFilePath);
+        operateRecordService.insertNewRecordAsync(visitorDO.getId(), uuid, IpUtils.getIpAddr(request), VisitActionEnum.UPLOAD_FILE, new Date(), "Upload local file to " + localFilePath);
         if (fileService.insert(fileEntity) > 0) {
             resp.success().setData(netFileUrl);
         }
@@ -91,7 +111,7 @@ public class FileController {
     /**
      * 从网络地址下载至服务器
      *
-     * @param visitorId      访客id
+     * @param visitor        访客名称
      * @param sysUserId      系统管理员id
      * @param originalNetUrl 原始网络路径
      * @param type           文件类型
@@ -99,10 +119,16 @@ public class FileController {
      */
     @PostMapping(path = "net/sync")
     public ApiResp<String> downloadFileFrom(HttpServletRequest request,
-                                            @RequestParam Long visitorId, @RequestParam(required = false) Integer sysUserId,
+                                            @RequestParam String visitor, @RequestParam(required = false) Integer sysUserId,
                                             @RequestParam String originalNetUrl, @RequestParam FileTypeEnum type)
             throws IOException, FilePathCreateFailureException {
         ApiResp<String> resp = new ApiResp<>();
+        VisitorDO visitorDO = visitorService.selectByVisitorName(visitor);
+        if (visitorDO == null) {
+            resp.setCode(ApiResp.NO_VISITOR_MATCH);
+            resp.setMessage("No matched visitor");
+            return resp;
+        }
         resp.setCode(ApiResp.PROCESS_ERROR);
         resp.setMessage("Failure to download file.");
         String suffix = IoUtils.getFileSuffix(originalNetUrl);
@@ -115,13 +141,36 @@ public class FileController {
         String localFilePath = IoUtils.combineLocalFilePath(resourceLocalDirectory, type, localFileName);
         String netFileUrl = IoUtils.combineNetFilePath(resourceNetDirectory, type, localFileName);
         String md5 = IoUtils.downloadNetFileAndGetMd5(originalNetUrl, localFilePath);
-        FileDO fileEntity = new FileDO(visitorId, sysUserId, type, localFilePath, netFileUrl, md5);
+        FileDO fileEntity = new FileDO(visitorDO.getId(), sysUserId, type, localFilePath, netFileUrl, md5);
         fileEntity.setOriginalNetUrl(originalNetUrl);
         fileEntity.setId(uuid);
-        operateRecordService.insertNewRecordAsync(visitorId, uuid, IpUtils.getIpAddr(request), VisitActionEnum.UPLOAD_FILE, new Date(), "Download net file to " + localFilePath);
+        operateRecordService.insertNewRecordAsync(visitorDO.getId(), uuid, IpUtils.getIpAddr(request), VisitActionEnum.UPLOAD_FILE, new Date(), "Download net file to " + localFilePath);
         if (fileService.insert(fileEntity) > 0) {
             resp.success().setData(netFileUrl);
         }
         return resp;
     }
+
+    @PostMapping(path = "local/toCloud")
+    public ApiResp<String> uploadFileToCloud(HttpServletRequest request,
+                                             @RequestParam String visitor, @RequestParam(required = false) Integer sysUserId,
+                                             @RequestParam FileTypeEnum type, @RequestParam MultipartFile file) {
+        ApiResp<String> resp = new ApiResp<>();
+        VisitorDO visitorDO = visitorService.selectByVisitorName(visitor);
+        if (visitorDO == null) {
+            resp.setCode(ApiResp.NO_VISITOR_MATCH);
+            resp.setMessage("No matched visitor");
+            return resp;
+        }
+        resp.setCode(ApiResp.PROCESS_ERROR);
+        resp.setMessage("Failure to upload file.");
+        return resp;
+    }
+
+//    @PostMapping(path = "net/toCloud")
+//    public ApiResp<String> downloadFileToCloud(HttpServletRequest request,
+//                                               @RequestParam String visitor, @RequestParam(required = false) Integer sysUserId,
+//                                               @RequestParam String originalNetUrl, @RequestParam FileTypeEnum type) {
+//
+//    }
 }

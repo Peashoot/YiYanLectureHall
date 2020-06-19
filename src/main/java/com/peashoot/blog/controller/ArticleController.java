@@ -2,14 +2,13 @@ package com.peashoot.blog.controller;
 
 import com.peashoot.blog.aspect.annotation.ErrorRecord;
 import com.peashoot.blog.aspect.annotation.VisitTimesLimit;
-import com.peashoot.blog.batis.entity.ArticleDO;
-import com.peashoot.blog.batis.entity.RoleDO;
-import com.peashoot.blog.batis.entity.SysUserDO;
+import com.peashoot.blog.aspect.annotation.VisitorVerify;
+import com.peashoot.blog.batis.entity.*;
 import com.peashoot.blog.batis.enums.VisitActionEnum;
-import com.peashoot.blog.batis.entity.OperateRecordDO;
 import com.peashoot.blog.batis.service.ArticleService;
 import com.peashoot.blog.batis.service.SysUserService;
 import com.peashoot.blog.batis.service.OperateRecordService;
+import com.peashoot.blog.batis.service.VisitorService;
 import com.peashoot.blog.context.request.article.ArticleAgreeDTO;
 import com.peashoot.blog.context.request.article.ArticleSearchDTO;
 import com.peashoot.blog.context.request.article.ChangedArticleDTO;
@@ -55,11 +54,17 @@ public class ArticleController {
      * 访客操作记录操作类
      */
     private final OperateRecordService visitRecordService;
+    /**
+     * 访客信息操作类
+     */
+    private final VisitorService visitorService;
 
-    public ArticleController(ArticleService articleService, SysUserService sysUserService, OperateRecordService visitRecordService) {
+    public ArticleController(ArticleService articleService, SysUserService sysUserService,
+                             OperateRecordService visitRecordService, VisitorService visitorService) {
         this.articleService = articleService;
         this.sysUserService = sysUserService;
         this.visitRecordService = visitRecordService;
+        this.visitorService = visitorService;
     }
 
     /**
@@ -178,11 +183,12 @@ public class ArticleController {
     @PostMapping(path = "reviews")
     @ApiOperation("文章点赞或反对")
     @VisitTimesLimit(value = 5)
+    @VisitorVerify
     public ApiResp<Boolean> agreeOrDisagreeArticle(@RequestBody ArticleAgreeDTO apiReq) {
         ApiResp<Boolean> resp = new ApiResp<>();
         resp.setCode(ApiResp.PROCESS_ERROR);
         resp.setMessage("Failure to action or disagree article");
-        OperateRecordDO visitRecordDO = visitRecordService.selectLastRecordByVisitorIdAndArticleId(apiReq.getVisitorId(), apiReq.getArticleId());
+        OperateRecordDO visitRecordDO = visitRecordService.selectLastRecordByVisitorIdAndArticleId(apiReq.getVisitorDO().getId(), apiReq.getArticleId());
         int agree = 0, disagree = 0;
         switch (apiReq.getAction()) {
             case AGREE_ARTICLE:
@@ -220,7 +226,7 @@ public class ArticleController {
             return resp;
         }
         // 新增访客操作记录并修改评论点赞反对数
-        visitRecordService.insertNewRecordAsync(apiReq.getVisitorId(), apiReq.getArticleId(), apiReq.getVisitorIp(), apiReq.getAction(), new Date(), "");
+        visitRecordService.insertNewRecordAsync(apiReq.getVisitorDO().getId(), apiReq.getArticleId(), apiReq.getVisitorIp(), apiReq.getAction(), new Date(), "");
         if (articleService.updateSupportAndDisagreeState(apiReq.getArticleId(), agree, disagree)) {
             resp.success().setData(true);
         }

@@ -20,6 +20,10 @@ public class ApiResp<T> {
      * 错误的请求
      */
     public static final int BAD_REQUEST = 400;
+    /**
+     * 未匹配到访客信息
+     */
+    public static final int NO_VISITOR_MATCH =  309;
 
     /**
      * 时间戳

@@ -16,7 +16,7 @@ public class UserNameAndVisitorDTO extends BaseApiReq {
      */
     @NotNull
     @ApiModelProperty(value = "访客名称", required = true)
-    private String visitorName;
+    private String visitor;
     /**
      * 系统用户名称
      */

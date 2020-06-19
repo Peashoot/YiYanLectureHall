@@ -3,16 +3,14 @@ package com.peashoot.blog.controller;
 import com.google.common.collect.ImmutableList;
 import com.peashoot.blog.aspect.annotation.ErrorRecord;
 import com.peashoot.blog.aspect.annotation.VisitTimesLimit;
+import com.peashoot.blog.batis.entity.VisitorDO;
 import com.peashoot.blog.batis.enums.VisitActionEnum;
-import com.peashoot.blog.batis.service.OperateRecordService;
-import com.peashoot.blog.batis.service.RoleService;
+import com.peashoot.blog.batis.service.*;
 import com.peashoot.blog.context.request.sysuser.*;
 import com.peashoot.blog.crypto.annotation.DecryptRequest;
 import com.peashoot.blog.batis.entity.RoleDO;
 import com.peashoot.blog.batis.entity.SysUserDO;
 import com.peashoot.blog.context.response.ApiResp;
-import com.peashoot.blog.batis.service.AuthService;
-import com.peashoot.blog.batis.service.SysUserService;
 import com.peashoot.blog.exception.UserNameOccupiedException;
 import com.peashoot.blog.exception.UserUnmatchedException;
 import com.peashoot.blog.util.IpUtils;
@@ -52,14 +50,20 @@ public class SysUserController {
      */
     private final OperateRecordService operateRecordService;
     /**
+     * 访客信息操作类
+     */
+    private final VisitorService visitorService;
+    /**
      * 普通用户角色信息
      */
     private Lazy<RoleDO> roleNormalUserLazy;
 
-    public SysUserController(SysUserService sysUserService, AuthService authService, OperateRecordService operateRecordService, RoleService roleService) {
+    public SysUserController(SysUserService sysUserService, AuthService authService, OperateRecordService operateRecordService,
+                             RoleService roleService, VisitorService visitorService) {
         this.sysUserService = sysUserService;
         this.authService = authService;
         this.operateRecordService = operateRecordService;
+        this.visitorService = visitorService;
         roleNormalUserLazy = new Lazy<>(() -> roleService.selectByRoleName(RoleDO.ROLE_NORMAL_USER));
     }
 
@@ -94,6 +98,13 @@ public class SysUserController {
     @ApiOperation("注册用户")
     @DecryptRequest
     public ApiResp<Boolean> registerSysUser(@RequestBody @Validated RegisterUserDTO apiReq) {
+        ApiResp<Boolean> resp = new ApiResp<>();
+        VisitorDO visitorDO = visitorService.selectByVisitorName(apiReq.getVisitor());
+        if (visitorDO == null) {
+            resp.setCode(ApiResp.NO_VISITOR_MATCH);
+            resp.setMessage("No matched visitor");
+            return resp;
+        }
         SysUserDO sysUser = new SysUserDO();
         apiReq.copyTo(sysUser);
         sysUser.setUsername(apiReq.getUsername());
@@ -101,9 +112,8 @@ public class SysUserController {
         sysUser.setPassword(apiReq.getPassword());
         String salt = UUID.randomUUID().toString().replace("-", "");
         sysUser.initialize(new Date(), ImmutableList.of(roleNormalUserLazy.getInstance()), salt);
-        ApiResp<Boolean> resp = new ApiResp<>();
         try {
-            operateRecordService.insertNewRecordAsync(apiReq.getVisitorId(), apiReq.getUsername(), apiReq.getVisitorIp(), VisitActionEnum.USER_REGISTER, new Date(),
+            operateRecordService.insertNewRecordAsync(visitorDO.getId(), apiReq.getUsername(), apiReq.getVisitorIp(), VisitActionEnum.USER_REGISTER, new Date(),
                     "Visitor try to register " + apiReq.getUsername() + ".");
             boolean success = authService.insertSysUser(sysUser);
             resp.success().setData(success);

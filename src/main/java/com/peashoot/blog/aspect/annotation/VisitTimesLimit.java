@@ -20,7 +20,7 @@ public @interface VisitTimesLimit {
     /**
      * 统计时间区间
      */
-    public int interval() default 60 * Constant.MILLISECONDS_PEY_SECOND;
+    public long interval() default 60;
 
     /**
      * 到期清零

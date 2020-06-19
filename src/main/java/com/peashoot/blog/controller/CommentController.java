@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.google.common.base.Objects;
 import com.peashoot.blog.aspect.annotation.ErrorRecord;
 import com.peashoot.blog.aspect.annotation.VisitTimesLimit;
+import com.peashoot.blog.aspect.annotation.VisitorVerify;
 import com.peashoot.blog.batis.entity.ArticleDO;
 import com.peashoot.blog.batis.entity.CommentDO;
 import com.peashoot.blog.batis.enums.VisitActionEnum;
@@ -20,6 +21,7 @@ import com.peashoot.blog.context.response.ApiResp;
 import com.peashoot.blog.context.response.comment.ArticleCommentDTO;
 import com.peashoot.blog.context.response.comment.PagedCommentsDTO;
 import com.peashoot.blog.util.StringUtils;
+import com.peashoot.blog.util.obs.impl.AliYunObjectBucketService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -164,11 +166,12 @@ public class CommentController {
     @PostMapping(path = "reviews")
     @ApiOperation("点赞或反对评论")
     @VisitTimesLimit(value = 5)
+    @VisitorVerify
     public ApiResp<Boolean> agreeOrDisagreeComment(@RequestBody CommentAgreeDTO apiReq) {
         ApiResp<Boolean> resp = new ApiResp<>();
         resp.setCode(ApiResp.PROCESS_ERROR);
         resp.setMessage("Failure to action or disagree comment");
-        OperateRecordDO visitRecordDO = visitRecordService.selectLastRecordByVisitorIdAndCommentId(apiReq.getVisitorId(), apiReq.getCommentId());
+        OperateRecordDO visitRecordDO = visitRecordService.selectLastRecordByVisitorIdAndCommentId(apiReq.getVisitorDO().getId(), apiReq.getCommentId());
         int agree = 0, disagree = 0;
         switch (apiReq.getAction()) {
             case AGREE_COMMENT:
@@ -206,7 +209,7 @@ public class CommentController {
             return resp;
         }
         // 新增访客操作记录并修改评论点赞反对数
-        visitRecordService.insertNewRecordAsync(apiReq.getVisitorId(), apiReq.getCommentId().toString(), apiReq.getVisitorIp(), apiReq.getAction(), new Date(), "");
+        visitRecordService.insertNewRecordAsync(apiReq.getVisitorDO().getId(), apiReq.getCommentId().toString(), apiReq.getVisitorIp(), apiReq.getAction(), new Date(), "");
         boolean result = commentService.updateSupportAndDisagreeState(apiReq.getCommentId(), agree, disagree);
         if (!result) {
             return resp;

@@ -2,7 +2,6 @@ package com.peashoot.blog.controller;
 
 import com.peashoot.blog.aspect.annotation.ErrorRecord;
 import com.peashoot.blog.aspect.annotation.VisitTimesLimit;
-import com.peashoot.blog.batis.entity.SysUserDO;
 import com.peashoot.blog.batis.enums.VisitActionEnum;
 import com.peashoot.blog.batis.entity.VisitorDO;
 import com.peashoot.blog.batis.service.OperateRecordService;
@@ -117,7 +116,7 @@ public class VisitorController {
     @ApiOperation("将访客信息和用户信息进行绑定")
     @VisitTimesLimit(value = 10)
     public ApiResp<Boolean> syncUserInfoToVisitor(@RequestBody @Validated UserNameAndVisitorDTO apiReq) {
-        VisitorDO visitor = visitorService.selectByVisitorName(apiReq.getVisitorName());
+        VisitorDO visitor = visitorService.selectByVisitorName(apiReq.getVisitor());
         ApiResp<Boolean> resp = new ApiResp<>();
         resp.setCode(ApiResp.PROCESS_ERROR);
         resp.setMessage("Failure to sync user's info to visitor.");
@@ -134,7 +133,7 @@ public class VisitorController {
             resp.success().setData(true);
             return resp;
         }
-        String record = "Visitor " + apiReq.getVisitorName() + " connect with system user " + apiReq.getSysUsername() + ".";
+        String record = "Visitor " + apiReq.getVisitor() + " connect with system user " + apiReq.getSysUsername() + ".";
         visitRecordService.insertNewRecordAsync(visitor.getId(), visitor.getId().toString(), apiReq.getVisitorIp(), VisitActionEnum.BIND_SYS_USER, new Date(), record);
         visitor.setUserId(userId);
         resp.success().setData(visitorService.update(visitor) > 0);

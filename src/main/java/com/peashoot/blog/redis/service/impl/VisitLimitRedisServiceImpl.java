@@ -7,10 +7,13 @@ import com.peashoot.blog.util.StringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -67,7 +70,7 @@ public class VisitLimitRedisServiceImpl implements VisitLimitRedisService {
             }
         }
         if (result) {
-            redisTemplate.<String, String>opsForValue().set(redisKey, String.valueOf(visitCount), visitTimesLimit.interval());
+            redisTemplate.<String, String>opsForValue().set(redisKey, String.valueOf(visitCount), Duration.ofSeconds(visitTimesLimit.interval()));
         }
         return result;
     }
@@ -113,7 +116,7 @@ public class VisitLimitRedisServiceImpl implements VisitLimitRedisService {
         }
         if (result) {
             visitHistoryStr = String.join(",", visitHistory.stream().map(Object::toString).toArray(String[]::new));
-            redisTemplate.opsForValue().set(redisKey, visitHistoryStr, visitTimesLimit.interval());
+            redisTemplate.opsForValue().set(redisKey, visitHistoryStr, Duration.ofSeconds(visitTimesLimit.interval()));
         }
         return result;
     }

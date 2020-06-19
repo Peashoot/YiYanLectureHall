@@ -17,8 +17,8 @@ public class RegisterUserDTO extends SysUserDetailDTO {
     /**
      * 访客id
      */
-    @ApiModelProperty(value = "访客Id")
-    private Long visitorId;
+    @ApiModelProperty(value = "访客名称")
+    private String visitor;
     /**
      * 邮箱
      */
